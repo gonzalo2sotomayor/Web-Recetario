@@ -1,0 +1,19 @@
+{% extends 'recetas_app/base.html' %}
+{% load static %}
+
+{% block title %}Inicio - Blog de Recetas{% endblock %}
+
+{% block content %}
+    <h1>Listado de Recetas</h1>
+    <div class="recetas-lista">
+        {% for receta in recetas %}
+            <div class="receta-item">
+                <h2><a href="{% url 'recetas_app:detalle_receta' receta.pk %}">{{ receta.titulo }}</a></h2>
+                <p>{{ receta.descripcion|truncatechars:100 }}</p>
+                <small>Publicado el: {{ receta.fecha_creacion|date:"d M Y" }}</small>
+            </div>
+        {% empty %}
+            <p>No hay recetas disponibles.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

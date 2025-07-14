@@ -1,9 +1,8 @@
 from .base import *
 
-
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] # Permite todas las peticiones para desarrollo, cámbialo en producción.
 
 DATABASES = {
     'default': {

@@ -3,10 +3,14 @@
 import os
 import sys
 
-
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'blog.settings.local')
+    # Añade la raíz del proyecto al sys.path para que Python encuentre 'apps'
+    sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
+    # Define la ruta a tu archivo de configuración de Django
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'apps.blog.settings.local')
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -16,7 +20,6 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
     execute_from_command_line(sys.argv)
-
 
 if __name__ == '__main__':
     main()

@@ -1,0 +1,14 @@
+{% extends 'recetas_app/base.html' %}
+{% load static %}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+    <h1>Iniciar Sesión</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Iniciar Sesión</button>
+    </form>
+    <p>¿No tienes cuenta? <a href="{% url 'usuarios:registro' %}">Regístrate aquí</a>.</p>
+{% endblock %}
