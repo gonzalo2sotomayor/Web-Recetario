@@ -1,31 +1,101 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Mi Blog de Recetas{% endblock %}</title>
+    <title>{% block title %}Recetas Web{% endblock title %}</title>
+    <!-- Enlace al archivo CSS personalizado -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock extra_head %}
 </head>
-<body>
-    <header>
-        <nav>
-            <a href="{% url 'recetas_app:home' %}">Inicio</a>
-            {% if user.is_authenticated %}
-                <span>Hola, {{ user.username }}</span>
-                <a href="{% url 'usuarios:logout' %}">Cerrar Sesión</a>
-            {% else %}
-                <a href="{% url 'usuarios:login' %}">Iniciar Sesión</a>
-                <a href="{% url 'usuarios:registro' %}">Registrarse</a>
-            {% endif %}
+<body class="dark-theme">
+
+    <header class="main-header">    
+        <!-- Banner de Imagen -->
+        <div class="banner-container">
+            <img src="https://imgur.com/Dg46ZNg.png" alt="Banner El Recetario" 
+                 class="banner-image">
+        </div>
+        <nav class="main-nav">
+            <!-- Logo/Título del Sitio -->
+            <a href="{% url 'recetas_app:home' %}" class="site-logo">
+                El Recetario
+            </a>
+
+            <!-- Navegación Principal -->
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="{% url 'recetas_app:home' %}" class="nav-link">Home</a>
+                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="/mensajes/" class="nav-link">Mensajes Privados</a>
+                    </li>
+                {% endif %}
+                <!-- Espacio para la barra de búsqueda simple -->
+                <li class="search-form-container">
+                    <form action="/buscar/" method="GET" class="search-form">
+                        <input type="text" name="q" placeholder="Buscar recetas..." 
+                               class="search-input"
+                               value="{{ request.GET.q|default:'' }}">
+                        <button type="submit" class="search-button">
+                            Buscar
+                        </button>
+                    </form>
+                </li>
+                <li class="nav-item">
+                    {# Enlace a la nueva página de búsqueda avanzada #}
+                    <a href="/buscar/avanzada/" class="nav-link nav-link-small">Búsqueda Avanzada</a>
+                </li>
+            </ul>
+
+            <!-- Enlaces de Usuario (Condicionales) -->
+            <div class="user-auth-links">
+                {% if user.is_authenticated %}
+                    <!-- Si el usuario está logueado -->
+                    <div class="dropdown user-profile-dropdown">
+                        <button class="dropdown-btn">
+                            Hola, {{ user.username }} <span class="dropdown-arrow">&#9660;</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="/perfil/editar/" class="dropdown-item">Editar Perfil</a>
+                            <a href="/perfil/privacidad/" class="dropdown-item">Privacidad de la Cuenta</a>
+                            <a href="/perfil/cambiar_contrasena/" class="dropdown-item">Cambiar Contraseña</a>
+                            <a href="/perfil/avatar/" class="dropdown-item">Avatar</a>
+                            <a href="/perfil/favoritos/" class="dropdown-item">Mis Favoritos</a> 
+                            <a href="{% url 'usuarios:logout' %}" class="dropdown-item">Cerrar Sesión</a> 
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Si el usuario no está logueado (es invitado) -->
+                    <a href="{% url 'usuarios:registro' %}" class="auth-button register">Registrarse</a>
+                    <a href="{% url 'usuarios:login' %}" class="auth-button login">Login</a>
+                {% endif %}
+            </div>
         </nav>
     </header>
-    <main>
+
+    <main class="main-content">
         {% block content %}
-        {% endblock %}
+            <h1 class="content-title">Bienvenido a El Recetario</h1>
+            <p class="content-paragraph">Explora un mundo de sabores y comparte tus propias creaciones culinarias.</p>
+            <div class="info-card">
+                <h2 class="card-title">¡Descubre Nuestras Recetas Destacadas!</h2>
+                <p class="card-text">Aquí podrás ver las recetas más populares y las últimas adiciones a nuestra colección.</p>
+                <ul class="list-style-disc">
+                    <li>Receta de Pasta Cremosa con Champiñones</li>
+                    <li>Sopa de Lentejas Tradicional</li>
+                    <li>Postre de Chocolate Sin Horno</li>
+                </ul>
+                <p class="card-link-text">¡Regístrate para guardar tus favoritas y compartir las tuyas!</p>
+            </div>
+        {% endblock content %}
     </main>
-    <footer>
-        <p>&copy; 2023 Mi Blog de Recetas</p>
+
+    <footer class="main-footer">
+        <p>&copy; 2025 Mi Blog de Recetas</p>
     </footer>
+
 </body>
 </html>

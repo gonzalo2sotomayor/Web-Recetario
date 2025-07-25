@@ -1,45 +1,445 @@
-/* Estilos básicos para tu blog */
-body {
-    font-family: Arial, sans-serif;
+/*
+ * Archivo: style.css
+ * Descripción: Estilos personalizados para el tema oscuro de la web de recetas,
+ */
+
+/* Color Variables*/
+:root {
+    --dark-bg: #1a1a1a;
+    --dark-card: #2a2a2a;
+    --dark-text: #f0f0f0;
+    --dark-accent: #60B0E0; /* Azul para acentos */
+    --dark-hover: #3a3a3a; /* Gris oscuro para estados hover */
+    --dark-input-bg: #3c3c3c; /* Fondo de inputs */
+    --dark-input-border: #555555; /* Borde de inputs y elementos */
+    --blue-hover: #4a90d0; /* Azul ligeramente más oscuro para hover de acentos */
+    --gray-button-bg: #5A5A5A; /* Fondo de botón gris */
+    --gray-button-hover: #707070; /* Fondo de botón gris en hover */
+    --shadow-color: rgba(0, 0, 0, 0.4); /* Color de sombra para dropdowns */
+}
+
+/* Base HTML and Body Styles */
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
+    font-family: Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: flex; /* Para que el footer se quede abajo */
+    flex-direction: column; /* Para que el footer se quede abajo */
 }
 
-header {
-    background-color: #333;
-    color: #fff;
-    padding: 1em 0;
-    text-align: center;
+/* Dark Theme Application */
+body.dark-theme {
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
 }
 
-nav a {
-    color: #fff;
-    margin: 0 15px;
+/* Header Styles */
+.main-header {
+    background-color: var(--dark-card);
+    box-shadow: 0 4px 6px var(--shadow-color);
+    padding: 1rem; 
+}
+
+/* Main Navigation Styles */
+.main-nav {
+    max-width: 1280px; /* Limita el ancho máximo de la navegación */
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column; /* Apila verticalmente en pantallas pequeñas */
+    align-items: center; /* Centra los ítems horizontalmente cuando están apilados */
+    gap: 1.5rem; /* Espacio entre ítems apilados */
+    padding: 0 1rem; /* Añade padding horizontal a la navegación misma */
+}
+
+/* Media query para pantallas medianas y más grandes */
+@media (min-width: 768px) {
+    .main-nav {
+        flex-direction: row; /* Vuelve a la disposición horizontal */
+        justify-content: space-between; /* Distribuye los ítems */
+        gap: 2rem; /* Ajusta el espacio para pantallas más anchas */
+    }
+}
+
+.site-logo {
+    color: var(--dark-text);
+    font-size: 1.5rem; 
+    font-weight: bold;
+    border-radius: 0.5rem; 
+    padding: 0.5rem;   
+    transition: background-color 0.2s ease;
+    text-decoration: none; /* Quitar subrayado por defecto */
+    margin-bottom: 1rem; /* Espacio debajo del logo cuando está apilado */
+}
+
+@media (min-width: 768px) {
+    .site-logo {
+        margin-bottom: 0; /* Sin margen inferior cuando está horizontal */
+    }
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column; /* Apila los ítems de navegación verticalmente */
+    align-items: center; /* Centra los ítems de navegación cuando están apilados */
+    gap: 0.75rem; /* Espacio más pequeño para enlaces apilados */
+    list-style: none; /* Elimina los puntos de lista */
+    padding: 0;
+    margin: 0; /* Reinicia el margen */
+    width: 100%; /* Ocupa todo el ancho para centrar el contenido */
+}
+
+.nav-links li { /* Asegura que los ítems de lista no tengan margen extra */
+    margin: 0;
+}
+
+@media (min-width: 768px) {
+    .nav-links {
+        flex-direction: row; /* Vuelve a la disposición horizontal */
+        gap: 1.5rem; /* Ajusta el espacio para pantallas más anchas */
+        margin-top: 0;
+        width: auto; /* Ancho automático cuando está horizontal */
+    }
+}
+
+.nav-item {
+    margin: 0; /* Asegura que no haya margen extra de los ítems de la lista */
+}
+
+.nav-link {
+    color: var(--dark-text);
+    padding: 0.5rem 0.75rem; 
+    border-radius: 0.375rem; 
+    transition: color 0.2s ease;
+    font-weight: 500; /* font-medium */
     text-decoration: none;
+    white-space: nowrap; /* Evita que el texto se rompa */
 }
 
-main {
-    padding: 20px;
-    max-width: 900px;
-    margin: 20px auto;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.nav-link:hover {
+    color: var(--dark-accent);
 }
 
-footer {
-    text-align: center;
-    padding: 20px;
-    background-color: #333;
-    color: #fff;
-    position: relative;
-    bottom: 0;
+.nav-link-small {
+    font-size: 0.875rem; 
+}
+
+/* Search Form Styles */
+.search-form-container {
+    display: flex;
+    align-items: center;
+    background-color: var(--dark-input-bg);
+    border-radius: 0.5rem; /* rounded-lg */
+    border: 1px solid var(--dark-input-border);
+    overflow: hidden;
+    width: 100%; /* Ocupa todo el ancho en pantallas pequeñas */
+}
+
+@media (min-width: 768px) {
+    .search-form-container {
+        width: auto; /* Ancho automático en pantallas más grandes */
+        flex-grow: 1; /* Permite que la barra de búsqueda crezca */
+        max-width: 300px; /* Limita el ancho de la barra de búsqueda */
+    }
+}
+
+.search-form {
+    display: flex;
     width: 100%;
 }
 
+.search-input {
+    background-color: var(--dark-input-bg);
+    color: var(--dark-text);
+    padding: 0.5rem 1rem; 
+    flex-grow: 1;
+    border: none;
+    outline: none; /* focus:outline-none */
+    border-top-left-radius: 0.5rem; 
+    border-bottom-left-radius: 0.5rem;
+}
+
+.search-input:focus {
+    box-shadow: none; 
+}
+
+.search-button {
+    background-color: var(--dark-accent);
+    color: var(--dark-text);
+    padding: 0.5rem 1rem; 
+    border-top-right-radius: 0.5rem; 
+    border-bottom-right-radius: 0.5rem;
+    font-weight: 600; /* font-semibold */
+    transition: background-color 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: var(--blue-hover); /* hover:bg-blue-600 */
+}
+
+/* Autenticación de usuario (Login/Register) */
+.user-auth-links {
+    display: flex;
+    flex-direction: column; /* Apila los enlaces de autenticación verticalmente */
+    align-items: center; /* Centra los enlaces de autenticación cuando están apilados */
+    gap: 0.75rem; /* Espacio más pequeño para enlaces apilados */
+    margin-top: 1rem; /* Espacio superior cuando está apilado */
+    width: 100%; /* Ocupa todo el ancho para centrar el contenido */
+}
+
+@media (min-width: 768px) {
+    .user-auth-links {
+        flex-direction: row; /* Vuelve a la disposición horizontal */
+        gap: 1rem; /* Ajusta el espacio para pantallas más anchas */
+        margin-top: 0;
+        width: auto; /* Ancho automático cuando está horizontal */
+    }
+}
+
+.auth-button {
+    padding: 0.5rem 1rem; 
+    border-radius: 0.5rem; 
+    font-weight: 600; /* font-semibold */
+    transition: background-color 0.2s ease;
+    border: none;
+    cursor: pointer;
+    text-decoration: none; /* Para los enlaces */
+    white-space: nowrap; /* Evita que el texto se rompa */
+    width: 100%; /* Hace que los botones ocupen todo el ancho cuando están apilados */
+    text-align: center; /* Centra el texto en los botones de ancho completo */
+}
+
+@media (min-width: 768px) {
+    .auth-button {
+        width: auto; /* Ancho automático cuando está horizontal */
+    }
+}
+
+.auth-button.register {
+    background-color: var(--gray-button-bg);
+    color: var(--dark-text);
+}
+
+.auth-button.register:hover {
+    background-color: var(--gray-button-hover);
+}
+
+.auth-button.login {
+    background-color: var(--dark-accent);
+    color: var(--dark-text);
+}
+
+.auth-button.login:hover {
+    background-color: var(--blue-hover);
+}
+
+/* Dropdown stilo específico */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    width: 100%; /* Ocupa todo el ancho para el botón del dropdown cuando está apilado */
+    transition: background-color 0.2s ease;
+}
+
+.dropdown:hover {
+    background-color: var(--dark-hover); /* Color de fondo al pasar el ratón */
+    border-radius: 0.5rem; /* Mantener la consistencia del borde redondeado */
+}
+
+
+@media (min-width: 768px) {
+    .dropdown {
+        width: auto; /* Ancho automático cuando está horizontal */
+    }
+}
+
+.dropdown-btn {
+    background-color: var(--dark-accent);
+    color: var(--dark-text);
+    padding: 0.5rem 1rem; 
+    border-radius: 0.5rem; 
+    font-weight: 600; /* font-semibold */
+    transition: background-color 0.2s ease;
+    border: none;
+    cursor: pointer;
+    outline: none; /* focus:outline-none */
+    display: flex; /* Para alinear texto y flecha */
+    align-items: center;
+    gap: 0.25rem; /* Pequeño espacio entre texto y flecha */
+    width: 100%; /* Hace que el botón ocupe todo el ancho del dropdown */
+    justify-content: center; /* Centra el contenido del botón */
+}
+
+@media (min-width: 768px) {
+    .dropdown-btn {
+        width: auto; /* Ancho automático en pantallas grandes */
+        justify-content: flex-start; /* Alinea a la izquierda en pantallas grandes */
+    }
+}
+
+.dropdown-btn:hover {
+    background-color: var(--blue-hover);
+}
+
+.dropdown-btn:focus {
+    box-shadow: 0 0 0 2px rgba(96, 176, 224, 0.5); /* Simulación de focus ring */
+}
+
+.dropdown-arrow {
+    font-size: 0.75rem; 
+}
+
+.dropdown-menu {
+    display: none; /* Oculta el menú por defecto */
+    position: absolute;
+    background-color: var(--dark-card);
+    min-width: 180px;
+    box-shadow: 0px 8px 16px 0px var(--shadow-color);
+    z-index: 1000;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    /* Posicionamiento para centrar en pantallas pequeñas */
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 100%; /* Asegura que sea al menos tan ancho como el botón */
+    box-sizing: border-box; /* Incluye padding/border en el ancho */
+    top: 100%;
+    margin-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+    .dropdown-menu {
+        right: 0; /* Vuelve a la alineación a la derecha en pantallas grandes */
+        left: auto;
+        transform: none; /* Elimina la transformación */
+        min-width: 180px; /* Ancho mínimo original */
+    }
+}
+
+/* Regla para mostrar el menú al pasar el ratón por el contenedor .dropdown */
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a.dropdown-item {
+    color: var(--dark-text);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-menu a.dropdown-item:hover {
+    background-color: var(--dark-hover);
+}
+
+/* Banner Styles */
+.banner-container {
+    width: 100%;
+    margin-top: 0px;
+    margin-bottom: 26px; 
+    max-width: 1280px; /* Para que el banner no se estire demasiado en pantallas grandes */
+}
+
+.banner-image {
+    margin-top: -5px; /* Ajusta la imagen para que no tenga margen superior */
+    width: 100%;
+    height: 100%; 
+    object-fit: cover;
+    border-radius: 2px; 
+    box-shadow: 0px 4px 6px var(--shadow-color); 
+    border: 1px solid var(--dark-input-border);
+}
+
+/* Main Content Area */
+.main-content {
+    flex-grow: 1; /* Permite que el contenido principal ocupe el espacio restante */
+    max-width: 1280px; /* container mx-auto */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1.5rem;
+}
+
+.content-title {
+    font-size: 1.875rem; 
+    font-weight: bold;
+    color: var(--dark-text);
+    margin-bottom: 1.5rem; 
+    text-align: center;
+}
+
+.content-paragraph {
+    font-size: 1.125rem; 
+    color: var(--dark-text); 
+    text-align: center;
+}
+
+.info-card {
+    margin-top: 2rem; 
+    padding: 1.5rem; 
+    background-color: var(--dark-card);
+    border-radius: 0.5rem; 
+    box-shadow: 0 4px 6px var(--shadow-color); 
+    border: 1px solid var(--dark-input-border);
+}
+
+.card-title {
+    font-size: 1.25rem; 
+    font-weight: 600; /* font-semibold */
+    color: var(--dark-text);
+    margin-bottom: 1rem; 
+}
+
+.card-text {
+    color: var(--dark-text); 
+}
+
+.list-style-disc {
+    list-style: disc;
+    list-style-position: inside;
+    margin-top: 1rem; 
+    color: var(--dark-text); 
+}
+
+.card-link-text {
+    margin-top: 1rem; 
+    color: var(--dark-text); 
+}
+
+.register-button-large {
+    background-color: var(--dark-accent);
+    color: var(--dark-text);
+    padding: 0.75rem 1.5rem; 
+    border-radius: 0.5rem; 
+    font-weight: 600; /* font-semibold */
+    transition: background-color 0.2s ease;
+    display: inline-block;
+    text-decoration: none; /* Para los enlaces */
+}
+
+.register-button-large:hover {
+    background-color: var(--blue-hover); /* hover:bg-blue-600 */
+}
+
+/* Footer Styles */
+.main-footer {
+    background-color: var(--dark-card);
+    padding: 1rem; 
+    text-align: center;
+    color: var(--dark-text); 
+    font-size: 0.875rem; 
+    margin-top: 2rem; 
+}
+
+/* Otros Styles*/
 .recetas-lista .receta-item {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--dark-input-border);
     padding: 15px 0;
 }
 
@@ -48,7 +448,7 @@ footer {
 }
 
 .recetas-lista .receta-item h2 a {
-    color: #007bff;
+    color: var(--dark-accent);
     text-decoration: none;
 }
 
@@ -56,7 +456,7 @@ footer {
     text-decoration: underline;
 }
 
-/* Estilos para formularios */
+/* Stilos generales */
 form p {
     margin-bottom: 15px;
 }
@@ -68,13 +468,15 @@ form textarea {
     width: 100%;
     padding: 8px;
     margin-top: 5px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--dark-input-border);
     border-radius: 4px;
-    box-sizing: border-box; /* Asegura que padding no aumente el ancho total */
+    box-sizing: border-box;
+    background-color: var(--dark-input-bg);
+    color: var(--dark-text);
 }
 
 form button[type="submit"] {
-    background-color: #28a745;
+    background-color: var(--dark-accent);
     color: white;
     padding: 10px 15px;
     border: none;
@@ -84,5 +486,5 @@ form button[type="submit"] {
 }
 
 form button[type="submit"]:hover {
-    background-color: #218838;
+    background-color: var(--blue-hover);
 }

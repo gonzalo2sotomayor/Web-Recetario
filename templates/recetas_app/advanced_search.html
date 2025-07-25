@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Búsqueda Avanzada - Recetas Web{% endblock title %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-dark-card p-8 rounded-lg shadow-xl mt-8">
+    <h1 class="text-3xl font-bold text-dark-text mb-6 text-center">Búsqueda Avanzada de Recetas</h1>
+    <p class="text-gray-400 text-center mb-8">Refina tu búsqueda utilizando múltiples criterios.</p>
+
+    <form action="/buscar/avanzada/resultados/" method="GET" class="space-y-6">
+        <!-- Campo: Palabra Exacta -->
+        <div>
+            <label for="exact_phrase" class="block text-dark-text text-sm font-bold mb-2">
+                Buscar por palabra exacta:
+            </label>
+            <input type="text" id="exact_phrase" name="exact_phrase" 
+                   class="shadow appearance-none border border-dark-input-border rounded w-full py-3 px-4 text-dark-text leading-tight focus:outline-none focus:ring-2 focus:ring-dark-accent bg-dark-input-bg"
+                   placeholder="Ej: 'Tarta de manzana'">
+            <p class="text-gray-500 text-xs italic mt-1">Busca la frase completa tal cual la escribes.</p>
+        </div>
+
+        <!-- Campo: Palabras Similares -->
+        <div>
+            <label for="similar_words" class="block text-dark-text text-sm font-bold mb-2">
+                Buscar por palabras similares:
+            </label>
+            <input type="text" id="similar_words" name="similar_words" 
+                   class="shadow appearance-none border border-dark-input-border rounded w-full py-3 px-4 text-dark-text leading-tight focus:outline-none focus:ring-2 focus:ring-dark-accent bg-dark-input-bg"
+                   placeholder="Ej: 'pollo asado'">
+            <p class="text-gray-500 text-xs italic mt-1">Encuentra recetas que contengan cualquiera de las palabras clave.</p>
+        </div>
+
+        <!-- Campo: Ingrediente -->
+        <div>
+            <label for="ingredient" class="block text-dark-text text-sm font-bold mb-2">
+                Incluir Ingrediente:
+            </label>
+            <input type="text" id="ingredient" name="ingredient" 
+                   class="shadow appearance-none border border-dark-input-border rounded w-full py-3 px-4 text-dark-text leading-tight focus:outline-none focus:ring-2 focus:ring-dark-accent bg-dark-input-bg"
+                   placeholder="Ej: 'tomate', 'queso'">
+            <p class="text-gray-500 text-xs italic mt-1">Recetas que contengan este ingrediente principal.</p>
+        </div>
+
+        <!-- Campo: Tipo de Receta (Dropdown) -->
+        <div>
+            <label for="recipe_type" class="block text-dark-text text-sm font-bold mb-2">
+                Tipo de Receta:
+            </label>
+            <select id="recipe_type" name="recipe_type" 
+                    class="block appearance-none w-full bg-dark-input-bg border border-dark-input-border text-dark-text py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:ring-2 focus:ring-dark-accent">
+                <option value="">Cualquier tipo</option>
+                <option value="postre">Postre</option>
+                <option value="vegano">Vegano</option>
+                <option value="vegetariano">Vegetariano</option>
+                <option value="internacional">Internacional</option>
+                <option value="desayuno">Desayuno</option>
+                <option value="almuerzo">Almuerzo</option>
+                <option value="cena">Cena</option>
+                <option value="entrada">Entrada</option>
+                <option value="bebida">Bebida</option>
+                <!-- Puedes añadir más opciones aquí -->
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+            </div>
+            <p class="text-gray-500 text-xs italic mt-1">Filtra por categorías de recetas.</p>
+        </div>
+
+        <!-- Botón de Envío -->
+        <div class="flex justify-center pt-4">
+            <button type="submit" 
+                    class="bg-dark-accent text-dark-text px-8 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                Buscar Recetas
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock content %}
