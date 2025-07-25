@@ -4,98 +4,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Recetas Web{% endblock title %}</title>
-    <!-- Enlace al archivo CSS personalizado -->
+    <title>{% block title %}El Recetario{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon"> {# Ruta para el favicon #}
     {% block extra_head %}{% endblock extra_head %}
 </head>
 <body class="dark-theme">
 
-    <header class="main-header">    
-        <!-- Banner de Imagen -->
-        <div class="banner-container">
-            <img src="https://imgur.com/Dg46ZNg.png" alt="Banner El Recetario" 
-                 class="banner-image">
-        </div>
-        <nav class="main-nav">
-            <!-- Logo/Título del Sitio -->
-            <a href="{% url 'recetas_app:home' %}" class="site-logo">
-                El Recetario
-            </a>
+    <header class="main-header-new">
+        <nav class="main-nav-new">
+            <!-- Sección Izquierda: Logo/Título -->
+            <div class="nav-left">
+                <a href="{% url 'recetas_app:home' %}" class="site-logo-new">
+                    El Recetario
+                </a>
+            </div>
 
-            <!-- Navegación Principal -->
-            <ul class="nav-links">
-                <li class="nav-item">
-                    <a href="{% url 'recetas_app:home' %}" class="nav-link">Home</a>
-                </li>
-                {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a href="/mensajes/" class="nav-link">Mensajes Privados</a>
-                    </li>
-                {% endif %}
-                <!-- Espacio para la barra de búsqueda simple -->
-                <li class="search-form-container">
-                    <form action="/buscar/" method="GET" class="search-form">
-                        <input type="text" name="q" placeholder="Buscar recetas..." 
-                               class="search-input"
-                               value="{{ request.GET.q|default:'' }}">
-                        <button type="submit" class="search-button">
-                            Buscar
-                        </button>
-                    </form>
-                </li>
-                <li class="nav-item">
-                    {# Enlace a la nueva página de búsqueda avanzada #}
-                    <a href="/buscar/avanzada/" class="nav-link nav-link-small">Búsqueda Avanzada</a>
-                </li>
+            <!-- Sección Central: Enlaces de Navegación Principal -->
+            <ul class="nav-links-new">
+                <li><a href="{% url 'recetas_app:home' %}" class="nav-link-new">Home</a></li>
+                <li><a href="/recetas/" class="nav-link-new">Recetas</a></li>
+                <li><a href="/comunidades/" class="nav-link-new">Comunidades</a></li>
+                <li><a href="/mi-recetario/" class="nav-link-new">Mi Recetario</a></li>
+                <li><a href="/perfil/" class="nav-link-new">Perfil</a></li>
             </ul>
 
-            <!-- Enlaces de Usuario (Condicionales) -->
-            <div class="user-auth-links">
+            <!-- Sección Derecha: Iconos de Usuario/Autenticación -->
+            <div class="nav-right">
+                <a href="#" class="nav-icon-link"><span class="icon">&#128722;</span></a> {# Icono de Carrito #}
+                <a href="#" class="nav-icon-link"><span class="icon">&#128276;</span></a> {# Icono de Campana #}
                 {% if user.is_authenticated %}
-                    <!-- Si el usuario está logueado -->
-                    <div class="dropdown user-profile-dropdown">
-                        <button class="dropdown-btn">
-                            Hola, {{ user.username }} <span class="dropdown-arrow">&#9660;</span>
+                    <div class="dropdown user-profile-dropdown-new">
+                        {# Botón con la imagen del avatar del usuario #}
+                        <button id="profileDropdownBtn" class="dropdown-btn-new">
+                            <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}" 
+                                 alt="Avatar de {{ user.username }}" 
+                                 class="avatar-image">
                         </button>
-                        <div class="dropdown-menu">
-                            <a href="/perfil/editar/" class="dropdown-item">Editar Perfil</a>
-                            <a href="/perfil/privacidad/" class="dropdown-item">Privacidad de la Cuenta</a>
-                            <a href="/perfil/cambiar_contrasena/" class="dropdown-item">Cambiar Contraseña</a>
-                            <a href="/perfil/avatar/" class="dropdown-item">Avatar</a>
-                            <a href="/perfil/favoritos/" class="dropdown-item">Mis Favoritos</a> 
-                            <a href="{% url 'usuarios:logout' %}" class="dropdown-item">Cerrar Sesión</a> 
+                        <div id="profileDropdownMenu" class="dropdown-menu-new">
+                            <a href="/perfil/editar/" class="dropdown-item-new">Editar Perfil</a>
+                            <a href="/perfil/privacidad/" class="dropdown-item-new">Privacidad</a>
+                            <a href="/perfil/cambiar_contrasena/" class="dropdown-item-new">Cambiar Contraseña</a>
+                            <a href="/perfil/avatar/" class="dropdown-item-new">Avatar</a>
+                            <a href="/perfil/favoritos/" class="dropdown-item-new">Mis Favoritos</a> 
+                            <a href="{% url 'usuarios:logout' %}" class="dropdown-item-new">Cerrar Sesión</a> 
                         </div>
                     </div>
                 {% else %}
-                    <!-- Si el usuario no está logueado (es invitado) -->
-                    <a href="{% url 'usuarios:registro' %}" class="auth-button register">Registrarse</a>
-                    <a href="{% url 'usuarios:login' %}" class="auth-button login">Login</a>
+                    <a href="{% url 'usuarios:registro' %}" class="auth-button-new">Registrarse</a>
+                    <a href="{% url 'usuarios:login' %}" class="auth-button-new">Iniciar Sesión</a>
                 {% endif %}
             </div>
         </nav>
     </header>
 
-    <main class="main-content">
-        {% block content %}
-            <h1 class="content-title">Bienvenido a El Recetario</h1>
-            <p class="content-paragraph">Explora un mundo de sabores y comparte tus propias creaciones culinarias.</p>
-            <div class="info-card">
-                <h2 class="card-title">¡Descubre Nuestras Recetas Destacadas!</h2>
-                <p class="card-text">Aquí podrás ver las recetas más populares y las últimas adiciones a nuestra colección.</p>
-                <ul class="list-style-disc">
-                    <li>Receta de Pasta Cremosa con Champiñones</li>
-                    <li>Sopa de Lentejas Tradicional</li>
-                    <li>Postre de Chocolate Sin Horno</li>
-                </ul>
-                <p class="card-link-text">¡Regístrate para guardar tus favoritas y compartir las tuyas!</p>
+    <!-- Sección Hero (Banner de Paella con Buscador) -->
+    <section class="hero-section">
+        <div class="hero-overlay">
+            <h1 class="hero-title">El Recetario</h1>
+            <div class="hero-search-container">
+                <form action="/buscar/" method="GET" class="hero-search-form">
+                    <input type="text" name="q" placeholder="Buscar recetas..." 
+                           class="hero-search-input"
+                           value="{{ request.GET.q|default:'' }}">
+                    <button type="submit" class="hero-search-button">&#128269;</button> {# Icono de Lupa #}
+                </form>
             </div>
+            <div class="hero-pagination-dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-content-new">
+        {% block content %}
+            {# Este bloque será llenado por las plantillas hijas (ej. home.html, search_results.html) #}
         {% endblock content %}
     </main>
 
-    <footer class="main-footer">
-        <p>&copy; 2025 Mi Blog de Recetas</p>
+    <footer class="main-footer-new">
+        <p>&copy; 2025 El Recetario</p>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+            const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+
+            if (profileDropdownBtn && profileDropdownMenu) {
+                profileDropdownBtn.addEventListener('click', function(event) {
+                    event.stopPropagation(); // Evita que el clic se propague al documento
+                    profileDropdownMenu.classList.toggle('show-dropdown');
+                });
+
+                // Cierra el menú si se hace clic fuera de él
+                document.addEventListener('click', function(event) {
+                    if (profileDropdownMenu.classList.contains('show-dropdown') && !profileDropdownBtn.contains(event.target) && !profileDropdownMenu.contains(event.target)) {
+                        profileDropdownMenu.classList.remove('show-dropdown');
+                    }
+                });
+            }
+        });
+    </script>
 
 </body>
 </html>

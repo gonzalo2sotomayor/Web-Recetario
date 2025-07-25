@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Resultados de Búsqueda - El Recetario{% endblock title %}
+
+{% block content %}
+<div class="search-results-container">
+    <h1 class="search-results-title">Resultados de Búsqueda</h1>
+
+    {% if search_type == 'simple' %}
+        <p class="search-query-info">Resultados para la búsqueda simple: "<span class="font-semibold">{{ query }}</span>"</p>
+    {% elif search_type == 'advanced' %}
+        <p class="search-query-info">Resultados para tu búsqueda avanzada:</p>
+        <ul class="advanced-search-criteria">
+            {% if exact_phrase %}<li><span class="criteria-label">Frase Exacta:</span> "{{ exact_phrase }}"</li>{% endif %}
+            {% if similar_words %}<li><span class="criteria-label">Palabras Clave:</span> "{{ similar_words }}"</li>{% endif %}
+            {% if ingredient %}<li><span class="criteria-label">Ingrediente:</span> "{{ ingredient }}"</li>{% endif %}
+            {% if recipe_type %}<li><span class="criteria-label">Tipo de Receta:</span> "{{ recipe_type|capfirst }}"</li>{% endif %}
+        </ul>
+    {% endif %}
+
+    <div class="recipe-grid">
+        {% if results %}
+            {% for receta in results %}
+                <div class="recipe-card">
+                    {# Asume que tu modelo Receta tiene un campo 'imagen' y 'titulo' #}
+                    <img src="{% if receta.imagen %}{{ receta.imagen.url }}{% else %}{% static 'img/default_recipe.png' %}{% endif %}" 
+                         alt="{{ receta.titulo }}" 
+                         class="recipe-card-image">
+                    <h3 class="recipe-card-title">{{ receta.titulo }}</h3>
+                    {# Asume que tu modelo Receta tiene un campo 'descripcion_corta' o similar #}
+                    <p class="recipe-card-description">{{ receta.descripcion|truncatechars:100 }}</p>
+                    <a href="{% url 'recetas_app:detalle_receta' pk=receta.pk %}" class="recipe-card-link">Ver Receta</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-recipes-message">No se encontraron recetas que coincidan con tu búsqueda.</p>
+        {% endif %}
+    </div>
+
+    <div class="search-navigation-buttons">
+        <a href="/buscar/avanzada/" class="button-secondary">Volver a Búsqueda Avanzada</a>
+        <a href="{% url 'recetas_app:home' %}" class="button-primary">Volver al Inicio</a>
+    </div>
+</div>
+{% endblock content %}
