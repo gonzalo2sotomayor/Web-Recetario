@@ -1,6 +1,10 @@
+from dotenv import load_dotenv
 from pathlib import Path
-import os
 from django.urls import reverse_lazy
+import os
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+load_dotenv(dotenv_path=BASE_DIR / '.env')
 
 # BASE_DIR ahora apunta a la carpeta 'blog-base' (raíz del repositorio)
 # __file__ es base.py (en settings/)
@@ -10,7 +14,8 @@ from django.urls import reverse_lazy
 # .parent.parent.parent.parent es blog-base/
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
-SECRET_KEY = 'django-insecure-&vznf9d1ub9b7!@ecs)&s+em1z%hwn9+nkqqvsge$+j%q$xf@k'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-&vznf9d1ub9b7!@ecs)&s+em1z%hwn9+nkqqvsge$+j%q$xf@k')
+
 
 AUTH_USER_MODEL = 'usuarios.Usuario' # Correcto: 'app_label.ModelName'
 LOGIN_REDIRECT_URL = reverse_lazy('recetas_app:home')
