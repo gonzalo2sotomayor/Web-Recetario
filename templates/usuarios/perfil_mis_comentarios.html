@@ -9,27 +9,34 @@
     <div class="comments-container">
         <p class="form-description">Aquí puedes ver todos los comentarios que has realizado y sus respuestas.</p>
 
-        {# Recordarme: Aquí listar los comentarios del usuario #}
-        {# {% if user.comments.all %} #}
-        {#     <ul class="user-comments-list"> #}
-        {#         {% for comment in user.comments.all %} #}
-        {#             <li class="user-comment-item"> #}
-        {#                 <p class="comment-text">"{{ comment.text|truncatechars:150 }}"</p> #}
-        {#                 <p class="comment-info">En: <a href="{{ comment.recipe.get_absolute_url }}">{{ comment.recipe.title }}</a> el {{ comment.created_at|date:"d M Y" }}</p> #}
-        {#                 {% if comment.replies.all %} #}
-        {#                     <div class="comment-replies"> #}
-        {#                         <h4>Respuestas:</h4> #}
-        {#                         {% for reply in comment.replies.all %} #}
-        {#                             <p class="reply-text"><strong>{{ reply.user.username }}:</strong> {{ reply.text }}</p> #}
-        {#                         {% endfor %} #}
-        {#                     </div> #}
-        {#                 {% endif %} #}
-        {#             </li> #}
-        {#         {% endfor %} #}
-        {#     </ul> #}
-        {# {% else %} #}
-        {#     <p>Aún no has realizado ningún comentario.</p> #}
-        {# {% endif %} #}
+        {% if comentarios_principales %}
+            <ul class="user-comments-list">
+                {% for comentario in comentarios_principales %}
+                    <li class="user-comment-item">
+                        <p class="comment-text">"{{ comentario.texto|truncatechars:200 }}"</p>
+                        <p class="comment-info">En: 
+                            <a href="{% url 'recetas_app:detalle_receta' pk=comentario.receta.pk %}">{{ comentario.receta.titulo }}</a> 
+                            el {{ comentario.fecha_creacion|date:"d M Y H:i" }}
+                        </p>
+                        
+                        {# Mostrar respuestas a este comentario #}
+                        {% if comentario.respuestas.all %}
+                            <div class="comment-replies">
+                                <h4>Respuestas:</h4>
+                                {% for respuesta in comentario.respuestas.all %}
+                                    <p class="reply-text">
+                                        <strong>{{ respuesta.autor.username }}:</strong> {{ respuesta.texto }}
+                                        <span class="reply-date">({{ respuesta.fecha_creacion|date:"d M Y H:i" }})</span>
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Aún no has realizado ningún comentario.</p>
+        {% endif %}
     </div>
 </div>
 {% endblock content %}

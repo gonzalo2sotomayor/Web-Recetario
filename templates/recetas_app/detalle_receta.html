@@ -23,7 +23,7 @@
         {% if user.is_authenticated %}
             <form action="{% url 'usuarios:toggle_favorito' receta_pk=receta.pk %}" method="post" class="favorite-form">
                 {% csrf_token %}
-                {% if user.recetas_favoritas.filter(receta=receta).exists %}
+                {% if es_favorita %} {# Usamos la variable 'es_favorita' del contexto #}
                     <button type="submit" class="button-secondary favorite-button favorited">
                         &#9733; Quitar de Favoritos
                     </button>
@@ -60,12 +60,204 @@
             </div>
         </div>
 
-        {# Sección de Comentarios (opcional, si ya la tienes implementada) #}
+        {# Sección de Comentarios #}
         <div class="comments-section">
-            <h3>Comentarios</h3>
-            {# Aquí iría la lógica para mostrar y añadir comentarios #}
-            <p>Aún no hay comentarios. ¡Sé el primero en comentar!</p>
+            <h3>Comentarios ({{ comentarios_principales.count }})</h3> {# Muestra el número de comentarios #}
+
+            {# Formulario para dejar un comentario #}
+            {% if user.is_authenticated %}
+                <div class="comment-form-container">
+                    <h4>Deja tu comentario:</h4>
+                    <form method="post" action="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
+                        {% csrf_token %}
+                        {{ form.texto }} {# Solo el campo de texto #}
+                        {{ form.respuesta_a }} {# Campo oculto para respuestas #}
+                        <button type="submit" class="button-primary comment-submit-button">Publicar Comentario</button>
+                    </form>
+                </div>
+            {% else %}
+                <p class="login-to-comment">
+                    <a href="{% url 'usuarios:login' %}?next={{ request.path }}">Inicia sesión</a> para dejar un comentario.
+                </p>
+            {% endif %}
+
+            {# Listado de comentarios #}
+            {% if comentarios_principales %}
+                <ul class="comments-list">
+                    {% for comentario in comentarios_principales %}
+                        <li class="comment-item">
+                            <div class="comment-header">
+                                <span class="comment-author">{{ comentario.autor.username }}</span>
+                                <span class="comment-date">{{ comentario.fecha_creacion|date:"d M Y H:i" }}</span>
+                            </div>
+                            <p class="comment-text-content">{{ comentario.texto }}</p>
+                            {# Botón para responder (opcional, requiere JS para mostrar el formulario de respuesta) #}
+                            {# <button class="button-secondary reply-button" data-comment-id="{{ comentario.pk }}">Responder</button> #}
+
+                            {# Respuestas a este comentario #}
+                            {% if comentario.respuestas.all %}
+                                <ul class="replies-list">
+                                    {% for respuesta in comentario.respuestas.all %}
+                                        <li class="reply-item">
+                                            <div class="comment-header">
+                                                <span class="comment-author">{{ respuesta.autor.username }}</span>
+                                                <span class="comment-date">{{ respuesta.fecha_creacion|date:"d M Y H:i" }}</span>
+                                            </div>
+                                            <p class="comment-text-content">{{ respuesta.texto }}</p>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Aún no hay comentarios. ¡Sé el primero en comentar!</p>
+            {% endif %}
         </div>
     </div>
 </div>
 {% endblock content %}
+
+/* Estilos para la sección de comentarios */
+.comments-section {
+    background-color: var(--secondary-bg);
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px var(--shadow-color);
+    padding: 30px;
+    margin-top: 40px;
+}
+
+.comments-section h3 {
+    color: var(--text-color);
+    font-size: 24px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--input-border);
+    padding-bottom: 10px;
+}
+
+.comment-form-container {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: var(--primary-bg);
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px var(--shadow-color);
+}
+
+.comment-form-container h4 {
+    color: var(--text-color);
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.comment-form-container textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    box-sizing: border-box;
+    background-color: var(--input-bg);
+    color: var(--dark-font);
+    font-size: 16px;
+    resize: vertical; /* Permite redimensionar verticalmente */
+}
+
+.comment-submit-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.login-to-comment {
+    text-align: center;
+    font-size: 16px;
+    color: var(--light-text);
+    margin-top: 20px;
+}
+
+.login-to-comment a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-to-comment a:hover {
+    text-decoration: underline;
+}
+
+
+.comments-list {
+    list-style: none;
+    padding: 0;
+}
+
+.comment-item {
+    background-color: var(--primary-bg);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0px 2px 5px var(--shadow-color);
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--input-border);
+    padding-bottom: 8px;
+}
+
+.comment-author {
+    font-weight: bold;
+    color: var(--accent-color);
+    font-size: 16px;
+}
+
+.comment-date {
+    font-size: 12px;
+    color: var(--light-text);
+}
+
+.comment-text-content {
+    font-size: 15px;
+    color: var(--text-color);
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+/* Estilos para respuestas anidadas */
+.replies-list {
+    list-style: none;
+    padding-left: 20px; /* Indentación para respuestas */
+    margin-top: 15px;
+    border-left: 3px solid var(--input-border); /* Línea vertical para indicar anidación */
+}
+
+.reply-item {
+    background-color: var(--secondary-bg); /* Fondo ligeramente diferente para respuestas */
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0px 1px 3px var(--shadow-color);
+}
+
+.reply-item .comment-header {
+    border-bottom: none; /* No repetir la línea de separación en respuestas */
+    padding-bottom: 0;
+}
+
+.reply-item .comment-author {
+    font-size: 15px;
+}
+
+.reply-item .comment-date {
+    font-size: 11px;
+}
+
+.reply-item .comment-text-content {
+    font-size: 14px;
+}

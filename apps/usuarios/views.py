@@ -6,10 +6,9 @@ from django.contrib.auth import login
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
 from django.contrib.auth import update_session_auth_hash
-from .forms import UserUpdateForm, PerfilUpdateForm, SeguridadPerfilForm, CategoriaFavoritaForm # Importar CategoriaFavoritaForm
-from .models import Perfil, CategoriaFavorita, RecetaFavorita # Importar RecetaFavorita y CategoriaFavorita
-from apps.recetas_app.models import Receta
-
+from .forms import UserUpdateForm, PerfilUpdateForm, SeguridadPerfilForm, CategoriaFavoritaForm
+from .models import Perfil, CategoriaFavorita, RecetaFavorita
+from apps.recetas_app.models import Receta, Comentario
 
 def registro(request):
     if request.method == 'POST':
@@ -110,8 +109,15 @@ def perfil_favoritos(request):
 
 @login_required
 def perfil_mis_comentarios(request):
-    # Recordarme: Lógica para listar los comentarios del usuario y sus respuestas
+    # Obtener los comentarios del usuario que no son respuestas a otros comentarios
+    # (es decir, son comentarios de nivel superior)
+    comentarios_principales = Comentario.objects.filter(
+        autor=request.user,
+        respuesta_a__isnull=True # Filtra solo los comentarios que no son respuestas
+    ).order_by('-fecha_creacion')
+
     return render(request, 'usuarios/perfil_mis_comentarios.html', {
+        'comentarios_principales': comentarios_principales,
         'user': request.user
     })
 
@@ -135,6 +141,19 @@ def toggle_favorito(request, receta_pk):
     return redirect('recetas_app:detalle_receta', pk=receta_pk)
 
 # Vista para añadir una receta a una categoría específica (requerirá un formulario en la página de receta)
+@login_required
+def add_to_category(request, receta_pk):
+    receta = get_object_or_404(Receta, pk=receta_pk)
+    if request.method == 'POST':
+        categoria_id = request.POST.get('categoria_id')
+        if categoria_id:
+            categoria = get_object_or_404(CategoriaFavorita, pk=categoria_id, user=request.user)
+            receta_favorita, created = RecetaFavorita.objects.get_or_create(user=request.user, receta=receta)
+            receta_favorita.categoria = categoria
+            receta_favorita.save()
+            # Recordarme: Añadir mensaje de éxito
+    return redirect('recetas_app:detalle_receta', pk=receta_pk)
+
 @login_required
 def add_to_category(request, receta_pk):
     receta = get_object_or_404(Receta, pk=receta_pk)

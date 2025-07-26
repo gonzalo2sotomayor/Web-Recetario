@@ -1,6 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse # Importar HttpResponse si se usa para depuración o respuestas simples
-from .models import Receta 
+from django.contrib.auth.decorators import login_required
+from .models import Receta, Ingrediente, Paso, Comentario # Importar Comentario
+from .forms import ComentarioForm # Importar ComentarioForm
+
 
 # Vista para la página de inicio (Home)
 def home(request):
@@ -12,11 +15,45 @@ def home(request):
 
 # Vista para el detalle de una receta específica
 def detalle_receta(request, pk):
-    """
-    Muestra los detalles de una receta específica, identificada por su clave primaria (pk).
-    """
-    receta = get_object_or_404(Receta, pk=pk) # Obtener la receta o lanzar un error 404 si no existe
-    return render(request, 'recetas_app/detalle.html', {'receta': receta})
+    receta = get_object_or_404(Receta, pk=pk)
+    
+    # Obtener todos los comentarios de nivel superior para esta receta
+    # Los comentarios de nivel superior son aquellos que no son respuestas a otros comentarios
+    comentarios_principales = Comentario.objects.filter(
+        receta=receta,
+        respuesta_a__isnull=True
+    ).order_by('fecha_creacion')
+
+    if request.method == 'POST':
+        # Asegurarse de que el usuario esté autenticado para comentar
+        if not request.user.is_authenticated:
+            # Puedes redirigir a la página de login o mostrar un mensaje
+            return redirect('usuarios:login') # Redirigir al login si no está autenticado
+
+        form = ComentarioForm(request.POST)
+        if form.is_valid():
+            nuevo_comentario = form.save(commit=False)
+            nuevo_comentario.receta = receta
+            nuevo_comentario.autor = request.user
+            nuevo_comentario.save()
+            # Si es una respuesta, el campo 'respuesta_a' ya debería venir en el POST
+            # Puedes añadir un mensaje de éxito aquí si lo deseas
+            return redirect('recetas_app:detalle_receta', pk=receta.pk) # Redirigir para evitar reenvío del formulario
+    else:
+        form = ComentarioForm() # Formulario vacío para GET request
+
+    # Verificar si la receta es favorita para el usuario actual (para el botón)
+    es_favorita = False
+    if request.user.is_authenticated:
+        es_favorita = request.user.recetas_favoritas.filter(receta=receta).exists()
+
+    context = {
+        'receta': receta,
+        'comentarios_principales': comentarios_principales,
+        'form': form, # Pasar el formulario al contexto
+        'es_favorita': es_favorita, # Pasar si es favorita para el template
+    }
+    return render(request, 'recetas_app/detalle_receta.html', context)
 
 # Vista para la búsqueda simple (desde la barra de navegación principal)
 def simple_search_view(request):
