@@ -64,14 +64,14 @@
         <div class="comments-section">
             <h3>Comentarios ({{ comentarios_principales.count }})</h3> {# Muestra el número de comentarios #}
 
-            {# Formulario para dejar un comentario #}
+            {# Formulario para dejar un comentario principal #}
             {% if user.is_authenticated %}
                 <div class="comment-form-container">
                     <h4>Deja tu comentario:</h4>
                     <form method="post" action="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
                         {% csrf_token %}
                         {{ form.texto }} {# Solo el campo de texto #}
-                        {{ form.respuesta_a }} {# Campo oculto para respuestas #}
+                        {{ form.respuesta_a }} {# Campo oculto para manejar respuestas (estará vacío para comentarios principales) #}
                         <button type="submit" class="button-primary comment-submit-button">Publicar Comentario</button>
                     </form>
                 </div>
@@ -91,8 +91,26 @@
                                 <span class="comment-date">{{ comentario.fecha_creacion|date:"d M Y H:i" }}</span>
                             </div>
                             <p class="comment-text-content">{{ comentario.texto }}</p>
-                            {# Botón para responder (opcional, requiere JS para mostrar el formulario de respuesta) #}
-                            {# <button class="button-secondary reply-button" data-comment-id="{{ comentario.pk }}">Responder</button> #}
+                            
+                            {# Botón para responder #}
+                            {% if user.is_authenticated %}
+                                <button class="button-secondary reply-button" data-comment-id="{{ comentario.pk }}">Responder</button>
+                            {% endif %}
+
+                            {# Formulario de respuesta (oculto por defecto) #}
+                            {% if user.is_authenticated %}
+                                <div class="reply-form-container" id="reply-form-{{ comentario.pk }}" style="display: none;">
+                                    <h4>Responder a {{ comentario.autor.username }}:</h4>
+                                    <form method="post" action="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
+                                        {% csrf_token %}
+                                        {{ form.texto.label_tag }} {# Etiqueta para el campo de texto #}
+                                        {{ form.texto }} {# Campo de texto para la respuesta #}
+                                        <input type="hidden" name="respuesta_a" value="{{ comentario.pk }}"> {# Campo oculto con el ID del comentario padre #}
+                                        <button type="submit" class="button-primary comment-submit-button">Publicar Respuesta</button>
+                                        <button type="button" class="button-secondary cancel-reply-button">Cancelar</button>
+                                    </form>
+                                </div>
+                            {% endif %}
 
                             {# Respuestas a este comentario #}
                             {% if comentario.respuestas.all %}
@@ -117,147 +135,74 @@
         </div>
     </div>
 </div>
+
+{# JavaScript para la funcionalidad de responder #}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Seleccionar todos los botones de "Responder"
+        const replyButtons = document.querySelectorAll('.reply-button');
+
+        replyButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                const replyFormContainer = document.getElementById(`reply-form-${commentId}`);
+                
+                // Ocultar todos los formularios de respuesta abiertos
+                document.querySelectorAll('.reply-form-container').forEach(form => {
+                    if (form.id !== `reply-form-${commentId}`) {
+                        form.style.display = 'none';
+                    }
+                });
+
+                // Alternar la visibilidad del formulario de respuesta actual
+                if (replyFormContainer) {
+                    replyFormContainer.style.display = replyFormContainer.style.display === 'none' ? 'block' : 'none';
+                    // Enfocar el textarea si el formulario se muestra
+                    if (replyFormContainer.style.display === 'block') {
+                        replyFormContainer.querySelector('textarea').focus();
+                    }
+                }
+            });
+        });
+
+        // Manejar los botones de "Cancelar" en los formularios de respuesta
+        const cancelReplyButtons = document.querySelectorAll('.cancel-reply-button');
+        cancelReplyButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const replyFormContainer = this.closest('.reply-form-container');
+                if (replyFormContainer) {
+                    replyFormContainer.style.display = 'none';
+                    // Limpiar el textarea al cancelar
+                    replyFormContainer.querySelector('textarea').value = '';
+                }
+            });
+        });
+
+        // Función para obtener el token CSRF de la cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Configurar el token CSRF para todas las solicitudes AJAX (si se usaran en el futuro)
+        // const csrftoken = getCookie('csrftoken');
+        // function csrfSafeMethod(method) {
+        //     // these HTTP methods do not require CSRF protection
+        //     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        // }
+        // axios.defaults.headers.common['X-CSRFToken'] = csrftoken;
+        // fetch.defaults.headers.common['X-CSRFToken'] = csrftoken;
+    });
+</script>
 {% endblock content %}
-
-/* Estilos para la sección de comentarios */
-.comments-section {
-    background-color: var(--secondary-bg);
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px var(--shadow-color);
-    padding: 30px;
-    margin-top: 40px;
-}
-
-.comments-section h3 {
-    color: var(--text-color);
-    font-size: 24px;
-    margin-bottom: 25px;
-    border-bottom: 1px solid var(--input-border);
-    padding-bottom: 10px;
-}
-
-.comment-form-container {
-    margin-bottom: 30px;
-    padding: 20px;
-    background-color: var(--primary-bg);
-    border-radius: 8px;
-    box-shadow: 0px 2px 5px var(--shadow-color);
-}
-
-.comment-form-container h4 {
-    color: var(--text-color);
-    font-size: 18px;
-    margin-bottom: 15px;
-}
-
-.comment-form-container textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid var(--input-border);
-    border-radius: 8px;
-    box-sizing: border-box;
-    background-color: var(--input-bg);
-    color: var(--dark-font);
-    font-size: 16px;
-    resize: vertical; /* Permite redimensionar verticalmente */
-}
-
-.comment-submit-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.login-to-comment {
-    text-align: center;
-    font-size: 16px;
-    color: var(--light-text);
-    margin-top: 20px;
-}
-
-.login-to-comment a {
-    color: var(--accent-color);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.login-to-comment a:hover {
-    text-decoration: underline;
-}
-
-
-.comments-list {
-    list-style: none;
-    padding: 0;
-}
-
-.comment-item {
-    background-color: var(--primary-bg);
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 15px;
-    box-shadow: 0px 2px 5px var(--shadow-color);
-}
-
-.comment-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    border-bottom: 1px solid var(--input-border);
-    padding-bottom: 8px;
-}
-
-.comment-author {
-    font-weight: bold;
-    color: var(--accent-color);
-    font-size: 16px;
-}
-
-.comment-date {
-    font-size: 12px;
-    color: var(--light-text);
-}
-
-.comment-text-content {
-    font-size: 15px;
-    color: var(--text-color);
-    line-height: 1.6;
-    margin-bottom: 10px;
-}
-
-/* Estilos para respuestas anidadas */
-.replies-list {
-    list-style: none;
-    padding-left: 20px; /* Indentación para respuestas */
-    margin-top: 15px;
-    border-left: 3px solid var(--input-border); /* Línea vertical para indicar anidación */
-}
-
-.reply-item {
-    background-color: var(--secondary-bg); /* Fondo ligeramente diferente para respuestas */
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 10px;
-    box-shadow: 0px 1px 3px var(--shadow-color);
-}
-
-.reply-item .comment-header {
-    border-bottom: none; /* No repetir la línea de separación en respuestas */
-    padding-bottom: 0;
-}
-
-.reply-item .comment-author {
-    font-size: 15px;
-}
-
-.reply-item .comment-date {
-    font-size: 11px;
-}
-
-.reply-item .comment-text-content {
-    font-size: 14px;
-}

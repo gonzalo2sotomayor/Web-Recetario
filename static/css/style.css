@@ -1,6 +1,6 @@
 /*
  * Archivo: style.css
- * Descripción: Estilos para el diseño visual de la web de recetas,
+ * Descripción: Estilos para el diseño visual completo de la web de recetas,
  * con una paleta de colores clara y elegante (cobre y marrones).
  */
 
@@ -799,8 +799,8 @@ body.light-theme {
     border-radius: 10px;
     box-shadow: 0px 4px 10px var(--shadow-color);
     padding: 30px;
-    max-width: 700px; /* Ancho máximo para formularios */
-    margin: 0 auto 40px auto; /* Centrar y añadir margen inferior */
+    max-width: 700px;
+    margin: 0 auto 40px auto;
 }
 
 .form-description {
@@ -830,7 +830,7 @@ body.light-theme {
     border-radius: 8px;
     box-sizing: border-box;
     background-color: var(--input-bg);
-    color: var(--dark-font); /* Texto oscuro en inputs claros */
+    color: var(--dark-font);
     font-size: 16px;
 }
 
@@ -839,7 +839,7 @@ body.light-theme {
 }
 
 .form-container form button[type="submit"] {
-    width: auto; /* Botón no ocupa todo el ancho */
+    width: auto;
     padding: 12px 30px;
     background-color: var(--accent-color);
     color: var(--white-text);
@@ -955,7 +955,7 @@ body.light-theme {
 /* Estilos para el botón de favoritos en detalle_receta.html */
 .favorite-form {
     margin-top: 20px;
-    text-align: center; /* Centra el botón si el contenedor es ancho */
+    text-align: center;
 }
 
 .favorite-button {
@@ -964,11 +964,11 @@ body.light-theme {
     font-weight: 600;
     text-decoration: none;
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-    display: inline-flex; /* Permite alinear el icono y el texto */
+    display: inline-flex;
     align-items: center;
-    gap: 8px; /* Espacio entre el icono y el texto */
+    gap: 8px;
     cursor: pointer;
-    border: 2px solid var(--accent-color); /* Borde por defecto para el botón */
+    border: 2px solid var(--accent-color);
     background-color: var(--accent-color);
     color: var(--white-text);
 }
@@ -980,22 +980,229 @@ body.light-theme {
 
 /* Estilo cuando la receta ya es favorita */
 .favorite-button.favorited {
-    background-color: transparent; /* Fondo transparente */
-    color: var(--accent-color); /* Texto color cobre */
-    border-color: var(--accent-color); /* Borde color cobre */
+    background-color: transparent;
+    color: var(--accent-color);
+    border-color: var(--accent-color);
 }
 
 .favorite-button.favorited:hover {
-    background-color: var(--accent-color); /* Fondo cobre en hover */
-    color: var(--white-text); /* Texto blanco en hover */
+    background-color: var(--accent-color);
+    color: var(--white-text);
 }
 
 /* Estilos para el tag de categoría en la lista de favoritos */
 .favorite-category-tag {
-    background-color: var(--input-border); /* Un color neutro para el fondo */
-    color: var(--text-color); /* Texto oscuro */
+    background-color: var(--input-border);
+    color: var(--text-color);
     padding: 4px 8px;
     border-radius: 5px;
     font-size: 0.85em;
     margin-left: 10px;
+}
+
+/* Estilos para la sección de comentarios */
+.comments-section {
+    background-color: var(--secondary-bg);
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px var(--shadow-color);
+    padding: 30px;
+    margin-top: 40px;
+}
+
+.comments-section h3 {
+    color: var(--text-color);
+    font-size: 24px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--input-border);
+    padding-bottom: 10px;
+}
+
+.comment-form-container {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: var(--primary-bg);
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px var(--shadow-color);
+}
+
+.comment-form-container h4 {
+    color: var(--text-color);
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.comment-form-container textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    box-sizing: border-box;
+    background-color: var(--input-bg);
+    color: var(--dark-font);
+    font-size: 16px;
+    resize: vertical;
+}
+
+.comment-submit-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.login-to-comment {
+    text-align: center;
+    font-size: 16px;
+    color: var(--light-text);
+    margin-top: 20px;
+}
+
+.login-to-comment a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-to-comment a:hover {
+    text-decoration: underline;
+}
+
+
+.comments-list {
+    list-style: none;
+    padding: 0;
+}
+
+.comment-item {
+    background-color: var(--primary-bg);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0px 2px 5px var(--shadow-color);
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--input-border);
+    padding-bottom: 8px;
+}
+
+.comment-author {
+    font-weight: bold;
+    color: var(--accent-color);
+    font-size: 16px;
+}
+
+.comment-date {
+    font-size: 12px;
+    color: var(--light-text);
+}
+
+.comment-text-content {
+    font-size: 15px;
+    color: var(--text-color);
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+/* Estilos para respuestas anidadas */
+.replies-list {
+    list-style: none;
+    padding-left: 20px;
+    margin-top: 15px;
+    border-left: 3px solid var(--input-border);
+}
+
+.reply-item {
+    background-color: var(--secondary-bg);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0px 1px 3px var(--shadow-color);
+}
+
+.reply-item .comment-header {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.reply-item .comment-author {
+    font-size: 15px;
+}
+
+.reply-item .comment-date {
+    font-size: 11px;
+}
+
+.reply-item .comment-text-content {
+    font-size: 14px;
+}
+
+/* Estilos para el botón Responder */
+.reply-button {
+    background-color: var(--gray-button-bg);
+    color: var(--white-text);
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+    margin-top: 10px;
+}
+
+.reply-button:hover {
+    background-color: var(--gray-button-hover);
+}
+
+/* Estilos para el contenedor del formulario de respuesta */
+.reply-form-container {
+    background-color: var(--secondary-bg);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    box-shadow: 0px 1px 3px var(--shadow-color);
+}
+
+.reply-form-container h4 {
+    font-size: 16px;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.reply-form-container textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    box-sizing: border-box;
+    background-color: var(--input-bg);
+    color: var(--dark-font);
+    font-size: 14px;
+    resize: vertical;
+}
+
+.reply-form-container .comment-submit-button,
+.reply-form-container .cancel-reply-button {
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.reply-form-container .cancel-reply-button {
+    background-color: var(--gray-button-bg);
+    color: var(--white-text);
+    border: none;
+}
+
+.reply-form-container .cancel-reply-button:hover {
+    background-color: var(--gray-button-hover);
 }
