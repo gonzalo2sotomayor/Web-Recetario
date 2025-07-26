@@ -1,7 +1,7 @@
 /*
  * Archivo: style.css
- * Descripción: Estilos para el diseño visual completo del Recetario
-*/
+ * Descripción: Estilos para el diseño visual completo de la web de recetas.
+ */
 
 /* Color Variables */
 :root {
@@ -26,7 +26,7 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente similar a la imagen */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     display: flex;
@@ -63,7 +63,7 @@ body.dark-theme {
 
 .site-logo-new {
     color: var(--white-text); /* Blanco puro para el logo */
-    font-size: 28px; 
+    font-size: 28px; /* Tamaño de fuente más grande */
     font-weight: bold;
     text-decoration: none;
     padding: 5px 10px;
@@ -153,13 +153,13 @@ body.dark-theme {
 }
 
 .dropdown-btn-new {
-    background-color: transparent; /* Botón transparente para el avatar */
+    background-color: transparent; /* Transparente como en la imagen */
     color: var(--text-color);
     border: none;
     cursor: pointer;
     padding: 0; /* Eliminar padding para que la imagen controle el tamaño */
     border-radius: 50%; /* Botón redondo */
-    font-size: 20px; /* Tamaño del icono de usuario */
+    font-size: 20px; /* Tamaño del icono de usuario (si se usa) */
     transition: background-color 0.2s ease;
     display: flex;
     align-items: center;
@@ -219,8 +219,7 @@ body.dark-theme {
     width: 100%;
     height: 400px; /* Altura del banner, ajusta según necesidad */
     min-height: 400px; /* Aseguramos una altura mínima */
-    /* Usando la ruta relativa a la carpeta static */
-    background-image: url('../img/paella_banner.jpg'); /* Img de fondo */
+    /* La imagen de fondo ahora se establece dinámicamente con JavaScript */
     background-size: cover;
     background-position: center;
     display: flex;
@@ -228,6 +227,7 @@ body.dark-theme {
     justify-content: center;
     text-align: center;
     overflow: hidden;
+    transition: background-image 0.5s ease-in-out; /* Transición para el cambio de imagen de fondo */
 }
 
 .hero-overlay {
@@ -245,61 +245,88 @@ body.dark-theme {
 }
 
 .hero-title {
-    font-family: 'Georgia', serif; 
+    font-family: 'Georgia', serif; /* Fuente similar a la imagen */
     font-size: 60px; /* Tamaño grande para el título */
     color: var(--white-text);
     margin-bottom: 20px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
 }
 
-.hero-search-container {
-    width: 80%; /* Ancho del contenedor de búsqueda */
-    max-width: 600px; /* Ancho máximo */
-    background-color: var(--white-text); /* Fondo blanco para la barra de búsqueda */
-    border-radius: 50px; /* Bordes muy redondeados */
-    overflow: hidden;
-    display: flex;
+/* Contenedor para los slides de contenido dentro del hero-overlay */
+.hero-content-slider {
+    position: relative; /* Para que los slides hijos puedan posicionarse absolutamente */
+    width: 80%; /* Ocupa el 80% del hero-overlay */
+    max-width: 600px; /* Ancho máximo para el contenido del slide */
+    height: 150px; /* Altura fija para el área del slide, ajusta según necesidad */
+    display: flex; /* Usamos flex para centrar los slides */
     align-items: center;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    justify-content: center;
+    overflow: hidden; /* Oculta el contenido que se desborda */
+    margin-bottom: 30px; /* Espacio entre el slider y los puntos de paginación */
 }
 
-.hero-search-form {
-    display: flex;
+/* Estilos para cada slide individual */
+.hero-slide {
+    position: absolute; /* Permite que los slides se superpongan */
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    display: none; /* Oculto por defecto */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px; /* Padding interno para el contenido del slide */
+    box-sizing: border-box;
+    opacity: 0; /* Para una transición suave */
+    transition: opacity 0.5s ease-in-out; /* Transición de opacidad */
 }
 
-.hero-search-input {
-    flex-grow: 1;
-    border: none;
-    padding: 15px 25px;
+/* Estilo para el slide activo */
+.hero-slide.active-slide {
+    display: flex; /* Muestra el slide activo */
+    opacity: 1; /* Hace visible el slide activo */
+}
+
+/* Estilos para los slides que son clicables */
+.hero-slide.clickable-slide {
+    cursor: pointer; /* Cambia el cursor para indicar que es clicable */
+}
+
+.slide-title {
+    font-family: 'Georgia', serif; /* Fuente similar a la imagen */
+    font-size: 40px; /* Tamaño de fuente para los títulos de los slides */
+    color: var(--white-text);
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+}
+
+.slide-description {
     font-size: 18px;
-    outline: none;
-    background-color: transparent; /* Fondo transparente para el input */
-    color: var(--dark-font); /* Color de texto oscuro para el input */
+    color: var(--light-text);
+    margin-bottom: 20px;
 }
 
-.hero-search-input::placeholder {
-    color: #888;
+/* El estilo de .slide-link se mantiene si se usa en otros lugares, pero no en los slides clicables */
+.slide-link {
+    background-color: var(--accent-color);
+    color: var(--white-text);
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
 }
 
-.hero-search-button {
-    background-color: transparent; /* Botón transparente */
-    border: none;
-    padding: 15px 20px;
-    font-size: 20px;
-    color: var(--dark-font); /* Color de icono oscuro */
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-.hero-search-button:hover {
-    color: var(--accent-color);
+.slide-link:hover {
+    background-color: var(--button-hover-color);
 }
 
 .hero-pagination-dots {
     display: flex;
     gap: 10px;
-    margin-top: 30px;
+    margin-top: 0; /* Ajustado para que esté cerca del slider */
 }
 
 .dot {
@@ -322,7 +349,7 @@ body.dark-theme {
 /* Main Content Area */
 .main-content-new {
     flex-grow: 1;
-    max-width: 1280px; /* Max-width del contenedor principal */
+    max-width: 1280px; /* Mantenemos el max-width del contenedor principal */
     margin: 30px auto; /* Centra el contenedor principal */
     padding: 0 20px;
     width: 100%; /* Asegura que ocupe el 100% del ancho de su padre */
@@ -334,20 +361,23 @@ body.dark-theme {
     font-weight: bold;
     color: var(--text-color);
     margin-bottom: 30px;
-    text-align: left; 
+    text-align: left; /* Alineado a la izquierda como en la imagen */
     padding-left: 10px; /* Pequeño padding para alinear con la cuadrícula */
 }
 
 /* Recipe Grid Styles */
 .recipe-grid {
     display: grid;
-    /* Limitado a 3 columnas, pero que se adapten al tamaño disponible */
+    /* Limita a 3 columnas, pero que se adapten al tamaño disponible */
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
     gap: 25px; /* Espacio entre las tarjetas */
     justify-content: center; /* Centra las tarjetas si no llenan todo el ancho */
     align-items: start; /* Alinea las tarjetas en la parte superior de su celda de cuadrícula */
+    
+    /* Limita el ancho de la cuadrícula y la centra */
     max-width: 950px; /* Ancho máximo para 3 columnas (aprox. 3*250px + 2*25px de gap + margen) */
     margin: 0 auto; /* Centra la cuadrícula dentro de .main-content-new */
+    
     width: 100%; /* Asegura que ocupe el 100% del ancho de su padre (hasta el max-width) */
     box-sizing: border-box; /* Incluye padding y borde en el cálculo del ancho */
 }
@@ -388,6 +418,7 @@ body.dark-theme {
     padding: 0 15px 15px 15px;
     margin: 0;
     flex-grow: 1; /* Permite que la descripción ocupe el espacio restante */
+    /* Nuevas reglas para truncar el texto en varias líneas */
     display: -webkit-box;
     -webkit-line-clamp: 2; /* Limita a 2 líneas */
     -webkit-box-orient: vertical;
@@ -454,7 +485,7 @@ body.dark-theme {
 }
 
 
-/* Mensaje si no hay recetas */
+/* No Recipes Message */
 .no-recipes-message {
     text-align: center;
     font-size: 18px;
@@ -463,7 +494,7 @@ body.dark-theme {
     grid-column: 1 / -1; /* Ocupa todas las columnas en la cuadrícula */
 }
 
-/* Estilos de la página de búsqueda */
+/* Search Results Page Specific Styles */
 .search-results-container {
     max-width: 1280px;
     margin: 30px auto;
@@ -551,7 +582,7 @@ body.dark-theme {
 }
 
 
-/* Footer Estilo */
+/* Footer Styles */
 .main-footer-new {
     background-color: var(--primary-bg); /* Fondo oscuro para el footer */
     padding: 20px;
@@ -562,7 +593,8 @@ body.dark-theme {
 }
 
 
-/* Estilos anteriores que podrían ser relevantes luego */
+/* Existing styles from your previous style.css that are still relevant
+   (These will be merged or overridden by the new styles above) */
 /*
 .recetas-lista .receta-item {
     border-bottom: 1px solid var(--input-border);
