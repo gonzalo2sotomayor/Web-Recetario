@@ -4,28 +4,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Mi Blog de Recetas{% endblock %}</title>
+    <title>{% block title %}El Recetario{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon"> {# Asegúrate de tener este archivo en static/img/ #}
+    {% block extra_head %}{% endblock extra_head %}
 </head>
-<body>
-    <header>
-        <nav>
-            <a href="{% url 'recetas_app:home' %}">Inicio</a>
-            {% if user.is_authenticated %}
-                <span>Hola, {{ user.username }}</span>
-                <a href="{% url 'usuarios:logout' %}">Cerrar Sesión</a>
-            {% else %}
-                <a href="{% url 'usuarios:login' %}">Iniciar Sesión</a>
-                <a href="{% url 'usuarios:registro' %}">Registrarse</a>
-            {% endif %}
+<body class="dark-theme">
+
+    <header class="main-header-new">
+        <nav class="main-nav-new">
+            <!-- Sección Izquierda: Logo/Título -->
+            <div class="nav-left">
+                <a href="{% url 'recetas_app:home' %}" class="site-logo-new">
+                    El Recetario
+                </a>
+            </div>
+
+            <!-- Sección Central: Enlaces de Navegación Principal -->
+            <ul class="nav-links-new">
+                <li><a href="{% url 'recetas_app:home' %}" class="nav-link-new">Home</a></li>
+                <li><a href="/recetas/" class="nav-link-new">Recetas</a></li>
+                <li><a href="/comunidades/" class="nav-link-new">Comunidades</a></li>
+                <li><a href="/mi-recetario/" class="nav-link-new">Mi Recetario</a></li>
+                <li><a href="/perfil/" class="nav-link-new">Perfil</a></li>
+            </ul>
+
+            <!-- Sección Derecha: Iconos de Usuario/Autenticación -->
+            <div class="nav-right">
+                <a href="#" class="nav-icon-link"><span class="icon">&#128722;</span></a> {# Icono de Carrito #}
+                <a href="#" class="nav-icon-link"><span class="icon">&#128276;</span></a> {# Icono de Campana #}
+                {% if user.is_authenticated %}
+                    <div class="dropdown user-profile-dropdown-new">
+                        {# Botón con la imagen del avatar del usuario #}
+                        <button id="profileDropdownBtn" class="dropdown-btn-new">
+                            <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}" 
+                                 alt="Avatar de {{ user.username }}" 
+                                 class="avatar-image"> {# Asegúrate de que default_avatar.png exista en static/img/ #}
+                        </button>
+                        <div id="profileDropdownMenu" class="dropdown-menu-new">
+                            <a href="/perfil/editar/" class="dropdown-item-new">Editar Perfil</a>
+                            <a href="/perfil/privacidad/" class="dropdown-item-new">Privacidad</a>
+                            <a href="/perfil/cambiar_contrasena/" class="dropdown-item-new">Cambiar Contraseña</a>
+                            <a href="/perfil/avatar/" class="dropdown-item-new">Avatar</a>
+                            <a href="/perfil/favoritos/" class="dropdown-item-new">Mis Favoritos</a> 
+                            <a href="{% url 'usuarios:logout' %}" class="dropdown-item-new">Cerrar Sesión</a> 
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'usuarios:registro' %}" class="auth-button-new">Registrarse</a>
+                    <a href="{% url 'usuarios:login' %}" class="auth-button-new">Iniciar Sesión</a>
+                {% endif %}
+            </div>
         </nav>
     </header>
-    <main>
+
+    <!-- Sección Hero (Banner con Slides) -->
+    <section class="hero-section">
+        <div class="hero-overlay">
+            {# El título "El Recetario" se ha movido o eliminado de aquí, ahora cada slide maneja su contenido #}
+            
+            <div class="hero-content-slider"> {# Contenedor para los diferentes slides de contenido #}
+                {# Slide 1: Buscador #}
+                <div id="slide-search" class="hero-slide active-slide" data-background-image="{% static 'img/paella_banner.jpg' %}">
+                    <h1 class="hero-title">El Recetario</h1> {# Título solo para el slide de búsqueda #}
+                    <div class="hero-search-container">
+                        <form action="/buscar/" method="GET" class="hero-search-form">
+                            <input type="text" name="q" placeholder="Buscar recetas..." 
+                                class="hero-search-input"
+                                value="{{ request.GET.q|default:'' }}">
+                            <button type="submit" class="hero-search-button">&#128269;</button> {# Icono de Lupa #}
+                        </form>
+                    </div>
+                </div>
+                
+                {# Slide 2: Receta del Día - Clicable en toda el área #}
+                <div id="slide-daily-recipe" class="hero-slide clickable-slide" data-background-image="{% static 'img/daily_recipe_banner.jpg' %}" onclick="window.location.href='/receta/123/'">
+                    <h2 class="slide-title">Receta del Día</h2>
+                    <p class="slide-description">Descubre nuestra deliciosa receta destacada para hoy. ¡No te la pierdas!</p>
+                    {# Botón eliminado, todo el slide es clicable #}
+                </div>
+
+                {# Slide 3: Recetas Populares - Clicable en toda el área #}
+                <div id="slide-popular-recipes" class="hero-slide clickable-slide" data-background-image="{% static 'img/popular_recipes_banner.jpg' %}" onclick="window.location.href='/recetas/populares/'">
+                    <h2 class="slide-title">Recetas Populares</h2>
+                    <p class="slide-description">Explora las recetas más votadas y comentadas por nuestra comunidad.</p>
+                    {# Botón eliminado, todo el slide es clicable #}
+                </div>
+            </div>
+
+            <div class="hero-pagination-dots">
+                <span class="dot active" data-target-slide="slide-search"></span>
+                <span class="dot" data-target-slide="slide-daily-recipe"></span>
+                <span class="dot" data-target-slide="slide-popular-recipes"></span>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-content-new">
         {% block content %}
-        {% endblock %}
+            {# Este bloque será llenado por las plantillas hijas (ej. home.html, search_results.html) #}
+            {# No debe contener contenido directo aquí, solo un placeholder o un comentario. #}
+        {% endblock content %}
     </main>
-    <footer>
-        <p>&copy; 2023 Mi Blog de Recetas</p>
+
+    <footer class="main-footer-new">
+        <p>&copy; 2025 El Recetario</p>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lógica del Dropdown de Perfil
+            const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+            const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+
+            if (profileDropdownBtn && profileDropdownMenu) {
+                profileDropdownBtn.addEventListener('click', function(event) {
+                    event.stopPropagation(); // Evita que el clic se propague al documento
+                    profileDropdownMenu.classList.toggle('show-dropdown');
+                });
+
+                // Cierra el menú si se hace clic fuera de él
+                document.addEventListener('click', function(event) {
+                    if (profileDropdownMenu.classList.contains('show-dropdown') && !profileDropdownBtn.contains(event.target) && !profileDropdownMenu.contains(event.target)) {
+                        profileDropdownMenu.classList.remove('show-dropdown');
+                    }
+                });
+            }
+
+            // Lógica de los Slides del Banner
+            const paginationDots = document.querySelectorAll('.hero-pagination-dots .dot');
+            const heroSlides = document.querySelectorAll('.hero-slide');
+            const heroSection = document.querySelector('.hero-section'); // Obtener la sección hero para cambiar su fondo
+
+            function updateSlide(targetSlideId) {
+                // Remover 'active' de todos los puntos
+                paginationDots.forEach(d => d.classList.remove('active'));
+                // Añadir 'active' al punto clicado (encontrar el punto por data-target-slide)
+                document.querySelector(`.dot[data-target-slide="${targetSlideId}"]`).classList.add('active');
+
+                // Ocultar todos los slides
+                heroSlides.forEach(slide => {
+                    slide.classList.remove('active-slide');
+                    slide.style.opacity = 0; // Asegurar opacidad 0 para slides ocultos
+                });
+
+                // Mostrar el slide correspondiente
+                const targetSlide = document.getElementById(targetSlideId);
+                if (targetSlide) {
+                    targetSlide.classList.add('active-slide');
+                    targetSlide.style.opacity = 1; // Hacerlo visible
+                    
+                    // Actualizar la imagen de fondo de hero-section
+                    const backgroundImage = targetSlide.dataset.backgroundImage;
+                    if (backgroundImage) {
+                        heroSection.style.backgroundImage = `url('${backgroundImage}')`;
+                    }
+                }
+            }
+
+            // Inicializar la imagen de fondo del primer slide al cargar la página
+            const initialSlide = document.querySelector('.hero-slide.active-slide');
+            if (initialSlide) {
+                const initialBackgroundImage = initialSlide.dataset.backgroundImage;
+                if (initialBackgroundImage) {
+                    heroSection.style.backgroundImage = `url('${initialBackgroundImage}')`;
+                }
+            }
+
+            paginationDots.forEach(dot => {
+                dot.addEventListener('click', function() {
+                    const targetSlideId = this.dataset.targetSlide;
+                    updateSlide(targetSlideId);
+                });
+            });
+        });
+    </script>
+
 </body>
 </html>

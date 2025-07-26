@@ -1,19 +1,33 @@
-{% extends 'recetas_app/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Inicio - Blog de Recetas{% endblock %}
+{% block title %}Inicio - El Recetario{% endblock title %}
 
 {% block content %}
-    <h1>Listado de Recetas</h1>
-    <div class="recetas-lista">
+<h2 class="section-title">Recetas Destacadas</h2> 
+<div class="recipe-grid">
+    {% if recetas %}
         {% for receta in recetas %}
-            <div class="receta-item">
-                <h2><a href="{% url 'recetas_app:detalle_receta' receta.pk %}">{{ receta.titulo }}</a></h2>
-                <p>{{ receta.descripcion|truncatechars:100 }}</p>
-                <small>Publicado el: {{ receta.fecha_creacion|date:"d M Y" }}</small>
+            <div class="recipe-card">
+                <img src="{% if receta.imagen %}{{ receta.imagen.url }}{% else %}{% static 'img/default_recipe.png' %}{% endif %}" 
+                     alt="{{ receta.titulo }}" 
+                     class="recipe-card-image">
+                <h3 class="recipe-card-title">{{ receta.titulo }}</h3>
+                <p class="recipe-card-description">{{ receta.descripcion|truncatechars:100 }}</p> 
+                <a href="{% url 'recetas_app:detalle_receta' pk=receta.pk %}" class="recipe-card-link">Ver Receta</a>
             </div>
-        {% empty %}
-            <p>No hay recetas disponibles.</p>
         {% endfor %}
+    {% else %}
+        <p class="no-recipes-message">No hay recetas disponibles en este momento.</p>
+    {% endif %}
+</div>
+
+{# Este bloque solo se mostrará si el usuario NO está autenticado #}
+{% if not user.is_authenticated %}
+    <div class="call-to-action-card">
+        <h2 class="call-to-action-title">¡Únete a Nuestra Comunidad!</h2>
+        <p class="call-to-action-text">Regístrate para guardar tus recetas favoritas, compartir las tuyas y conectar con otros amantes de la cocina.</p>
+        <a href="{% url 'usuarios:registro' %}" class="register-button-large">Registrarse Ahora</a>
     </div>
-{% endblock %}
+{% endif %}
+{% endblock content %}

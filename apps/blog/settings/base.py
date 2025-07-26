@@ -48,7 +48,10 @@ ROOT_URLCONF = 'apps.blog.urls' # Ruta completa
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'], # Apunta a blog-base/templates/
+        'DIRS': [
+            BASE_DIR / 'templates',
+            BASE_DIR / 'templates' / 'recetas_app', # <-- ¡Esta es la línea añadida para tu base.html!
+        ], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
