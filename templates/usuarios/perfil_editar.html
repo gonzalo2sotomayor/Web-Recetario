@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Perfil - El Recetario{% endblock title %}
+
+{% block content %}
+<div class="main-content-new">
+    <h2 class="section-title">Editar Perfil</h2>
+    <div class="form-container">
+        <p class="form-description">Aquí puedes actualizar tu información personal.</p>
+        <form method="post" enctype="multipart/form-data"> {# ¡Importante para subir archivos como el avatar! #}
+            {% csrf_token %}
+            
+            <h3>Datos de Usuario</h3>
+            {{ user_form.as_p }} {# Renderiza los campos del formulario de usuario #}
+            
+            <h3>Datos de Perfil</h3>
+            {# Mostrar el avatar actual si existe #}
+            {% if user.perfil.avatar %}
+                <label>Avatar Actual:</label>
+                <img src="{{ user.perfil.avatar.url }}" alt="Avatar actual" class="current-avatar-preview"> {# Recordarme: Añadir estilos CSS para esta imagen en style.css #}
+            {% endif %}
+            {{ perfil_form.as_p }} {# Renderiza los campos del formulario de perfil #}
+            
+            <button type="submit" class="button-primary">Guardar Cambios</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from .models import Usuario
+from .models import Perfil, CategoriaFavorita, RecetaFavorita
 
-admin.site.register(Usuario, UserAdmin)
+admin.site.register(Perfil)
+admin.site.register(CategoriaFavorita)
+admin.site.register(RecetaFavorita)

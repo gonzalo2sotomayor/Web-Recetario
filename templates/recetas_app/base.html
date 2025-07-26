@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}El Recetario{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon"> {# Asegúrate de tener este archivo en static/img/ #}
+    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon"> {# Asegurarme de tener este archivo en static/img/ #}
     {% block extra_head %}{% endblock extra_head %}
 </head>
-<body class="dark-theme">
+<body class="light-theme"> {# ¡Cambiado de "dark-theme" a "light-theme" para el nuevo esquema de colores! #}
 
     <header class="main-header-new">
         <nav class="main-nav-new">
@@ -39,14 +39,14 @@
                         <button id="profileDropdownBtn" class="dropdown-btn-new">
                             <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}" 
                                  alt="Avatar de {{ user.username }}" 
-                                 class="avatar-image"> {# Asegúrate de que default_avatar.png exista en static/img/ #}
+                                 class="avatar-image"> {# Asegurarme de que default_avatar.png exista en static/img/ #}
                         </button>
                         <div id="profileDropdownMenu" class="dropdown-menu-new">
-                            <a href="/perfil/editar/" class="dropdown-item-new">Editar Perfil</a>
-                            <a href="/perfil/privacidad/" class="dropdown-item-new">Privacidad</a>
-                            <a href="/perfil/cambiar_contrasena/" class="dropdown-item-new">Cambiar Contraseña</a>
-                            <a href="/perfil/avatar/" class="dropdown-item-new">Avatar</a>
-                            <a href="/perfil/favoritos/" class="dropdown-item-new">Mis Favoritos</a> 
+                            {# Menú desplegable actualizado #}
+                            <a href="{% url 'usuarios:editar_perfil' %}" class="dropdown-item-new">Editar Perfil</a>
+                            <a href="{% url 'usuarios:seguridad_perfil' %}" class="dropdown-item-new">Seguridad</a>
+                            <a href="{% url 'usuarios:favoritos_perfil' %}" class="dropdown-item-new">Mis Favoritos</a> 
+                            <a href="{% url 'usuarios:mis_comentarios' %}" class="dropdown-item-new">Mis Comentarios</a> 
                             <a href="{% url 'usuarios:logout' %}" class="dropdown-item-new">Cerrar Sesión</a> 
                         </div>
                     </div>
@@ -102,8 +102,7 @@
 
     <main class="main-content-new">
         {% block content %}
-            {# Este bloque será llenado por las plantillas hijas (ej. home.html, search_results.html) #}
-            {# No debe contener contenido directo aquí, solo un placeholder o un comentario. #}
+            {# Este bloque será llenado por las plantillas hijas #}
         {% endblock content %}
     </main>
 
@@ -119,11 +118,11 @@
 
             if (profileDropdownBtn && profileDropdownMenu) {
                 profileDropdownBtn.addEventListener('click', function(event) {
-                    event.stopPropagation(); // Evita que el clic se propague al documento
+                    event.stopPropagation(); // Evitar que el clic se propague al documento
                     profileDropdownMenu.classList.toggle('show-dropdown');
                 });
 
-                // Cierra el menú si se hace clic fuera de él
+                // Cerrar el menú si se hace clic fuera de él
                 document.addEventListener('click', function(event) {
                     if (profileDropdownMenu.classList.contains('show-dropdown') && !profileDropdownBtn.contains(event.target) && !profileDropdownMenu.contains(event.target)) {
                         profileDropdownMenu.classList.remove('show-dropdown');

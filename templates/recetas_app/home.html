@@ -4,30 +4,105 @@
 {% block title %}Inicio - El Recetario{% endblock title %}
 
 {% block content %}
-<h2 class="section-title">Recetas Destacadas</h2> 
-<div class="recipe-grid">
-    {% if recetas %}
-        {% for receta in recetas %}
-            <div class="recipe-card">
-                <img src="{% if receta.imagen %}{{ receta.imagen.url }}{% else %}{% static 'img/default_recipe.png' %}{% endif %}" 
-                     alt="{{ receta.titulo }}" 
-                     class="recipe-card-image">
-                <h3 class="recipe-card-title">{{ receta.titulo }}</h3>
-                <p class="recipe-card-description">{{ receta.descripcion|truncatechars:100 }}</p> 
-                <a href="{% url 'recetas_app:detalle_receta' pk=receta.pk %}" class="recipe-card-link">Ver Receta</a>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p class="no-recipes-message">No hay recetas disponibles en este momento.</p>
-    {% endif %}
+{# Sección para la Receta de la Semana (una receta destacada de forma prominente) #}
+<div class="featured-recipe-of-week-card">
+    <h2 class="section-title text-center">Receta de la Semana</h2> {# Mi título centrado para esta sección #}
+    <div class="featured-recipe-content">
+        <img src="{% static 'img/featured_recipe_of_week.jpg' %}" alt="Receta de la Semana: Lasaña Casera" class="featured-recipe-image"> {# Recordarme cambiar esto por mi imagen estática real #}
+        <div class="featured-recipe-text">
+            <h3 class="featured-recipe-title">Lasaña Casera al Horno</h3>
+            <p class="featured-recipe-description">
+                Descubre el secreto de la lasaña perfecta, con capas de pasta fresca, una rica salsa boloñesa, bechamel cremosa y mucho queso. Ideal para compartir en familia.
+            </p>
+            <a href="/receta/lasana-casera/" class="featured-recipe-button">Ver Receta Completa</a> {# Recordarme cambiar por la URL real de la receta #}
+        </div>
+    </div>
 </div>
 
-{# Este bloque solo se mostrará si el usuario NO está autenticado #}
+{# Sección de Últimas Recetas Añadidas #}
+<div class="section-wrapper section-bg-primary"> {# Nuevo contenedor para la sección #}
+    <h2 class="section-title">Últimas Recetas Añadidas</h2>
+    <div class="latest-recipes-grid"> {# Esta es la cuadrícula de las últimas recetas #}
+        {# Contenido de ejemplo para "Últimas Recetas Añadidas" #}
+        <div class="recipe-card clickable-card" onclick="window.location.href='/receta/nueva-receta-1/'">
+            <img src="{% static 'img/placeholder_latest_1.jpg' %}" alt="Ensalada Fresca de Verano" class="recipe-card-image"> {# Recordarme cambiar esto por mi imagen estática real #}
+            <h3 class="recipe-card-title">Ensalada Fresca de Verano</h3>
+            <p class="recipe-card-description">Una explosión de sabor y frescura para los días calurosos.</p>
+        </div>
+        <div class="recipe-card clickable-card" onclick="window.location.href='/receta/nueva-receta-2/'">
+            <img src="{% static 'img/placeholder_latest_2.jpg' %}" alt="Curry de Lentejas Rojo" class="recipe-card-image"> {# Recordarme cambiar esto por mi imagen estática real #}
+            <h3 class="recipe-card-title">Curry de Lentejas Rojo</h3>
+            <p class="recipe-card-description">Un plato vegetariano reconfortante y lleno de especias.</p>
+        </div>
+        <div class="recipe-card clickable-card" onclick="window.location.href='/receta/nueva-receta-3/'">
+            <img src="{% static 'img/placeholder_latest_3.jpg' %}" alt="Tarta de Manzana Clásica" class="recipe-card-image"> {# Recordarme cambiar esto por mi imagen estática real #}
+            <h3 class="recipe-card-title">Tarta de Manzana Clásica</h3>
+            <p class="recipe-card-description">El postre perfecto para cualquier ocasión, con un toque casero.</p>
+        </div>
+    </div>
+</div>
+
+{# Sección de Explora por Categorías Populares #}
+<div class="section-wrapper section-bg-secondary"> {# Nuevo contenedor para la sección #}
+    <h2 class="section-title">Explora por Categorías Populares</h2>
+    <div class="category-grid"> {# Esta es la cuadrícula para categorías #}
+        <div class="category-card clickable-card" onclick="window.location.href='/categorias/plato-principal/'">
+            <img src="{% static 'img/category_main_dish.jpg' %}" alt="Plato Principal" class="category-card-image"> {# Recordarme cambiar esto por mi imagen estática real #}
+            <h3 class="category-card-title">Plato Principal</h3>
+        </div>
+        <div class="category-card clickable-card" onclick="window.location.href='/categorias/postre/'">
+            <img src="{% static 'img/category_dessert.jpg' %}" alt="Postre" class="category-card-image"> {# Recordarme cambiar esto por mi imagen estática real #}
+            <h3 class="category-card-title">Postre</h3>
+        </div>
+        <div class="category-card clickable-card" onclick="window.location.href='/categorias/snacks/'">
+            <img src="{% static 'img/category_snacks.jpg' %}" alt="Snacks" class="category-card-image"> {# Recordarme cambiar esto por mi imagen estática real #}
+            <h3 class="category-card-title">Snacks</h3>
+        </div>
+        <div class="category-card clickable-card" onclick="window.location.href='/categorias/bebidas/'">
+            <img src="{% static 'img/category_drinks.jpg' %}" alt="Bebidas" class="category-card-image"> {# Recordarme cambiar esto por mi imagen estática real #}
+            <h3 class="category-card-title">Bebidas</h3>
+        </div>
+        <div class="category-card clickable-card" onclick="window.location.href='/categorias/desayunos/'">
+            <img src="{% static 'img/category_breakfast.jpg' %}" alt="Desayunos" class="category-card-image"> {# Recordarme cambiar esto por mi imagen estática real #}
+            <h3 class="category-card-title">Desayunos</h3>
+        </div>
+        <div class="category-card clickable-card" onclick="window.location.href='/categorias/vegetarianas/'">
+            <img src="{% static 'img/category_vegetarian.jpg' %}" alt="Vegetarianas" class="category-card-image"> {# Recordarme cambiar esto por mi imagen estática real #}
+            <h3 class="category-card-title">Vegetarianas</h3>
+        </div>
+    </div>
+</div>
+
+{# Sección de Consejos de Cocina #}
+<div class="section-wrapper section-bg-primary"> {# Nuevo contenedor para la sección #}
+    <h2 class="section-title">Consejos de Cocina</h2>
+    <div class="tip-grid"> {# Esta es la cuadrícula para consejos #}
+        <div class="tip-card clickable-card" onclick="window.location.href='/consejos/corte-cebolla/'">
+            <img src="{% static 'img/tip_onion.jpg' %}" alt="Cómo cortar cebolla sin llorar" class="tip-card-image"> {# Recordarme cambiar esto por mi imagen estática real #}
+            <h3 class="tip-card-title">Cómo cortar cebolla sin llorar</h3>
+            <p class="tip-card-description">Un truco infalible para evitar las lágrimas al picar cebolla.</p>
+        </div>
+        <div class="tip-card clickable-card" onclick="window.location.href='/consejos/utensilios-esenciales/'">
+            <img src="{% static 'img/tip_utensils.jpg' %}" alt="Utensilios esenciales de cocina" class="tip-card-image"> {# Recordarme cambiar esto por mi imagen estática real #}
+            <h3 class="tip-card-title">Utensilios esenciales de cocina</h3>
+            <p class="tip-card-description">Descubre las herramientas básicas que todo cocinero necesita.</p>
+        </div>
+        <div class="tip-card clickable-card" onclick="window.location.href='/consejos/conservar-alimentos/'">
+            <img src="{% static 'img/tip_storage.jpg' %}" alt="Consejos para conservar alimentos" class="tip-card-image"> {# Recordarme cambiar esto por mi imagen estática real #}
+            <h3 class="tip-card-title">Consejos para conservar alimentos</h3>
+            <p class="tip-card-description">Prolonga la vida útil de tus ingredientes con estos trucos.</p>
+        </div>
+    </div>
+</div>
+
+{# Este bloque solo se mostrará si no estoy autenticada #}
 {% if not user.is_authenticated %}
-    <div class="call-to-action-card">
-        <h2 class="call-to-action-title">¡Únete a Nuestra Comunidad!</h2>
-        <p class="call-to-action-text">Regístrate para guardar tus recetas favoritas, compartir las tuyas y conectar con otros amantes de la cocina.</p>
-        <a href="{% url 'usuarios:registro' %}" class="register-button-large">Registrarse Ahora</a>
+    <div class="section-wrapper section-bg-secondary"> {# Nuevo contenedor para la sección #}
+        <div class="call-to-action-card">
+            <h2 class="call-to-action-title">¡Únete a Nuestra Comunidad!</h2>
+            <p class="call-to-action-text">Regístrate para guardar tus recetas favoritas, compartir las tuyas y conectar con otros amantes de la cocina.</p>
+            <a href="{% url 'usuarios:registro' %}" class="register-button-large">Registrarse Ahora</a>
+        </div>
     </div>
 {% endif %}
 {% endblock content %}

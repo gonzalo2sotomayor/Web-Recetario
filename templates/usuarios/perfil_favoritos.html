@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mis Favoritos - El Recetario{% endblock title %}
+
+{% block content %}
+<div class="main-content-new">
+    <h2 class="section-title">Mis Favoritos</h2>
+    <div class="form-container">
+        <p class="form-description">Gestiona tus recetas favoritas y organízalas en categorías.</p>
+
+        {# Sección para Crear Nueva Categoría #}
+        <h3>Crear Nueva Categoría</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ categoria_form.as_p }} {# Renderiza el campo del formulario de categoría #}
+            <button type="submit" class="button-primary">Crear Categoría</button>
+        </form>
+
+        {# Sección para Mis Categorías #}
+        <h3>Mis Categorías</h3>
+        {% if categorias_favoritas %}
+            <ul class="category-list">
+                {% for categoria in categorias_favoritas %}
+                    <li>
+                        {{ categoria.nombre }}
+                        {# Recordarme: Añadir botones para editar/eliminar categoría aquí #}
+                        {# <button class="button-secondary">Editar</button> #}
+                        {# <button class="button-secondary">Eliminar</button> #}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Aún no has creado ninguna categoría de favoritos.</p>
+        {% endif %}
+
+        {# Sección para Mis Recetas Favoritas #}
+        <h3>Mis Recetas Favoritas</h3>
+        {% if recetas_favoritas %}
+            <ul class="favorites-list">
+                {% for receta_favorita in recetas_favoritas %}
+                    <li>
+                        <a href="{% url 'recetas_app:detalle_receta' pk=receta_favorita.receta.pk %}">{{ receta_favorita.receta.titulo }}</a>
+                        {% if receta_favorita.categoria %}
+                            <span class="favorite-category-tag">Categoría: {{ receta_favorita.categoria.nombre }}</span>
+                        {% endif %}
+                        {# Recordarme: Añadir botón para eliminar de favoritos aquí #}
+                        {# <button class="button-secondary">Eliminar</button> #}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Aún no tienes recetas favoritas. ¡Empieza a explorar y añade algunas!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

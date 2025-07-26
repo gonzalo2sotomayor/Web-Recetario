@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 SECRET_KEY = 'django-insecure-&vznf9d1ub9b7!@ecs)&s+em1z%hwn9+nkqqvsge$+j%q$xf@k'
 
-AUTH_USER_MODEL = 'usuarios.Usuario' # Correcto: 'app_label.ModelName'
+# AUTH_USER_MODEL = 'usuarios.Usuario' # <--- ¡Esta línea ha sido eliminada!
 LOGIN_REDIRECT_URL = reverse_lazy('recetas_app:home')
 LOGOUT_REDIRECT_URL = reverse_lazy('recetas_app:home')
 LOGIN_URL = reverse_lazy('usuarios:login')
@@ -73,6 +73,6 @@ STATICFILES_DIRS = [
 ]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media' # Apunta a blog-base/media/
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

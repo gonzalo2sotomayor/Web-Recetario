@@ -1,50 +1,51 @@
 /*
  * Archivo: style.css
- * Descripción: Estilos para el diseño visual completo de la web de recetas.
+ * Descripción: Estilos para el diseño visual de la web de recetas,
+ * con una paleta de colores clara y elegante (cobre y marrones).
  */
 
-/* Color Variables */
+/* Variables de Colores para el Tema Claro y Elegante */
 :root {
-    --primary-bg: #1a1a1a; /* Fondo principal oscuro */
-    --secondary-bg: #2a2a2a; /* Fondo de tarjetas/header */
-    --text-color: #f0f0f0; /* Color de texto principal */
-    --accent-color: #60B0E0; /* Azul para acentos */
-    --hover-color: #3a3a3a; /* Fondo para estados hover */
-    --input-bg: #3c3c3c; /* Fondo de inputs */
-    --input-border: #555555; /* Borde de inputs y elementos */
-    --button-hover-color: #4a90d0; /* Azul más oscuro para hover de botones */
-    --shadow-color: rgba(0, 0, 0, 0.4); /* Color de sombra */
-    --light-text: #ccc; /* Texto más claro para descripciones */
-    --white-text: #ffffff; /* Blanco puro para algunos elementos */
-    --dark-font: #333333; /* Color de fuente oscuro para "El Recetario" en banner */
-    --gray-button-bg: #5A5A5A; /* Fondo de botón gris */
-    --gray-button-hover: #707070; /* Fondo de botón gris en hover */
+    --primary-bg: #F5F5DC; /* Fondo principal */
+    --secondary-bg: #E0D8C8; /* Fondo de tarjetas/secciones */
+    --text-color: #362D24; /* Color de texto principal */
+    --accent-color: #B87333; /* Color de acento: Cobre */
+    --hover-color: #D4C7B5; /* Fondo para estados hover */
+    --input-bg: #FFFFFF; /* Fondo de inputs */
+    --input-border: #A08D79; /* Borde de inputs y elementos */
+    --button-hover-color: #A3642D; /* Cobre más oscuro para hover de botones */
+    --shadow-color: rgba(0, 0, 0, 0.1); /* Color de sombra */
+    --light-text: #6F6152; /* Texto más claro para descripciones */
+    --white-text: #FFFFFF; /* Blanco puro (para texto sobre acentos de cobre) */
+    --dark-font: #1A1A1A; /* Color de fuente muy oscuro */
+    --gray-button-bg: #C0B8AE; /* Fondo de botón gris/marrón neutro */
+    --gray-button-hover: #A8A096; /* Fondo de botón gris/marrón neutro en hover */
 }
 
-/* Base HTML and Body Styles */
+/* Estilos Base HTML y Body */
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente similar a la imagen */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     display: flex;
     flex-direction: column;
 }
 
-body.dark-theme {
+body.light-theme {
     background-color: var(--primary-bg);
     color: var(--text-color);
 }
 
-/* Header Styles */
+/* Estilos del Header */
 .main-header-new {
-    background-color: var(--primary-bg); /* Fondo oscuro para el header */
-    box-shadow: 0px 2px 5px var(--shadow-color); /* Sombra sutil */
-    padding: 10px 0; /* Menos padding vertical para un header más compacto */
-    position: relative; /* Para el z-index del dropdown */
-    z-index: 100; /* Asegura que el header esté por encima de otros elementos */
+    background-color: var(--primary-bg);
+    box-shadow: 0px 2px 5px var(--shadow-color);
+    padding: 10px 0;
+    position: relative;
+    z-index: 100;
 }
 
 .main-nav-new {
@@ -53,17 +54,17 @@ body.dark-theme {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px; /* Padding horizontal */
-    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+    padding: 0 20px;
+    flex-wrap: wrap;
 }
 
 .nav-left {
-    flex-shrink: 0; /* Evita que el logo se encoja */
+    flex-shrink: 0;
 }
 
 .site-logo-new {
-    color: var(--white-text); /* Blanco puro para el logo */
-    font-size: 28px; /* Tamaño de fuente más grande */
+    color: var(--text-color);
+    font-size: 28px;
     font-weight: bold;
     text-decoration: none;
     padding: 5px 10px;
@@ -80,10 +81,10 @@ body.dark-theme {
     padding: 0;
     margin: 0;
     display: flex;
-    gap: 25px; /* Espacio entre los enlaces principales */
-    flex-grow: 1; /* Permite que los enlaces ocupen el espacio central */
-    justify-content: center; /* Centra los enlaces en el espacio disponible */
-    flex-wrap: wrap; /* Permite que los enlaces se envuelvan */
+    gap: 25px;
+    flex-grow: 1;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .nav-link-new {
@@ -94,7 +95,7 @@ body.dark-theme {
     padding: 8px 12px;
     border-radius: 5px;
     transition: background-color 0.2s ease, color 0.2s ease;
-    white-space: nowrap; /* Evita que los enlaces se rompan */
+    white-space: nowrap;
 }
 
 .nav-link-new:hover {
@@ -105,16 +106,16 @@ body.dark-theme {
 .nav-right {
     display: flex;
     align-items: center;
-    gap: 15px; /* Espacio entre los iconos/botones de usuario */
-    flex-shrink: 0; /* Evita que los iconos se encojan */
+    gap: 15px;
+    flex-shrink: 0;
 }
 
 .nav-icon-link {
     color: var(--text-color);
     text-decoration: none;
-    font-size: 20px; /* Tamaño de los iconos */
+    font-size: 20px;
     padding: 5px;
-    border-radius: 50%; /* Iconos redondos */
+    border-radius: 50%;
     transition: background-color 0.2s ease;
     display: flex;
     align-items: center;
@@ -126,11 +127,10 @@ body.dark-theme {
 }
 
 .icon {
-    /* Estilos para los caracteres Unicode de iconos */
-    font-family: 'Arial Unicode MS', sans-serif; /* Asegura que los emojis se muestren */
+    font-family: 'Arial Unicode MS', sans-serif;
 }
 
-/* Auth Buttons (Login/Register) */
+/* Botones de Autenticación (Login/Register) */
 .auth-button-new {
     background-color: var(--accent-color);
     color: var(--white-text);
@@ -146,27 +146,27 @@ body.dark-theme {
     background-color: var(--button-hover-color);
 }
 
-/* User Profile Dropdown */
+/* Dropdown de Perfil de Usuario */
 .user-profile-dropdown-new {
     position: relative;
     display: inline-block;
 }
 
 .dropdown-btn-new {
-    background-color: transparent; /* Transparente como en la imagen */
+    background-color: transparent;
     color: var(--text-color);
     border: none;
     cursor: pointer;
-    padding: 0; /* Eliminar padding para que la imagen controle el tamaño */
-    border-radius: 50%; /* Botón redondo */
-    font-size: 20px; /* Tamaño del icono de usuario (si se usa) */
+    padding: 0;
+    border-radius: 50%;
+    font-size: 20px;
     transition: background-color 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px; /* Tamaño del círculo del avatar */
-    height: 40px; /* Tamaño del círculo del avatar */
-    overflow: hidden; /* Asegura que la imagen se recorte al círculo */
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
 }
 
 .dropdown-btn-new:hover {
@@ -176,23 +176,23 @@ body.dark-theme {
 .avatar-image {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Asegura que la imagen cubra el círculo */
-    border-radius: 50%; /* Hace la imagen circular */
-    border: 2px solid var(--accent-color); /* Borde de acento alrededor del avatar */
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--accent-color);
 }
 
 .dropdown-menu-new {
-    display: none; /* Oculto por defecto, se mostrará con JS */
+    display: none;
     position: absolute;
-    background-color: var(--secondary-bg); /* Fondo de menú oscuro */
+    background-color: var(--secondary-bg);
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px var(--shadow-color);
     z-index: 1;
     border-radius: 5px;
     overflow: hidden;
-    right: 0; /* Alinea a la derecha del botón */
+    right: 0;
     top: 100%;
-    margin-top: 10px; /* Espacio debajo del botón */
+    margin-top: 10px;
 }
 
 /* Clase para mostrar el dropdown con JavaScript */
@@ -213,13 +213,12 @@ body.dark-theme {
     background-color: var(--hover-color);
 }
 
-/* Hero Section Styles */
+/* Estilos de la Sección Hero (Banner) */
 .hero-section {
     position: relative;
     width: 100%;
-    height: 400px; /* Altura del banner, ajusta según necesidad */
-    min-height: 400px; /* Aseguramos una altura mínima */
-    /* La imagen de fondo ahora se establece dinámicamente con JavaScript */
+    height: 400px;
+    min-height: 400px;
     background-size: cover;
     background-position: center;
     display: flex;
@@ -227,7 +226,7 @@ body.dark-theme {
     justify-content: center;
     text-align: center;
     overflow: hidden;
-    transition: background-image 0.5s ease-in-out; /* Transición para el cambio de imagen de fondo */
+    transition: background-image 0.5s ease-in-out;
 }
 
 .hero-overlay {
@@ -236,7 +235,7 @@ body.dark-theme {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4); /* Capa semitransparente sobre la imagen */
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -245,8 +244,8 @@ body.dark-theme {
 }
 
 .hero-title {
-    font-family: 'Georgia', serif; /* Fuente similar a la imagen */
-    font-size: 60px; /* Tamaño grande para el título */
+    font-family: 'Georgia', serif;
+    font-size: 60px;
     color: var(--white-text);
     margin-bottom: 20px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
@@ -254,49 +253,49 @@ body.dark-theme {
 
 /* Contenedor para los slides de contenido dentro del hero-overlay */
 .hero-content-slider {
-    position: relative; /* Para que los slides hijos puedan posicionarse absolutamente */
-    width: 80%; /* Ocupa el 80% del hero-overlay */
-    max-width: 600px; /* Ancho máximo para el contenido del slide */
-    height: 150px; /* Altura fija para el área del slide, ajusta según necesidad */
-    display: flex; /* Usamos flex para centrar los slides */
+    position: relative;
+    width: 80%;
+    max-width: 600px;
+    height: 150px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden; /* Oculta el contenido que se desborda */
-    margin-bottom: 30px; /* Espacio entre el slider y los puntos de paginación */
+    overflow: hidden;
+    margin-bottom: 30px;
 }
 
 /* Estilos para cada slide individual */
 .hero-slide {
-    position: absolute; /* Permite que los slides se superpongan */
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    display: none; /* Oculto por defecto */
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 10px; /* Padding interno para el contenido del slide */
+    padding: 10px;
     box-sizing: border-box;
-    opacity: 0; /* Para una transición suave */
-    transition: opacity 0.5s ease-in-out; /* Transición de opacidad */
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
 }
 
 /* Estilo para el slide activo */
 .hero-slide.active-slide {
-    display: flex; /* Muestra el slide activo */
-    opacity: 1; /* Hace visible el slide activo */
+    display: flex;
+    opacity: 1;
 }
 
 /* Estilos para los slides que son clicables */
 .hero-slide.clickable-slide {
-    cursor: pointer; /* Cambia el cursor para indicar que es clicable */
+    cursor: pointer;
 }
 
 .slide-title {
-    font-family: 'Georgia', serif; /* Fuente similar a la imagen */
-    font-size: 40px; /* Tamaño de fuente para los títulos de los slides */
+    font-family: 'Georgia', serif;
+    font-size: 40px;
     color: var(--white-text);
     margin-bottom: 10px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
@@ -308,7 +307,6 @@ body.dark-theme {
     margin-bottom: 20px;
 }
 
-/* El estilo de .slide-link se mantiene si se usa en otros lugares, pero no en los slides clicables */
 .slide-link {
     background-color: var(--accent-color);
     color: var(--white-text);
@@ -326,34 +324,34 @@ body.dark-theme {
 .hero-pagination-dots {
     display: flex;
     gap: 10px;
-    margin-top: 0; /* Ajustado para que esté cerca del slider */
+    margin-top: 0;
 }
 
 .dot {
     width: 12px;
     height: 12px;
-    background-color: rgba(255, 255, 255, 0.5); /* Puntos semitransparentes */
+    background-color: rgba(255, 255, 255, 0.5);
     border-radius: 50%;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
 
 .dot.active {
-    background-color: var(--white-text); /* Punto activo blanco */
+    background-color: var(--white-text);
 }
 
 .dot:hover {
     background-color: rgba(255, 255, 255, 0.8);
 }
 
-/* Main Content Area */
+/* Área de Contenido Principal */
 .main-content-new {
     flex-grow: 1;
-    max-width: 1280px; /* Mantenemos el max-width del contenedor principal */
-    margin: 30px auto; /* Centra el contenedor principal */
+    max-width: 1280px;
+    margin: 30px auto;
     padding: 0 20px;
-    width: 100%; /* Asegura que ocupe el 100% del ancho de su padre */
-    box-sizing: border-box; /* Incluye padding y borde en el cálculo del ancho */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .section-title {
@@ -361,54 +359,152 @@ body.dark-theme {
     font-weight: bold;
     color: var(--text-color);
     margin-bottom: 30px;
-    text-align: left; /* Alineado a la izquierda como en la imagen */
-    padding-left: 10px; /* Pequeño padding para alinear con la cuadrícula */
+    text-align: left;
+    padding-left: 10px;
 }
 
-/* Recipe Grid Styles */
-.recipe-grid {
+/* Estilos para la sección "Receta de la Semana" */
+.featured-recipe-of-week-card {
+    background-color: var(--secondary-bg);
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px var(--shadow-color);
+    padding: 30px;
+    margin: 0 auto 40px auto;
+    max-width: 950px;
+    text-align: center;
+}
+
+.featured-recipe-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+@media (min-width: 768px) {
+    .featured-recipe-content {
+        flex-direction: row;
+        text-align: left;
+    }
+}
+
+.featured-recipe-image {
+    width: 100%;
+    max-width: 400px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px var(--shadow-color);
+}
+
+@media (min-width: 768px) {
+    .featured-recipe-image {
+        width: 50%;
+        height: 300px;
+    }
+}
+
+.featured-recipe-text {
+    flex-grow: 1;
+    padding: 10px;
+}
+
+.featured-recipe-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-bottom: 15px;
+}
+
+.featured-recipe-description {
+    font-size: 16px;
+    color: var(--light-text);
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.featured-recipe-button {
+    background-color: var(--accent-color);
+    color: var(--white-text);
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+}
+
+.featured-recipe-button:hover {
+    background-color: var(--button-hover-color);
+}
+
+
+/* Estilos para los contenedores de sección */
+.section-wrapper {
+    width: 100%;
+    padding: 40px 0;
+    box-sizing: border-box;
+    margin-bottom: 0;
+}
+
+.section-bg-primary {
+    background-color: var(--primary-bg);
+}
+
+.section-bg-secondary {
+    background-color: var(--secondary-bg);
+}
+
+/* Ajuste para que los títulos de sección se centren dentro del wrapper y tengan el max-width */
+.section-wrapper .section-title {
+    max-width: 1280px;
+    margin: 0 auto 30px auto;
+    padding: 0 20px;
+    text-align: left;
+}
+
+/* Estilos de Cuadrícula de Recetas */
+.recipe-grid, .latest-recipes-grid {
     display: grid;
-    /* Limita a 3 columnas, pero que se adapten al tamaño disponible */
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-    gap: 25px; /* Espacio entre las tarjetas */
-    justify-content: center; /* Centra las tarjetas si no llenan todo el ancho */
-    align-items: start; /* Alinea las tarjetas en la parte superior de su celda de cuadrícula */
-    
-    /* Limita el ancho de la cuadrícula y la centra */
-    max-width: 950px; /* Ancho máximo para 3 columnas (aprox. 3*250px + 2*25px de gap + margen) */
-    margin: 0 auto; /* Centra la cuadrícula dentro de .main-content-new */
-    
-    width: 100%; /* Asegura que ocupe el 100% del ancho de su padre (hasta el max-width) */
-    box-sizing: border-box; /* Incluye padding y borde en el cálculo del ancho */
+    gap: 25px;
+    justify-content: center;
+    align-items: start;
+    max-width: 950px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .recipe-card {
-    background-color: var(--secondary-bg); /* Fondo de tarjeta oscuro */
-    border-radius: 10px; /* Bordes redondeados */
-    overflow: hidden; /* Asegura que la imagen no se salga */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Sombra de tarjeta */
+    background-color: var(--secondary-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 4px 10px var(--shadow-color);
     transition: transform 0.2s ease;
     display: flex;
     flex-direction: column;
-    height: 100%; /* Asegura que las tarjetas ocupen la altura completa de su celda de cuadrícula */
+    height: 100%;
 }
 
 .recipe-card:hover {
-    transform: translateY(-5px); /* Pequeño efecto hover */
+    transform: translateY(-5px);
 }
 
 .recipe-card-image {
     width: 100%;
-    height: 180px; /* Altura fija para las imágenes de las tarjetas */
-    object-fit: cover; /* Recorta la imagen para que cubra el área */
-    border-bottom: 1px solid var(--input-border); /* Separador sutil */
+    height: 180px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--input-border);
 }
 
 .recipe-card-title {
     font-size: 18px;
     font-weight: 600;
     color: var(--text-color);
-    padding: 15px 15px 5px 15px; /* Padding interno */
+    padding: 15px 15px 5px 15px;
     margin: 0;
 }
 
@@ -417,13 +513,12 @@ body.dark-theme {
     color: var(--light-text);
     padding: 0 15px 15px 15px;
     margin: 0;
-    flex-grow: 1; /* Permite que la descripción ocupe el espacio restante */
-    /* Nuevas reglas para truncar el texto en varias líneas */
+    flex-grow: 1;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* Limita a 2 líneas */
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis; /* Añade puntos suspensivos si el texto se trunca */
+    text-overflow: ellipsis;
 }
 
 .recipe-card-link {
@@ -435,7 +530,7 @@ body.dark-theme {
     text-decoration: none;
     font-weight: 600;
     transition: background-color 0.2s ease;
-    margin-top: auto; /* Empuja el botón al final de la tarjeta */
+    margin-top: auto;
 }
 
 .recipe-card-link:hover {
@@ -443,14 +538,118 @@ body.dark-theme {
 }
 
 
-/* Call to Action Card (from home.html) */
+/* Estilos para la cuadrícula de categorías */
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    max-width: 950px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: center;
+}
+
+.category-card {
+    background-color: var(--secondary-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 4px 10px var(--shadow-color);
+    transition: transform 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-bottom: 15px;
+    cursor: pointer;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+}
+
+.category-card-image {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--input-border);
+    margin-bottom: 10px;
+}
+
+.category-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-color);
+    padding: 0 10px;
+    margin: 0;
+}
+
+/* Estilos para la cuadrícula de consejos */
+.tip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    max-width: 950px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: center;
+}
+
+.tip-card {
+    background-color: var(--secondary-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 4px 10px var(--shadow-color);
+    transition: transform 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    cursor: pointer;
+}
+
+.tip-card:hover {
+    transform: translateY(-5px);
+}
+
+.tip-card-image {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--input-border);
+}
+
+.tip-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color);
+    padding: 15px 15px 5px 15px;
+    margin: 0;
+}
+
+.tip-card-description {
+    font-size: 14px;
+    color: var(--light-text);
+    padding: 0 15px 15px 15px;
+    margin: 0;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* Tarjeta de Llamada a la Acción (Unirse a la Comunidad) */
 .call-to-action-card {
     background-color: var(--secondary-bg);
     border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 10px var(--shadow-color);
     padding: 30px;
     text-align: center;
-    margin-top: 40px; /* Espacio superior */
+    max-width: 950px;
+    margin: 0 auto;
 }
 
 .call-to-action-title {
@@ -466,18 +665,18 @@ body.dark-theme {
     margin-bottom: 25px;
 }
 
-/* El botón de registro grande en la tarjeta de llamada a la acción */
+/* Botón de registro grande en la tarjeta de llamada a la acción */
 .register-button-large {
     background-color: var(--accent-color);
     color: var(--white-text);
-    padding: 12px 24px; /* Ajustado para un tamaño de botón adecuado */
+    padding: 12px 24px;
     border-radius: 8px;
     font-weight: 600;
-    text-decoration: none; /* Asegura que no tenga subrayado de enlace */
+    text-decoration: none;
     transition: background-color 0.2s ease;
-    display: inline-block; /* Para que se comporte como un botón y acepte padding */
-    border: none; /* Asegura que no tenga borde de botón por defecto */
-    cursor: pointer; /* Indica que es clickeable */
+    display: inline-block;
+    border: none;
+    cursor: pointer;
 }
 
 .register-button-large:hover {
@@ -485,16 +684,16 @@ body.dark-theme {
 }
 
 
-/* No Recipes Message */
+/* Mensaje de No Recetas */
 .no-recipes-message {
     text-align: center;
     font-size: 18px;
     color: var(--light-text);
     padding: 50px 0;
-    grid-column: 1 / -1; /* Ocupa todas las columnas en la cuadrícula */
+    grid-column: 1 / -1;
 }
 
-/* Search Results Page Specific Styles */
+/* Estilos de Páginas de Resultados de Búsqueda */
 .search-results-container {
     max-width: 1280px;
     margin: 30px auto;
@@ -529,7 +728,7 @@ body.dark-theme {
     background-color: var(--secondary-bg);
     border-radius: 8px;
     padding: 20px;
-    box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0px 2px 5px var(--shadow-color);
 }
 
 .advanced-search-criteria li {
@@ -582,66 +781,219 @@ body.dark-theme {
 }
 
 
-/* Footer Styles */
+/* Estilos del Footer */
 .main-footer-new {
-    background-color: var(--primary-bg); /* Fondo oscuro para el footer */
+    background-color: var(--primary-bg);
     padding: 20px;
     text-align: center;
     color: var(--light-text);
     font-size: 14px;
-    margin-top: 40px; /* Margen superior para separarlo del contenido */
+    margin-top: 40px;
 }
 
-
-/* Existing styles from your previous style.css that are still relevant
-   (These will be merged or overridden by the new styles above) */
-/*
-.recetas-lista .receta-item {
-    border-bottom: 1px solid var(--input-border);
-    padding: 15px 0px;
+/* Estilos para formularios y listas dentro de las páginas de perfil */
+.form-container, .comments-container {
+    background-color: var(--secondary-bg);
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px var(--shadow-color);
+    padding: 30px;
+    max-width: 700px; /* Ancho máximo para formularios */
+    margin: 0 auto 40px auto; /* Centrar y añadir margen inferior */
 }
 
-.recetas-lista .receta-item:last-child {
-    border-bottom: none;
+.form-description {
+    font-size: 16px;
+    color: var(--light-text);
+    margin-bottom: 25px;
+    text-align: center;
 }
 
-.recetas-lista .receta-item h2 a {
-    color: var(--accent-color);
-    text-decoration: none;
-}
-
-.recetas-lista .receta-item h2 a:hover {
-    text-decoration: underline;
-}
-
-form p {
-    margin-bottom: 15px;
-}
-
-form input[type="text"],
-form input[type="email"],
-form input[type="password"],
-form textarea {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border: 1px solid var(--input-border);
-    border-radius: 4px;
-    box-sizing: border-box;
-    background-color: var(--input-bg);
+.form-container form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
     color: var(--text-color);
 }
 
-form button[type="submit"] {
-    background-color: var(--accent-color);
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.form-container form input[type="text"],
+.form-container form input[type="email"],
+.form-container form input[type="password"],
+.form-container form input[type="date"],
+.form-container form textarea,
+.form-container form select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    box-sizing: border-box;
+    background-color: var(--input-bg);
+    color: var(--dark-font); /* Texto oscuro en inputs claros */
     font-size: 16px;
 }
 
-form button[type="submit"]:hover {
+.form-container form input[type="file"] {
+    margin-bottom: 20px;
+}
+
+.form-container form button[type="submit"] {
+    width: auto; /* Botón no ocupa todo el ancho */
+    padding: 12px 30px;
+    background-color: var(--accent-color);
+    color: var(--white-text);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.form-container form button[type="submit"]:hover {
     background-color: var(--button-hover-color);
+}
+
+.form-container h3 {
+    font-size: 22px;
+    color: var(--text-color);
+    margin-top: 30px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--input-border);
+    padding-bottom: 10px;
+}
+
+/* Estilos para listas de favoritos/comentarios */
+.favorites-list, .category-list, .user-comments-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.favorites-list li, .category-list li, .user-comments-list li {
+    background-color: var(--primary-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+.favorites-list li a, .user-comments-list li a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.favorites-list li a:hover, .user-comments-list li a:hover {
+    text-decoration: underline;
+}
+
+.favorites-list li button, .category-list li button {
+    background-color: var(--gray-button-bg);
+    color: var(--white-text);
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+    margin-left: 10px;
+}
+
+.favorites-list li button:hover, .category-list li button:hover {
+    background-color: var(--gray-button-hover);
+}
+
+.user-comment-item {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.comment-text {
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
+.comment-info {
+    font-size: 13px;
+    color: var(--light-text);
+    margin-bottom: 10px;
+}
+
+.comment-replies {
+    background-color: var(--primary-bg);
+    border-left: 3px solid var(--accent-color);
+    padding: 15px;
+    margin-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.comment-replies h4 {
+    font-size: 16px;
+    color: var(--text-color);
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.reply-text {
+    font-size: 14px;
+    color: var(--light-text);
+    margin-bottom: 5px;
+}
+
+.reply-text strong {
+    color: var(--text-color);
+}
+
+/* Estilos para el botón de favoritos en detalle_receta.html */
+.favorite-form {
+    margin-top: 20px;
+    text-align: center; /* Centra el botón si el contenedor es ancho */
+}
+
+.favorite-button {
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    display: inline-flex; /* Permite alinear el icono y el texto */
+    align-items: center;
+    gap: 8px; /* Espacio entre el icono y el texto */
+    cursor: pointer;
+    border: 2px solid var(--accent-color); /* Borde por defecto para el botón */
+    background-color: var(--accent-color);
+    color: var(--white-text);
+}
+
+.favorite-button:hover {
+    background-color: var(--button-hover-color);
+    border-color: var(--button-hover-color);
+}
+
+/* Estilo cuando la receta ya es favorita */
+.favorite-button.favorited {
+    background-color: transparent; /* Fondo transparente */
+    color: var(--accent-color); /* Texto color cobre */
+    border-color: var(--accent-color); /* Borde color cobre */
+}
+
+.favorite-button.favorited:hover {
+    background-color: var(--accent-color); /* Fondo cobre en hover */
+    color: var(--white-text); /* Texto blanco en hover */
+}
+
+/* Estilos para el tag de categoría en la lista de favoritos */
+.favorite-category-tag {
+    background-color: var(--input-border); /* Un color neutro para el fondo */
+    color: var(--text-color); /* Texto oscuro */
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 0.85em;
+    margin-left: 10px;
 }

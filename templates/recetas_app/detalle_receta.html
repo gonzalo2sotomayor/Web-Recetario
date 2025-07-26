@@ -1,12 +1,71 @@
-{% extends 'recetas_app/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ receta.titulo }} - Blog de Recetas{% endblock %}
+{% block title %}{{ receta.titulo }} - El Recetario{% endblock title %}
 
 {% block content %}
-    <h1>{{ receta.titulo }}</h1>
-    <p>{{ receta.descripcion }}</p>
-    <small>Publicado el: {{ receta.fecha_creacion|date:"d M Y" }}</small>
-    <br>
-    <a href="{% url 'recetas_app:home' %}">Volver a la lista de recetas</a>
-{% endblock %}
+<div class="main-content-new">
+    <div class="recipe-detail-container">
+        <h1 class="recipe-detail-title">{{ receta.titulo }}</h1>
+        
+        <div class="recipe-header-info">
+            <span class="recipe-author">Por: {{ receta.autor.username }}</span>
+            <span class="recipe-date">Publicado el: {{ receta.fecha_publicacion|date:"d M Y" }}</span>
+        </div>
+
+        {% if receta.imagen %}
+            <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-detail-image">
+        {% else %}
+            <img src="{% static 'img/default_recipe.png' %}" alt="Imagen por defecto" class="recipe-detail-image">
+        {% endif %}
+
+        {# Botón para añadir/eliminar de favoritos #}
+        {% if user.is_authenticated %}
+            <form action="{% url 'usuarios:toggle_favorito' receta_pk=receta.pk %}" method="post" class="favorite-form">
+                {% csrf_token %}
+                {% if user.recetas_favoritas.filter(receta=receta).exists %}
+                    <button type="submit" class="button-secondary favorite-button favorited">
+                        &#9733; Quitar de Favoritos
+                    </button>
+                {% else %}
+                    <button type="submit" class="button-primary favorite-button">
+                        &#9734; Añadir a Favoritos
+                    </button>
+                {% endif %}
+            </form>
+        {% endif %}
+
+        <div class="recipe-sections">
+            <div class="recipe-section">
+                <h3>Descripción</h3>
+                <p>{{ receta.descripcion|linebreaksbr }}</p>
+            </div>
+
+            <div class="recipe-section">
+                <h3>Ingredientes</h3>
+                <ul>
+                    {% for ingrediente in receta.ingredientes.all %}
+                        <li>{{ ingrediente.cantidad }} {{ ingrediente.unidad }} de {{ ingrediente.nombre }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="recipe-section">
+                <h3>Instrucciones</h3>
+                <ol>
+                    {% for paso in receta.pasos.all %}
+                        <li>{{ paso.descripcion }}</li>
+                    {% endfor %}
+                </ol>
+            </div>
+        </div>
+
+        {# Sección de Comentarios (opcional, si ya la tienes implementada) #}
+        <div class="comments-section">
+            <h3>Comentarios</h3>
+            {# Aquí iría la lógica para mostrar y añadir comentarios #}
+            <p>Aún no hay comentarios. ¡Sé el primero en comentar!</p>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mis Comentarios - El Recetario{% endblock title %}
+
+{% block content %}
+<div class="main-content-new">
+    <h2 class="section-title">Mis Comentarios</h2>
+    <div class="comments-container">
+        <p class="form-description">Aquí puedes ver todos los comentarios que has realizado y sus respuestas.</p>
+
+        {# Recordarme: Aquí listar los comentarios del usuario #}
+        {# {% if user.comments.all %} #}
+        {#     <ul class="user-comments-list"> #}
+        {#         {% for comment in user.comments.all %} #}
+        {#             <li class="user-comment-item"> #}
+        {#                 <p class="comment-text">"{{ comment.text|truncatechars:150 }}"</p> #}
+        {#                 <p class="comment-info">En: <a href="{{ comment.recipe.get_absolute_url }}">{{ comment.recipe.title }}</a> el {{ comment.created_at|date:"d M Y" }}</p> #}
+        {#                 {% if comment.replies.all %} #}
+        {#                     <div class="comment-replies"> #}
+        {#                         <h4>Respuestas:</h4> #}
+        {#                         {% for reply in comment.replies.all %} #}
+        {#                             <p class="reply-text"><strong>{{ reply.user.username }}:</strong> {{ reply.text }}</p> #}
+        {#                         {% endfor %} #}
+        {#                     </div> #}
+        {#                 {% endif %} #}
+        {#             </li> #}
+        {#         {% endfor %} #}
+        {#     </ul> #}
+        {# {% else %} #}
+        {#     <p>Aún no has realizado ningún comentario.</p> #}
+        {# {% endif %} #}
+    </div>
+</div>
+{% endblock content %}

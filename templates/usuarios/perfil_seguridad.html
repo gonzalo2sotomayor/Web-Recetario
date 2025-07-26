@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Seguridad y Notificaciones - El Recetario{% endblock title %}
+
+{% block content %}
+<div class="main-content-new">
+    <h2 class="section-title">Seguridad y Notificaciones</h2>
+    <div class="form-container">
+        <p class="form-description">Gestiona tu seguridad y las notificaciones que recibes.</p>
+
+        {# Sección para Cambiar Contraseña #}
+        <h3>Cambiar Contraseña</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ password_form.as_p }} {# Renderiza los campos del formulario de cambio de contraseña #}
+            <button type="submit" name="change_password_submit" class="button-primary">Cambiar Contraseña</button>
+        </form>
+
+        {# Sección para Preferencias de Notificaciones y Mensajes #}
+        <h3>Preferencias de Notificaciones y Mensajes</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ seguridad_form.as_p }} {# Renderiza los campos del formulario de seguridad/notificaciones #}
+            <button type="submit" name="seguridad_settings_submit" class="button-primary">Guardar Preferencias</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}
