@@ -3,8 +3,16 @@
 
 {% block titulo %}HOME{% endblock titulo %}
 
-
 {% block contenido %}
-	<h2>HOLA SOY EL HOME</h2>
+  <h2>Receta del Día</h2>
+  {% if receta_del_dia %}
+    <p>
+      <a href="{% url 'recetas_app:detalle_receta' receta_del_dia.id %}">
+        {{ receta_del_dia.titulo }}
+      </a>
+    </p>
+  {% else %}
+    <p>No hay receta para hoy.</p>
+  {% endif %}
 {% endblock contenido %}
 
