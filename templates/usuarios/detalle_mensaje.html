@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mensaje de {{ mensaje.remitente.username }} - El Recetario{% endblock title %}
+
+{% block content %}
+<div class="main-content-new">
+    <h2 class="section-title">Detalle del Mensaje</h2>
+    <div class="message-detail-container">
+        <div class="message-info-card">
+            <p><strong>De:</strong> {{ mensaje.remitente.username }}</p>
+            <p><strong>Para:</strong> {{ mensaje.destinatario.username }}</p>
+            <p><strong>Asunto:</strong> {{ mensaje.asunto|default:"(Sin Asunto)" }}</p>
+            <p><strong>Fecha:</strong> {{ mensaje.fecha_envio|date:"d M Y H:i" }}</p>
+            <p><strong>Estado:</strong> {% if mensaje.leido %}Leído{% else %}No leído{% endif %}</p>
+        </div>
+
+        <div class="message-body-card">
+            <h4>Mensaje:</h4>
+            <p>{{ mensaje.cuerpo|linebreaksbr }}</p>
+        </div>
+
+        <div class="message-actions">
+            <a href="{% url 'usuarios:mensajes_privados' %}" class="button-secondary">Volver a Bandeja de Entrada</a>
+            {# Botón para responder #}
+            {% if request.user == mensaje.destinatario %} {# Solo el destinatario puede responder #}
+                <button id="replyMessageBtn" class="button-primary">Responder</button>
+            {% endif %}
+        </div>
+
+        {# Formulario de respuesta (oculto por defecto) #}
+        {% if request.user == mensaje.destinatario %}
+            <div id="replyFormContainer" class="form-container" style="display: none; margin-top: 30px;">
+                <h3>Responder a {{ mensaje.remitente.username }}</h3>
+                <form method="post" action="{% url 'usuarios:enviar_mensaje' %}"> {# Enviar a la vista de enviar_mensaje #}
+                    {% csrf_token %}
+                    {{ reply_form.destinatario.as_hidden }} {# Destinatario oculto #}
+                    {{ reply_form.asunto.label_tag }}
+                    {{ reply_form.asunto }}
+                    {{ reply_form.cuerpo.label_tag }}
+                    {{ reply_form.cuerpo }}
+                    <button type="submit" class="button-primary">Enviar Respuesta</button>
+                    <button type="button" id="cancelReplyBtn" class="button-secondary">Cancelar</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const replyMessageBtn = document.getElementById('replyMessageBtn');
+        const replyFormContainer = document.getElementById('replyFormContainer');
+        const cancelReplyBtn = document.getElementById('cancelReplyBtn');
+
+        if (replyMessageBtn && replyFormContainer) {
+            replyMessageBtn.addEventListener('click', function() {
+                replyFormContainer.style.display = 'block';
+                // Opcional: Enfocar el textarea al mostrar el formulario
+                replyFormContainer.querySelector('textarea').focus();
+            });
+        }
+
+        if (cancelReplyBtn && replyFormContainer) {
+            cancelReplyBtn.addEventListener('click', function() {
+                replyFormContainer.style.display = 'none';
+                // Opcional: Limpiar el formulario al cancelar
+                replyFormContainer.querySelector('textarea').value = '';
+            });
+        }
+    });
+</script>
+{% endblock content %}

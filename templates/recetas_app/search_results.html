@@ -4,43 +4,162 @@
 {% block title %}Resultados de Búsqueda - El Recetario{% endblock title %}
 
 {% block content %}
-<div class="search-results-container">
-    <h1 class="search-results-title">Resultados de Búsqueda</h1>
+<div class="main-content-new">
+    <h2 class="section-title">Resultados de Búsqueda {% if search_type == 'simple' %}(Simple){% else %}(Avanzada){% endif %}</h2>
+    <div class="search-results-container">
+        {% if query %}
+            <p class="search-query-info">Mostrando resultados para: "<strong>{{ query }}</strong>"</p>
+        {% elif exact_phrase or similar_words or ingredient or recipe_type %}
+            <p class="search-query-info">Mostrando resultados para tu búsqueda avanzada.</p>
+        {% endif %}
 
-    {% if search_type == 'simple' %}
-        <p class="search-query-info">Resultados para la búsqueda simple: "<span class="font-semibold">{{ query }}</span>"</p>
-    {% elif search_type == 'advanced' %}
-        <p class="search-query-info">Resultados para tu búsqueda avanzada:</p>
-        <ul class="advanced-search-criteria">
-            {% if exact_phrase %}<li><span class="criteria-label">Frase Exacta:</span> "{{ exact_phrase }}"</li>{% endif %}
-            {% if similar_words %}<li><span class="criteria-label">Palabras Clave:</span> "{{ similar_words }}"</li>{% endif %}
-            {% if ingredient %}<li><span class="criteria-label">Ingrediente:</span> "{{ ingredient }}"</li>{% endif %}
-            {% if recipe_type %}<li><span class="criteria-label">Tipo de Receta:</span> "{{ recipe_type|capfirst }}"</li>{% endif %}
-        </ul>
-    {% endif %}
-
-    <div class="recipe-grid">
         {% if results %}
-            {% for receta in results %}
-                <div class="recipe-card">
-                    {# Asume que tu modelo Receta tiene un campo 'imagen' y 'titulo' #}
-                    <img src="{% if receta.imagen %}{{ receta.imagen.url }}{% else %}{% static 'img/default_recipe.png' %}{% endif %}" 
-                         alt="{{ receta.titulo }}" 
-                         class="recipe-card-image">
-                    <h3 class="recipe-card-title">{{ receta.titulo }}</h3>
-                    {# Asume que tu modelo Receta tiene un campo 'descripcion_corta' o similar #}
-                    <p class="recipe-card-description">{{ receta.descripcion|truncatechars:100 }}</p>
-                    <a href="{% url 'recetas_app:detalle_receta' pk=receta.pk %}" class="recipe-card-link">Ver Receta</a>
-                </div>
-            {% endfor %}
+            <div class="grid-container">
+                {% for receta in results %}
+                    <div class="recipe-card">
+                        {% if receta.imagen %}
+                            <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-image">
+                        {% else %}
+                            <img src="https://placehold.co/400x300/E0E0E0/616161?text=Sin+Imagen" alt="Imagen no disponible" class="recipe-image">
+                        {% endif %}
+                        <h3 class="recipe-title">{{ receta.titulo }}</h3>
+                        <p class="recipe-description">{{ receta.descripcion|truncatechars:100 }}</p>
+                        <a href="{% url 'recetas_app:detalle_receta' pk=receta.pk %}" class="btn-primary">Ver Receta</a>
+                    </div>
+                {% endfor %}
+            </div>
         {% else %}
-            <p class="no-recipes-message">No se encontraron recetas que coincidan con tu búsqueda.</p>
+            <p class="no-results-message">No se encontraron recetas que coincidan con tu búsqueda.</p>
         {% endif %}
     </div>
-
-    <div class="search-navigation-buttons">
-        <a href="/buscar/avanzada/" class="button-secondary">Volver a Búsqueda Avanzada</a>
-        <a href="{% url 'recetas_app:home' %}" class="button-primary">Volver al Inicio</a>
-    </div>
 </div>
-{% endblock content %}
+
+<style>
+    /* Estilos básicos para la página de resultados de búsqueda */
+    .main-content-new {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: #f9f9f9;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .section-title {
+        color: #333;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .search-results-container {
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-query-info {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        color: #555;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        padding: 1rem;
+    }
+
+    .recipe-card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-bottom: 1rem; /* Espacio para el botón */
+    }
+
+    .recipe-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .recipe-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid #eee;
+    }
+
+    .recipe-title {
+        font-size: 1.5rem;
+        color: #333;
+        margin: 1rem 1rem 0.5rem;
+        font-weight: 600;
+    }
+
+    .recipe-description {
+        font-size: 0.95rem;
+        color: #666;
+        margin: 0 1rem 1rem;
+        line-height: 1.5;
+        flex-grow: 1; /* Permite que la descripción ocupe el espacio disponible */
+    }
+
+    .btn-primary {
+        display: block;
+        width: calc(100% - 2rem); /* Ancho del botón con padding */
+        padding: 0.8rem 1.2rem;
+        margin: 0 1rem; /* Centrar el botón */
+        background-color: #4CAF50; /* Color verde */
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        font-weight: 600;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary:hover {
+        background-color: #45a049;
+        transform: translateY(-2px);
+    }
+
+    .no-results-message {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #777;
+        padding: 2rem;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .main-content-new {
+            padding: 1rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .grid-container {
+            grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
+            padding: 0.5rem;
+        }
+
+        .recipe-card {
+            margin: 0 auto; /* Centrar tarjetas */
+            max-width: 350px; /* Ancho máximo para tarjetas en móvil */
+        }
+    }
+</style>

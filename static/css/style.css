@@ -110,7 +110,31 @@ body.light-theme {
     flex-shrink: 0;
 }
 
+/* Estilos para iconos en la barra de navegación */
+.nav-icon {
+    margin-right: 5px; /* Espacio entre el icono y el texto */
+    font-size: 18px; /* Ajusta el tamaño si es necesario */
+}
+
+/* Estilos para el badge de notificaciones/mensajes */
+.badge {
+    background-color: #E74C3C; /* Rojo para notificaciones */
+    color: var(--white-text);
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 50%;
+    padding: 3px 6px;
+    position: absolute;
+    top: -5px; /* Ajusta la posición vertical */
+    right: -5px; /* Ajusta la posición horizontal */
+    min-width: 18px; /* Asegura que el círculo sea visible */
+    text-align: center;
+    line-height: 1; /* Centra el número verticalmente */
+}
+
+/* Ajuste para el enlace de icono para que el badge se posicione correctamente */
 .nav-icon-link {
+    position: relative; /* Necesario para posicionar el badge */
     color: var(--text-color);
     text-decoration: none;
     font-size: 20px;
@@ -120,10 +144,29 @@ body.light-theme {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
 }
 
 .nav-icon-link:hover {
     background-color: var(--hover-color);
+}
+
+/* Estilo para mensajes sin leer */
+.nav-messages-link.unread-messages {
+    background-color: var(--accent-color); /* Fondo de acento para destacar */
+    border-radius: 5px; /* Un poco más cuadrado para destacar */
+    padding: 5px 10px; /* Más padding para que se note */
+    transition: background-color 0.2s ease;
+}
+
+.nav-messages-link.unread-messages .nav-icon {
+    color: var(--white-text); /* Icono blanco */
+}
+
+.nav-messages-link.unread-messages:hover {
+    background-color: var(--button-hover-color); /* Color de hover más oscuro */
 }
 
 .icon {
@@ -1205,4 +1248,221 @@ body.light-theme {
 
 .reply-form-container .cancel-reply-button:hover {
     background-color: var(--gray-button-hover);
+}
+
+/* Estilos para la página de visualización de perfil (ver_perfil.html) */
+.profile-page-container {
+    max-width: 950px; /* Ancho similar a las cuadrículas de recetas */
+    margin: 0 auto 40px auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.profile-header-card {
+    background-color: var(--secondary-bg);
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px var(--shadow-color);
+    padding: 30px;
+    display: flex;
+    flex-direction: column; /* Por defecto apilado para móvil */
+    align-items: center;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+@media (min-width: 768px) {
+    .profile-header-card {
+        flex-direction: row; /* En fila para escritorio */
+        text-align: left;
+        align-items: flex-start;
+    }
+}
+
+.profile-avatar-wrapper {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 4px solid var(--accent-color); /* Borde de acento alrededor del avatar */
+    flex-shrink: 0; /* Evita que el avatar se encoja */
+}
+
+@media (min-width: 768px) {
+    .profile-avatar-wrapper {
+        margin-right: 30px;
+        margin-bottom: 0;
+    }
+}
+
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info-main {
+    flex-grow: 1;
+}
+
+.profile-username {
+    font-size: 36px;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 5px;
+}
+
+.profile-fullname {
+    font-size: 20px;
+    color: var(--light-text);
+    margin-bottom: 10px;
+}
+
+.profile-nickname {
+    font-size: 18px;
+    color: var(--accent-color);
+    margin-bottom: 15px;
+}
+
+.profile-location,
+.profile-birthday,
+.profile-age {
+    font-size: 16px;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center; /* Centrar en móvil */
+}
+
+@media (min-width: 768px) {
+    .profile-location,
+    .profile-birthday,
+    .profile-age {
+        justify-content: flex-start; /* Alinear a la izquierda en escritorio */
+    }
+}
+
+.profile-location .icon,
+.profile-birthday .icon,
+.profile-age .icon {
+    font-size: 18px;
+    color: var(--accent-color);
+}
+
+.profile-about-me {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid var(--input-border);
+    text-align: left; /* Asegura que el texto se alinee a la izquierda */
+}
+
+.profile-about-me h4 {
+    font-size: 18px;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.profile-about-me p {
+    font-size: 15px;
+    color: var(--light-text);
+    line-height: 1.6;
+}
+
+.profile-edit-button {
+    margin-top: 25px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    display: inline-block; /* Para que sea un botón centrado */
+}
+
+/* Cuadrícula de Contenido Inferior (Favoritos y Comentarios) */
+.profile-content-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Una columna para móvil */
+    gap: 30px;
+}
+
+@media (min-width: 768px) {
+    .profile-content-grid {
+        grid-template-columns: repeat(2, 1fr); /* Dos columnas para escritorio */
+    }
+}
+
+.profile-section-card {
+    background-color: var(--secondary-bg);
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px var(--shadow-color);
+    padding: 25px;
+}
+
+.profile-section-card h3 {
+    font-size: 22px;
+    color: var(--text-color);
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--input-border);
+    padding-bottom: 10px;
+}
+
+.favorite-category-group {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed var(--input-border); /* Separador sutil entre categorías */
+}
+
+.favorite-category-group:last-child {
+    border-bottom: none; /* Eliminar el borde del último grupo */
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.favorite-category-group h4 {
+    font-size: 18px;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+}
+
+.favorites-list-compact,
+.comments-list-compact {
+    list-style: none;
+    padding: 0;
+}
+
+.favorites-list-compact li {
+    font-size: 15px;
+    color: var(--text-color);
+    margin-bottom: 8px;
+}
+
+.favorites-list-compact li a {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.favorites-list-compact li a:hover {
+    color: var(--accent-color);
+}
+
+.comment-compact-text {
+    font-size: 14px;
+    color: var(--light-text);
+    font-style: italic;
+    margin-bottom: 5px;
+}
+
+.comment-compact-info {
+    font-size: 12px;
+    color: var(--light-text);
+}
+
+.comment-compact-info a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.comment-compact-info a:hover {
+    text-decoration: underline;
 }

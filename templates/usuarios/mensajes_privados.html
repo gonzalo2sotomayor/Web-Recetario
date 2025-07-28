@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mensajes Privados - El Recetario{% endblock title %}
+
+{% block content %}
+<div class="main-content-new">
+    <h2 class="section-title">Mensajes Privados</h2>
+    <div class="form-container">
+        <p class="form-description">Aquí podrás ver y gestionar tus mensajes privados.</p>
+        <p>¡Esta funcionalidad está en construcción!</p>
+        {# Aquí irá la lógica para mostrar mensajes #}
+        {% if unread_messages_count > 0 %}
+            <p>Tienes {{ unread_messages_count }} mensaje(s) sin leer.</p>
+        {% else %}
+            <p>No tienes mensajes nuevos.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Perfil de {{ user.username }} - El Recetario{% endblock title %}
+
+{% block content %}
+<div class="main-content-new">
+    <div class="profile-page-container">
+        {# Sección Superior del Perfil #}
+        <div class="profile-header-card">
+            <div class="profile-avatar-wrapper">
+                {% if perfil.avatar %}
+                    <img src="{{ perfil.avatar.url }}" alt="Avatar de {{ user.username }}" class="profile-avatar">
+                {% else %}
+                    <img src="{% static 'img/default_avatar.png' %}" alt="Avatar por defecto" class="profile-avatar">
+                {% endif %}
+            </div>
+            <div class="profile-info-main">
+                <h2 class="profile-username">{{ user.username }}</h2>
+                <p class="profile-fullname">{{ user.first_name }} {{ user.last_name }}</p>
+                
+                {% if perfil.nickname %}
+                    <p class="profile-nickname">@{{ perfil.nickname }}</p>
+                {% endif %}
+
+                {% if perfil.localidad or perfil.pais %}
+                    <p class="profile-location">
+                        <span class="icon">&#128205;</span> {# Icono de ubicación #}
+                        {% if perfil.localidad %}{{ perfil.localidad }}{% endif %}
+                        {% if perfil.localidad and perfil.pais %}, {% endif %}
+                        {% if perfil.pais %}{{ perfil.pais }}{% endif %}
+                    </p>
+                {% endif %}
+
+                {% if perfil.fecha_nacimiento and perfil.mostrar_cumpleanos %}
+                    <p class="profile-birthday">
+                        <span class="icon">&#127874;</span> {# Icono de cumpleaños #}
+                        Cumpleaños: {{ perfil.fecha_nacimiento|date:"d M" }}
+                    </p>
+                {% endif %}
+
+                {% if perfil.edad and perfil.mostrar_edad %}
+                    <p class="profile-age">
+                        <span class="icon">&#128100;</span> {# Icono de edad #}
+                        Edad: {{ perfil.edad }} años
+                    </p>
+                {% endif %}
+
+                {% if perfil.acerca_de_mi %}
+                    <div class="profile-about-me">
+                        <h4>Acerca de mí:</h4>
+                        <p>{{ perfil.acerca_de_mi|linebreaksbr }}</p>
+                    </div>
+                {% endif %}
+
+                {# Botón para editar perfil (solo si es el propio usuario) #}
+                {% if request.user == user %}
+                    <a href="{% url 'usuarios:editar_perfil' %}" class="button-primary profile-edit-button">Editar Perfil</a>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Secciones Inferiores (Favoritos y Comentarios) #}
+        <div class="profile-content-grid">
+            {# Sección de Recetas Favoritas #}
+            <div class="profile-section-card">
+                <h3>Recetas Favoritas ({{ recetas_favoritas.count }})</h3>
+                {% if favoritos_por_categoria %}
+                    {% for categoria_nombre, recetas_en_categoria in favoritos_por_categoria.items %}
+                        <div class="favorite-category-group">
+                            <h4>{{ categoria_nombre }}</h4>
+                            <ul class="favorites-list-compact">
+                                {% for fav_receta in recetas_en_categoria %}
+                                    <li>
+                                        <a href="{% url 'recetas_app:detalle_receta' pk=fav_receta.receta.pk %}">{{ fav_receta.receta.titulo }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Este usuario aún no ha marcado ninguna receta como favorita.</p>
+                {% endif %}
+            </div>
+
+            {# Sección de Últimos Comentarios #}
+            <div class="profile-section-card">
+                <h3>Últimos Comentarios ({{ ultimos_comentarios.count }})</h3>
+                {% if ultimos_comentarios %}
+                    <ul class="comments-list-compact">
+                        {% for comentario in ultimos_comentarios %}
+                            <li>
+                                <p class="comment-compact-text">"{{ comentario.texto|truncatechars:100 }}"</p>
+                                <p class="comment-compact-info">En: 
+                                    <a href="{% url 'recetas_app:detalle_receta' pk=comentario.receta.pk %}">{{ comentario.receta.titulo }}</a> 
+                                    ({{ comentario.fecha_creacion|date:"d M Y" }})
+                                </p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Este usuario aún no ha dejado ningún comentario.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

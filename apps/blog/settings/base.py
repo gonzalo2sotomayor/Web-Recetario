@@ -45,7 +45,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR / 'templates',
-            BASE_DIR / 'templates' / 'recetas_app', # <-- ¡Esta es la línea añadida para tu base.html!
+            BASE_DIR / 'templates' / 'recetas_app', # Apunta a blog-base/templates/recetas_app/
+            BASE_DIR / 'templates' / 'usuarios',    # Apunta a blog-base/templates/usuarios/
         ], 
         'APP_DIRS': True,
         'OPTIONS': {
@@ -54,6 +55,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'usuarios.context_processors.unread_messages_count',
             ],
         },
     },

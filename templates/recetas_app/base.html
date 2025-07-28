@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}El Recetario{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon"> {# Asegurarme de tener este archivo en static/img/ #}
+    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon"> {# Asegurarse de tener este archivo en static/img/ #}
     {% block extra_head %}{% endblock extra_head %}
 </head>
-<body class="light-theme"> {# ¡Cambiado de "dark-theme" a "light-theme" para el nuevo esquema de colores! #}
+<body class="light-theme">
 
     <header class="main-header-new">
         <nav class="main-nav-new">
@@ -22,27 +22,42 @@
 
             <!-- Sección Central: Enlaces de Navegación Principal -->
             <ul class="nav-links-new">
-                <li><a href="{% url 'recetas_app:home' %}" class="nav-link-new">Home</a></li>
-                <li><a href="/recetas/" class="nav-link-new">Recetas</a></li>
-                <li><a href="/comunidades/" class="nav-link-new">Comunidades</a></li>
-                <li><a href="/mi-recetario/" class="nav-link-new">Mi Recetario</a></li>
-                <li><a href="/perfil/" class="nav-link-new">Perfil</a></li>
+                <li><a href="{% url 'recetas_app:home' %}" class="nav-link-new"><span class="nav-icon">&#127969;</span> Home</a></li> {# Icono de Casa #}
+                <li><a href="{% url 'recetas_app:recetas_aleatorias' %}" class="nav-link-new"><span class="nav-icon">&#128562;</span> Descubre</a></li> {# Icono sorpresa #}
+                <li><a href="{% url 'recetas_app:advanced_search' %}" class="nav-link-new"><span class="nav-icon">&#128373;</span> Búsqueda Avanzada</a></li> {# Icono detective #}
+                <li><a href="/comunidades/" class="nav-link-new"><span class="nav-icon">&#128101;</span> Comunidades</a></li> {# Icono de Grupo #}
             </ul>
 
             <!-- Sección Derecha: Iconos de Usuario/Autenticación -->
             <div class="nav-right">
-                <a href="#" class="nav-icon-link"><span class="icon">&#128722;</span></a> {# Icono de Carrito #}
-                <a href="#" class="nav-icon-link"><span class="icon">&#128276;</span></a> {# Icono de Campana #}
+                {% if user.is_authenticated %}
+                    {# Mensajes Privados (solo para usuarios registrados) #}
+                    <a href="{% url 'usuarios:mensajes_privados' %}" class="nav-icon-link nav-messages-link {% if unread_messages_count > 0 %}unread-messages{% endif %}">
+                        <span class="nav-icon">&#128232;</span> {# Icono de Sobre #}
+                        {% if unread_messages_count > 0 %}
+                            <span class="badge">{{ unread_messages_count }}</span>
+                        {% endif %}
+                    </a>
+                {% endif %}
+
+                {# Campanita de Notificaciones #}
+                <a href="#" class="nav-icon-link nav-notifications-link">
+                    <span class="nav-icon">&#128276;</span> {# Icono de Campana #}
+                    {% if notifications_count > 0 %}
+                        <span class="badge">{{ notifications_count }}</span>
+                    {% endif %}
+                </a>
+
                 {% if user.is_authenticated %}
                     <div class="dropdown user-profile-dropdown-new">
                         {# Botón con la imagen del avatar del usuario #}
                         <button id="profileDropdownBtn" class="dropdown-btn-new">
-                            <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}" 
+                            <img src="{% if user.perfil.avatar %}{{ user.perfil.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}" 
                                  alt="Avatar de {{ user.username }}" 
-                                 class="avatar-image"> {# Asegurarme de que default_avatar.png exista en static/img/ #}
+                                 class="avatar-image">
                         </button>
                         <div id="profileDropdownMenu" class="dropdown-menu-new">
-                            {# Menú desplegable actualizado #}
+                            <a href="{% url 'usuarios:ver_perfil' %}" class="dropdown-item-new">Mi Perfil</a>
                             <a href="{% url 'usuarios:editar_perfil' %}" class="dropdown-item-new">Editar Perfil</a>
                             <a href="{% url 'usuarios:seguridad_perfil' %}" class="dropdown-item-new">Seguridad</a>
                             <a href="{% url 'usuarios:favoritos_perfil' %}" class="dropdown-item-new">Mis Favoritos</a> 
@@ -61,18 +76,17 @@
     <!-- Sección Hero (Banner con Slides) -->
     <section class="hero-section">
         <div class="hero-overlay">
-            {# El título "El Recetario" se ha movido o eliminado de aquí, ahora cada slide maneja su contenido #}
             
             <div class="hero-content-slider"> {# Contenedor para los diferentes slides de contenido #}
                 {# Slide 1: Buscador #}
                 <div id="slide-search" class="hero-slide active-slide" data-background-image="{% static 'img/paella_banner.jpg' %}">
-                    <h1 class="hero-title">El Recetario</h1> {# Título solo para el slide de búsqueda #}
+                    <h1 class="hero-title">El Recetario</h1>
                     <div class="hero-search-container">
                         <form action="/buscar/" method="GET" class="hero-search-form">
                             <input type="text" name="q" placeholder="Buscar recetas..." 
                                 class="hero-search-input"
                                 value="{{ request.GET.q|default:'' }}">
-                            <button type="submit" class="hero-search-button">&#128269;</button> {# Icono de Lupa #}
+                            <button type="submit" class="hero-search-button">&#128269;</button>
                         </form>
                     </div>
                 </div>
@@ -81,14 +95,12 @@
                 <div id="slide-daily-recipe" class="hero-slide clickable-slide" data-background-image="{% static 'img/daily_recipe_banner.jpg' %}" onclick="window.location.href='/receta/123/'">
                     <h2 class="slide-title">Receta del Día</h2>
                     <p class="slide-description">Descubre nuestra deliciosa receta destacada para hoy. ¡No te la pierdas!</p>
-                    {# Botón eliminado, todo el slide es clicable #}
                 </div>
 
                 {# Slide 3: Recetas Populares - Clicable en toda el área #}
                 <div id="slide-popular-recipes" class="hero-slide clickable-slide" data-background-image="{% static 'img/popular_recipes_banner.jpg' %}" onclick="window.location.href='/recetas/populares/'">
                     <h2 class="slide-title">Recetas Populares</h2>
                     <p class="slide-description">Explora las recetas más votadas y comentadas por nuestra comunidad.</p>
-                    {# Botón eliminado, todo el slide es clicable #}
                 </div>
             </div>
 

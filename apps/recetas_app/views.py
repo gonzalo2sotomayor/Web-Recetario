@@ -3,7 +3,7 @@ from django.http import HttpResponse # Importar HttpResponse si se usa para depu
 from django.contrib.auth.decorators import login_required
 from .models import Receta, Ingrediente, Paso, Comentario # Importar Comentario
 from .forms import ComentarioForm # Importar ComentarioForm
-
+import random
 
 # Vista para la página de inicio (Home)
 def home(request):
@@ -54,6 +54,26 @@ def detalle_receta(request, pk):
         'es_favorita': es_favorita, # Pasar si es favorita para el template
     }
     return render(request, 'recetas_app/detalle_receta.html', context)
+
+# Vista: Receta al azar (Descubre)
+def recetas_aleatorias(request):
+    # Obtener un ID de receta al azar
+    recetas_ids = list(Receta.objects.values_list('id', flat=True))
+    if recetas_ids:
+        random_id = random.choice(recetas_ids)
+        return redirect('recetas_app:detalle_receta', pk=random_id)
+    else:
+        return redirect('recetas_app:home') # O a una página de "no hay recetas"
+
+# Vista para el formulario de búsqueda avanzada (placeholder)
+def advanced_search_view(request):
+    # Aquí irá el formulario de búsqueda avanzada
+    return render(request, 'recetas_app/advanced_search.html', {})
+
+# Vista para procesar los resultados de la búsqueda avanzada (placeholder)
+def advanced_search_results_view(request):
+    # Aquí irá la lógica para mostrar los resultados de la búsqueda avanzada
+    return render(request, 'recetas_app/advanced_search_results.html', {})
 
 # Vista para la búsqueda simple (desde la barra de navegación principal)
 def simple_search_view(request):
