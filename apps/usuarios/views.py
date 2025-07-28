@@ -6,10 +6,12 @@ from django.contrib.auth import login
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
 from django.contrib.auth import update_session_auth_hash
-from django.db.models import Q # Importar Q para consultas complejas
+from django.db.models import Q 
+from django.contrib.auth.models import User 
+
 from .forms import UserUpdateForm, PerfilUpdateForm, SeguridadPerfilForm, CategoriaFavoritaForm, MensajeForm
-from .models import Perfil, CategoriaFavorita, RecetaFavorita, Mensaje
-from apps.recetas_app.models import Receta, Comentario
+from .models import Perfil, CategoriaFavorita, Mensaje
+from apps.recetas_app.models import Receta, Comentario, RecetaFavorita
 
 def registro(request):
     if request.method == 'POST':
@@ -252,4 +254,3 @@ def add_to_category(request, receta_pk):
             receta_favorita.save()
             # Recordarme: Añadir mensaje de éxito
     return redirect('recetas_app:detalle_receta', pk=receta_pk)
-

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Perfil, CategoriaFavorita, RecetaFavorita, Mensaje
+from apps.recetas_app.models import RecetaFavorita
+from .models import Perfil, CategoriaFavorita, Mensaje
 
 admin.site.register(Perfil)
 admin.site.register(CategoriaFavorita)

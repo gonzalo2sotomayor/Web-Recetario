@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.auth.models import User # Importamos el modelo User de Django
 from django.contrib.auth.forms import UserCreationForm 
-from .models import Perfil, CategoriaFavorita, Mensaje # Importamos nuestro modelo Perfil, categoría favorita y receta favorita
+from .models import Perfil, CategoriaFavorita, Mensaje 
 
 # Formulario de Registro Personalizado
 class RegistroForm(UserCreationForm):

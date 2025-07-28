@@ -12,7 +12,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 SECRET_KEY = 'django-insecure-&vznf9d1ub9b7!@ecs)&s+em1z%hwn9+nkqqvsge$+j%q$xf@k'
 
-# AUTH_USER_MODEL = 'usuarios.Usuario' # <--- ¡Esta línea ha sido eliminada!
+DEBUG = True
+
+ALLOWED_HOSTS = ['*']
+
 LOGIN_REDIRECT_URL = reverse_lazy('recetas_app:home')
 LOGOUT_REDIRECT_URL = reverse_lazy('recetas_app:home')
 LOGIN_URL = reverse_lazy('usuarios:login')
@@ -24,9 +27,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.recetas_app', # Ruta completa
-    'apps.usuarios',    # Ruta completa
-]
+    'apps.recetas_app.apps.RecetasAppConfig',
+    'apps.usuarios.apps.UsuariosAppConfig',
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -38,15 +41,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'apps.blog.urls' # Ruta completa
+ROOT_URLCONF = 'apps.blog.urls' 
+WSGI_APPLICATION = 'apps.blog.wsgi.application'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR / 'templates',
-            BASE_DIR / 'templates' / 'recetas_app', # Apunta a blog-base/templates/recetas_app/
-            BASE_DIR / 'templates' / 'usuarios',    # Apunta a blog-base/templates/usuarios/
+            BASE_DIR / 'templates' / 'recetas_app',
+            BASE_DIR / 'templates' / 'usuarios',
         ], 
         'APP_DIRS': True,
         'OPTIONS': {
@@ -61,8 +65,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'apps.blog.wsgi.application' # Ruta completa
-
 LANGUAGE_CODE = 'es-ar'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -71,8 +73,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static', # Apunta a blog-base/static/
+    BASE_DIR / 'static',
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

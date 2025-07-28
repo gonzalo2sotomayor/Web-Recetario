@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crear Nueva Receta - El Recetario{% endblock title %}
+
+{% block content %}
+<div class="main-content-new">
+    <h2 class="section-title">Crear Nueva Receta</h2>
+    <div class="form-container">
+        <p class="form-description">Completa los detalles de tu receta, añade ingredientes y los pasos.</p>
+
+        <form method="post" enctype="multipart/form-data"> {# Importante: enctype para subir archivos (imágenes) #}
+            {% csrf_token %}
+
+            {# Formulario de la Receta Principal #}
+            <h3>Información de la Receta</h3>
+            {{ receta_form.as_p }}
+
+            {# Formset para Ingredientes #}
+            <h3>Ingredientes</h3>
+            <div id="ingredientes-form-container">
+                {{ ingrediente_formset.management_form }} {# Campos ocultos necesarios para el formset #}
+                {% for form in ingrediente_formset %}
+                    <div class="formset-item">
+                        {% for hidden_field in form.hidden_fields %}{{ hidden_field }}{% endfor %}
+                        {{ form.id }} {# Campo ID oculto para elementos existentes #}
+                        <div class="formset-fields">
+                            {{ form.nombre.label_tag }} {{ form.nombre }}
+                            {{ form.cantidad.label_tag }} {{ form.cantidad }}
+                            {{ form.unidad.label_tag }} {{ form.unidad }}
+                            {% if form.instance.pk %}{{ form.DELETE.label_tag }} {{ form.DELETE }}{% endif %} {# Checkbox para eliminar #}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="add-ingrediente" class="button-secondary add-item-button">Añadir Ingrediente</button>
+
+            {# Formset para Pasos #}
+            <h3>Pasos</h3>
+            <div id="pasos-form-container">
+                {{ paso_formset.management_form }} {# Campos ocultos necesarios para el formset #}
+                {% for form in paso_formset %}
+                    <div class="formset-item">
+                        {% for hidden_field in form.hidden_fields %}{{ hidden_field }}{% endfor %}
+                        {{ form.id }} {# Campo ID oculto para elementos existentes #}
+                        <div class="formset-fields">
+                            {{ form.orden.label_tag }} {{ form.orden }}
+                            {{ form.descripcion.label_tag }} {{ form.descripcion }}
+                            {% if form.instance.pk %}{{ form.DELETE.label_tag }} {{ form.DELETE }}{% endif %} {# Checkbox para eliminar #}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="add-paso" class="button-secondary add-item-button">Añadir Paso</button>
+
+            <button type="submit" class="button-primary submit-recipe-button">Crear Receta</button>
+        </form>
+    </div>
+</div>
+
+{# JavaScript para añadir/eliminar campos de formset dinámicamente #}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> {# jQuery es útil para formsets dinámicos #}
+<script src="{% static 'js/jquery.formset.js' %}"></script> {# Este archivo lo crearemos a continuación #}
+
+<script>
+    $(function() {
+        $('#ingredientes-form-container').formset({
+            addText: 'Añadir otro Ingrediente',
+            deleteText: 'Eliminar',
+            prefix: 'ingredientes',
+            added: function (row) {
+                // Limpiar los campos del nuevo formulario
+                $(row).find('input[type="text"], input[type="number"], textarea').val('');
+                // Asegurar que el checkbox DELETE esté desmarcado
+                $(row).find('input[type="checkbox"]').prop('checked', false);
+            }
+        });
+
+        $('#pasos-form-container').formset({
+            addText: 'Añadir otro Paso',
+            deleteText: 'Eliminar',
+            prefix: 'pasos',
+            added: function (row) {
+                // Limpiar los campos del nuevo formulario
+                $(row).find('input[type="text"], input[type="number"], textarea').val('');
+                // Asegurar que el checkbox DELETE esté desmarcado
+                $(row).find('input[type="checkbox"]').prop('checked', false);
+            }
+        });
+    })
+</script>
+
+{% endblock content %}

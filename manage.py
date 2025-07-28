@@ -6,7 +6,8 @@ import sys
 def main():
     """Run administrative tasks."""
     # Añade la raíz del proyecto al sys.path para que Python encuentre 'apps'
-    sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+    #sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+    sys.path.append(os.path.join(os.path.dirname(__file__), 'apps'))
 
     # Define la ruta a tu archivo de configuración de Django
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'apps.blog.settings.local')

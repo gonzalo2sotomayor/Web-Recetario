@@ -1,3 +1,4 @@
+# blog-base/apps/recetas_app/models.py
 from django.db import models
 from django.contrib.auth.models import User # Importamos el modelo User de Django
 
@@ -7,6 +8,7 @@ class Receta(models.Model):
     fecha_publicacion = models.DateTimeField(auto_now_add=True)
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
     imagen = models.ImageField(upload_to='recetas_imagenes/', null=True, blank=True)
+    tipo = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return self.titulo
@@ -51,3 +53,24 @@ class Comentario(models.Model):
 
     def __str__(self):
         return f'Comentario de {self.autor.username} en {self.receta.titulo}'
+    
+# Modelo para las recetas favoritas de un usuario
+class RecetaFavorita(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recetas_favoritas')
+    receta = models.ForeignKey('Receta', on_delete=models.CASCADE) # Relación con el modelo Receta
+    categoria = models.ForeignKey(
+        'usuarios.CategoriaFavorita', 
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='recetas'
+    )
+    fecha_agregado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Receta Favorita"
+        verbose_name_plural = "Recetas Favoritas"
+        unique_together = ('user', 'receta')
+
+    def __str__(self):
+        return f"{self.receta.titulo} - {self.user.username}"
