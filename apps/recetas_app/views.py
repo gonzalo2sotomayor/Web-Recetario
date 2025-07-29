@@ -55,7 +55,7 @@ def home(request):
 def detalle_receta(request, pk):
     receta = get_object_or_404(Receta, pk=pk)
     
-    # --- INICIO DE CÓDIGO DE DEPURACIÓN (Mantener si es útil, sino se puede quitar) ---
+    # --- INICIO DE CÓDIGO DE DEPURACIÓN ---
     print(f"\n--- Depuración para Receta ID: {receta.pk} ---")
     print(f"Título de la receta: {receta.titulo}")
     print(f"Número de ingredientes relacionados: {receta.ingredientes.count()}")
@@ -64,7 +64,7 @@ def detalle_receta(request, pk):
     
     print(f"Número de pasos relacionados: {receta.pasos.count()}")
     for i, paso in enumerate(receta.pasos.all()):
-        print(f"  Paso {i+1}: Orden {paso.orden}, Descripción: {paso.descripcion[:30]}...")
+        print(f"  Paso {i+1}: Título: {paso.titulo}, Descripción: {paso.descripcion[:30]}...")
     print("---------------------------------------\n")
     # --- FIN DE CÓDIGO DE DEPURACIÓN ---
 
@@ -188,7 +188,7 @@ def crear_receta(request):
         ingrediente_formset = IngredienteFormSet(request.POST, prefix='ingredientes')
         paso_formset = PasoFormSet(request.POST, prefix='pasos')
 
-        # --- INICIO DE DEPURACIÓN DE FORMSETS EN VIEWS.PY ---
+# --- INICIO DE DEPURACIÓN DE FORMSETS EN VIEWS.PY ---
         print("\n--- Depuración de Formsets en crear_receta (POST) ---")
         print(f"Receta Formulario es válido: {receta_form.is_valid()}")
         print(f"Ingrediente Formset es válido: {ingrediente_formset.is_valid()}")
@@ -218,7 +218,8 @@ def crear_receta(request):
             print("Paso Formset - Cleaned Data:")
             for i, form in enumerate(paso_formset):
                 if form.cleaned_data:
-                    print(f"  Formulario Paso {i}: {form.cleaned_data}")
+                    # CAMBIO AQUÍ: 'orden' se cambia a 'titulo'
+                    print(f"  Formulario Paso {i}: {{'titulo': {form.cleaned_data.get('titulo')}, 'descripcion': {form.cleaned_data.get('descripcion')}}}")
         print("---------------------------------------------------\n")
         # --- FIN DE DEPURACIÓN DE FORMSETS EN VIEWS.PY ---
 
@@ -270,7 +271,7 @@ def editar_receta(request, pk):
         ingrediente_formset = IngredienteFormSet(request.POST, instance=receta, prefix='ingredientes')
         paso_formset = PasoFormSet(request.POST, instance=receta, prefix='pasos')
 
-        # --- INICIO DE DEPURACIÓN DE FORMSETS EN VIEWS.PY (Editar) ---
+    # --- INICIO DE DEPURACIÓN DE FORMSETS EN VIEWS.PY (Editar) ---
         print("\n--- Depuración de Formsets en editar_receta (POST) ---")
         print(f"Receta Formulario es válido: {receta_form.is_valid()}")
         print(f"Ingrediente Formset es válido: {ingrediente_formset.is_valid()}")
@@ -300,10 +301,10 @@ def editar_receta(request, pk):
             print("Paso Formset - Cleaned Data (Editar):")
             for i, form in enumerate(paso_formset):
                 if form.cleaned_data:
-                    print(f"  Formulario Paso {i}: {form.cleaned_data}")
+                    # CAMBIO AQUÍ: 'orden' se cambia a 'titulo'
+                    print(f"  Formulario Paso {i}: {{'titulo': {form.cleaned_data.get('titulo')}, 'descripcion': {form.cleaned_data.get('descripcion')}}}")
         print("---------------------------------------------------\n")
         # --- FIN DE DEPURACIÓN DE FORMSETS EN VIEWS.PY (Editar) ---
-
 
         if receta_form.is_valid() and ingrediente_formset.is_valid() and paso_formset.is_valid():
             try:
@@ -500,7 +501,7 @@ def previsualizar_receta(request):
                 else:
                     # Incluir datos y errores para depuración en la previsualización
                     data_with_errors = {
-                        'orden': form_paso.data.get(form_paso.add_prefix('orden'), ''),
+                        'titulo': form_paso.data.get(form_paso.add_prefix('titulo'), ''),
                         'descripcion': form_paso.data.get(form_paso.add_prefix('descripcion'), ''),
                         'errors': form_paso.errors
                     }

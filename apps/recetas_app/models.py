@@ -43,9 +43,7 @@ class Receta(models.Model):
 
 class Ingrediente(models.Model):
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE, related_name='ingredientes')
-    # ¡IMPORTANTE! Cambiado de DecimalField a CharField para permitir texto como "2 tazas"
     cantidad = models.CharField(max_length=50) 
-    # Añadido blank=True, null=True para permitir unidades opcionales
     unidad = models.CharField(max_length=50, blank=True, null=True) 
     nombre = models.CharField(max_length=100) # Nombre movido al final para consistencia
 
@@ -56,17 +54,17 @@ class Ingrediente(models.Model):
         return f"{self.cantidad} de {self.nombre}"
 
 
+# Modelo para Pasos de una Receta
 class Paso(models.Model):
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE, related_name='pasos')
-    orden = models.PositiveIntegerField()
+    titulo = models.CharField(max_length=200, help_text="Ej: Preparación de la salsa, Cocción de la pasta")
     descripcion = models.TextField()
-
     class Meta:
-        ordering = ['orden'] # Asegura que los pasos se ordenen correctamente
-
+        ordering = ['id'] # Mantiene el orden de creación si no hay un campo de orden explícito
+        verbose_name_plural = "Pasos"
     def __str__(self):
-        return f"Paso {self.orden}: {self.descripcion[:50]}..." # Ajustado para mostrar una parte de la descripción
-
+        return f"{self.titulo} ({self.receta.titulo[:20]}...)"
+    
 #Modelo de Comentario
 class Comentario(models.Model):
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE, related_name='comentarios')

@@ -107,9 +107,9 @@
                                 {{ hidden_field }}
                             {% endfor %}
                             <div class="form-field small-field">
-                                {{ form_paso.orden.label_tag }}
-                                {{ form_paso.orden }}
-                                {% if form_paso.orden.errors %}<div class="error-message">{{ form_paso.orden.errors }}</div>{% endif %}
+                                {{ form_paso.titulo.label_tag }} {# CAMBIO AQUÍ: de 'orden' a 'titulo' #}
+                                {{ form_paso.titulo }} {# CAMBIO AQUÍ: de 'orden' a 'titulo' #}
+                                {% if form_paso.titulo.errors %}<div class="error-message">{{ form_paso.titulo.errors }}</div>{% endif %} {# CAMBIO AQUÍ #}
                             </div>
                             <div class="form-field large-field">
                                 {{ form_paso.descripcion.label_tag }}
@@ -358,12 +358,12 @@
             });
 
             visiblePasos.forEach((item, index) => {
-                // Usar el índice dinámico para buscar los elementos
-                const ordenInput = item.querySelector(`input[name^="pasos-"][name$="-orden"]`);
+                // CAMBIO AQUÍ: de 'ordenInput' a 'tituloInput'
+                const tituloInput = item.querySelector(`input[name^="pasos-"][name$="-titulo"]`);
                 const descripcionInput = item.querySelector(`textarea[name^="pasos-"][name$="-descripcion"]`);
-                if (!ordenInput || !ordenInput.value.trim() || !descripcionInput || !descripcionInput.value.trim()) {
+                if (!tituloInput || !tituloInput.value.trim() || !descripcionInput || !descripcionInput.value.trim()) {
                     isValid = false;
-                    showMessageModal('Error de Validación', 'Todos los campos de orden y descripción de los pasos deben estar llenos.', 'error');
+                    showMessageModal('Error de Validación', 'Todos los campos de nombre y descripción de los pasos deben estar llenos.', 'error');
                 }
             });
 

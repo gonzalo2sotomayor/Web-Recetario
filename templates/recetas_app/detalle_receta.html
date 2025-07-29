@@ -12,7 +12,7 @@
             <span class="recipe-author">Por: {{ receta.autor.username }}</span>
             <span class="recipe-date">Publicado el: {{ receta.fecha_publicacion|date:"d M Y" }}</span>
             {% if receta.categoria %}
-                <span class="recipe-category">Categoría: {{ receta.categoria.nombre }}</span>
+                <span class="recipe-category">Categoría: <a href="{% url 'recetas_app:recetas_por_categoria' receta.categoria.slug %}" class="category-link">{{ receta.categoria.nombre }}</a></span>
             {% endif %}
             {% if receta.tiempo_preparacion %}
                 <span class="recipe-info-item">Preparación: {{ receta.tiempo_preparacion }} min</span>
@@ -74,7 +74,8 @@
                 <h3>Instrucciones</h3>
                 <ol>
                     {% for paso in receta.pasos.all %}
-                        <li>{{ paso.orden }}. {{ paso.descripcion }}</li>
+                        {# Eliminamos {{ forloop.counter }}. para evitar la doble numeración #}
+                        <li>{{ paso.titulo }}: {{ paso.descripcion }}</li>
                     {% empty %}
                         <li>No se han añadido instrucciones.</li>
                     {% endfor %}
@@ -91,7 +92,8 @@
                     <h4>Deja tu comentario:</h4>
                     <form method="post" action="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
                         {% csrf_token %}
-                        {{ form.texto }}
+                        {# Usar 'contenido' en lugar de 'texto' para que coincida con el modelo Comentario #}
+                        {{ form.contenido }} 
                         {{ form.respuesta_a }}
                         <button type="submit" class="button-primary comment-submit-button">Publicar Comentario</button>
                     </form>
@@ -110,7 +112,8 @@
                                 <span class="comment-author">{{ comentario.autor.username }}</span>
                                 <span class="comment-date">{{ comentario.fecha_creacion|date:"d M Y H:i" }}</span>
                             </div>
-                            <p class="comment-text-content">{{ comentario.texto }}</p>
+                            {# Usar 'contenido' en lugar de 'texto' #}
+                            <p class="comment-text-content">{{ comentario.contenido }}</p>
                             
                             {% if user.is_authenticated %}
                                 <button class="button-secondary reply-button" data-comment-id="{{ comentario.pk }}">Responder</button>
@@ -119,10 +122,12 @@
                             {% if user.is_authenticated %}
                                 <div class="reply-form-container" id="reply-form-{{ comentario.pk }}" style="display: none;">
                                     <h4>Responder a {{ comentario.autor.username }}:</h4>
-                                    <form method="post" action="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
+                                    {# La acción del formulario de respuesta apunta a la vista 'responder_comentario' #}
+                                    <form method="post" action="{% url 'recetas_app:responder_comentario' comentario.pk %}">
                                         {% csrf_token %}
-                                        {{ form.texto.label_tag }}
-                                        {{ form.texto }}
+                                        {# Usar 'contenido' en lugar de 'texto' #}
+                                        {{ form.contenido.label_tag }}
+                                        {{ form.contenido }}
                                         <input type="hidden" name="respuesta_a" value="{{ comentario.pk }}">
                                         <button type="submit" class="button-primary comment-submit-button">Publicar Respuesta</button>
                                         <button type="button" class="button-secondary cancel-reply-button">Cancelar</button>
@@ -138,7 +143,8 @@
                                                 <span class="comment-author">{{ respuesta.autor.username }}</span>
                                                 <span class="comment-date">{{ respuesta.fecha_creacion|date:"d M Y H:i" }}</span>
                                             </div>
-                                            <p class="comment-text-content">{{ respuesta.texto }}</p>
+                                            {# Usar 'contenido' en lugar de 'texto' #}
+                                            <p class="comment-text-content">{{ respuesta.contenido }}</p>
                                         </li>
                                     {% endfor %}
                                 </ul>

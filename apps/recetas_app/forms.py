@@ -64,14 +64,19 @@ IngredienteFormSet = inlineformset_factory(
 PasoFormSet = inlineformset_factory(
     Receta, 
     Paso, 
-    fields=['orden', 'descripcion'],
+    fields=['titulo', 'descripcion'],
     extra=1, 
     can_delete=True, 
     max_num=None, # Permitir un número ilimitado de formularios
     min_num=0,    # Permitir 0 formularios si no hay pasos
     widgets={
-        'orden': forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Ej: 1'}),
+        # CAMBIO AQUÍ: 'orden' se cambia a 'titulo' y es TextInput
+        'titulo': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej: Preparación de la masa'}),
         'descripcion': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 3, 'placeholder': 'Describe este paso...'}),
+    },
+    labels={
+        # CAMBIO AQUÍ: Etiqueta para el nuevo campo 'titulo'
+        'titulo': 'Nombre del Paso',
     }
 )
 
