@@ -11,7 +11,6 @@
         <div class="recipe-header-info">
             <span class="recipe-author">Por: {{ receta.autor.username }}</span>
             <span class="recipe-date">Publicado el: {{ receta.fecha_publicacion|date:"d M Y" }}</span>
-            {# NEW! Display the recipe category #}
             {% if receta.categoria %}
                 <span class="recipe-category">Categoría: {{ receta.categoria.nombre }}</span>
             {% endif %}
@@ -23,11 +22,11 @@
             <img src="{% static 'img/default_recipe.png' %}" alt="Imagen por defecto" class="recipe-detail-image">
         {% endif %}
 
-        {# Button to add/remove from favorites #}
+        {# Botón para añadir/eliminar de favoritos #}
         {% if user.is_authenticated %}
             <form action="{% url 'usuarios:toggle_favorito' receta_pk=receta.pk %}" method="post" class="favorite-form">
                 {% csrf_token %}
-                {% if es_favorita %} {# Use the 'es_favorita' variable from the context #}
+                {% if es_favorita %} {# Usamos la variable 'es_favorita' del contexto #}
                     <button type="submit" class="button-secondary favorite-button favorited">
                         &#9733; Quitar de Favoritos
                     </button>
@@ -37,11 +36,17 @@
                     </button>
                 {% endif %}
             </form>
-            {# Link for admin to edit the recipe #}
-            {% if user.is_staff %}
-                <a href="{% url 'recetas_app:editar_receta' pk=receta.pk %}" class="button-primary edit-recipe-button">
-                    Editar Receta
-                </a>
+            {# Enlaces de administración para la receta (Editar y Eliminar) #}
+            {% if user.is_authenticated and user.is_staff %}
+                <div class="admin-recipe-actions">
+                    <a href="{% url 'recetas_app:editar_receta' pk=receta.pk %}" class="button-primary edit-recipe-button">
+                        Editar Receta
+                    </a>
+                    {# NEW! Botón para eliminar la receta #}
+                    <a href="{% url 'recetas_app:eliminar_receta' pk=receta.pk %}" class="button-danger delete-recipe-button">
+                        Eliminar Receta
+                    </a>
+                </div>
             {% endif %}
         {% endif %}
 
@@ -70,11 +75,11 @@
             </div>
         </div>
 
-        {# Comments Section #}
+        {# Sección de Comentarios #}
         <div class="comments-section">
             <h3>Comentarios ({{ comentarios_principales.count }})</h3>
 
-            {# Form to leave a main comment #}
+            {# Formulario para dejar un comentario principal #}
             {% if user.is_authenticated %}
                 <div class="comment-form-container">
                     <h4>Deja tu comentario:</h4>
@@ -91,7 +96,7 @@
                 </p>
             {% endif %}
 
-            {# Comments list #}
+            {# Listado de comentarios #}
             {% if comentarios_principales %}
                 <ul class="comments-list">
                     {% for comentario in comentarios_principales %}
@@ -102,12 +107,12 @@
                             </div>
                             <p class="comment-text-content">{{ comentario.texto }}</p>
                             
-                            {# Reply button #}
+                            {# Botón para responder #}
                             {% if user.is_authenticated %}
                                 <button class="button-secondary reply-button" data-comment-id="{{ comentario.pk }}">Responder</button>
                             {% endif %}
 
-                            {# Reply form (hidden by default) #}
+                            {# Formulario de respuesta (oculto por defecto) #}
                             {% if user.is_authenticated %}
                                 <div class="reply-form-container" id="reply-form-{{ comentario.pk }}" style="display: none;">
                                     <h4>Responder a {{ comentario.autor.username }}:</h4>
@@ -122,7 +127,7 @@
                                 </div>
                             {% endif %}
 
-                            {# Replies to this comment #}
+                            {# Respuestas a este comentario #}
                             {% if comentario.respuestas.all %}
                                 <ul class="replies-list">
                                     {% for respuesta in comentario.respuestas.all %}
@@ -146,7 +151,7 @@
     </div>
 </div>
 
-{# JavaScript for reply functionality #}
+{# JavaScript para la funcionalidad de responder #}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const replyButtons = document.querySelectorAll('.reply-button');

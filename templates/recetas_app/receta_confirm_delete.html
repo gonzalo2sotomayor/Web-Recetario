@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Eliminación de Receta{% endblock %}
+
+{% block content %}
+<div class="container confirm-page-container">
+    <h1 class="section-title">Eliminar Receta</h1>
+
+    <div class="confirm-card">
+        <p class="confirm-message">
+            ¿Estás seguro de que quieres eliminar la receta "<strong class="highlight-text">{{ receta.titulo }}</strong>"?
+        </p>
+        <p class="warning-message">
+            ¡Esta acción es irreversible! Se eliminarán todos los ingredientes, pasos y comentarios asociados a esta receta.
+        </p>
+
+        <form method="post" class="form-actions">
+            {% csrf_token %}
+            <a href="{% url 'recetas_app:detalle_receta' pk=receta.pk %}" class="button button-secondary">
+                Cancelar
+            </a>
+            <button type="submit" class="button button-danger">
+                Confirmar Eliminación
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

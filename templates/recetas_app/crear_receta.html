@@ -1,90 +1,558 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Crear Nueva Receta - El Recetario{% endblock %}
-
-{% block content %}
-<div class="main-content-new">
-    <h2 class="section-title">Crear Nueva Receta</h2>
-    <div class="form-container">
-        <p class="form-description">Completa los detalles de tu receta, añade ingredientes y los pasos.</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Nueva Receta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+        }
+        .form-group label {
+            font-weight: 600; /* font-semibold */
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group select,
+        .form-group input[type="number"], /* Añadido para campos numéricos */
+        .form-group input[type="file"] /* Añadido para campos de archivo */
+        {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            border-radius: 0.5rem; /* rounded-lg */
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        .btn-primary {
+            background-color: #3b82f6; /* bg-blue-500 */
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb; /* bg-blue-600 */
+        }
+        .btn-secondary {
+            background-color: #6b7280; /* bg-gray-500 */
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563; /* bg-gray-600 */
+        }
+        .add-button {
+            background-color: #10b981; /* bg-green-500 */
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+        .add-button:hover {
+            background-color: #059669; /* bg-green-600 */
+        }
+        .remove-button {
+            background-color: #ef4444; /* bg-red-500 */
+            color: #fff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem; /* rounded-md */
+            font-weight: 500;
+            transition: background-color 0.2s;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            font-size: 0.875rem;
+        }
+        .remove-button:hover {
+            background-color: #dc2626; /* bg-red-600 */
+        }
+        .preview-list {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: #f9fafb; /* bg-gray-50 */
+            border: 1px solid #e5e7eb; /* border-gray-200 */
+            border-radius: 0.5rem;
+        }
+        .preview-list-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #e5e7eb;
+        }
+        .preview-list-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center mb-6">Crear Nueva Receta</h1>
 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <h3>Información de la Receta</h3>
-            {{ receta_form.as_p }}
+            {# DEBUG: Comprueba si el objeto 'form' está disponible en el contexto #}
+            {% if form %}
+                <!-- El objeto 'form' está disponible. Si los campos no se muestran, revisa tu forms.py para asegurarte de que los campos están definidos correctamente. -->
+            {% else %}
+                <p style="color: red; font-weight: bold; padding: 1rem; border: 1px solid red; border-radius: 0.5rem; margin-bottom: 1rem;">
+                    Error: El objeto 'form' no está disponible en la plantilla. Por favor, verifica tu 'views.py' para asegurarte de que estás pasando el formulario al contexto.
+                </p>
+            {% endif %}
 
-            <h3>Ingredientes</h3>
-            <div id="ingredientes-form-container">
-                {{ ingrediente_formset.management_form }}
-                {% for form in ingrediente_formset %}
-                    <div class="formset-item">
-                        {% for hidden_field in form.hidden_fields %}{{ hidden_field }}{% endfor %}
-                        {{ form.id }}
-                        <div class="formset-fields">
-                            {{ form.nombre.label_tag }} {{ form.nombre }}
-                            {{ form.cantidad.label_tag }} {{ form.cantidad }}
-                            {{ form.unidad.label_tag }} {{ form.unidad }}
-                            {% if form.instance.pk %}{{ form.DELETE.label_tag }} {{ form.DELETE }}{% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
+            <div class="form-group mb-4">
+                <label for="id_titulo">Título:</label>
+                {{ form.titulo }}
             </div>
-            <button type="button" id="add-ingrediente" class="button-secondary add-item-button">Añadir Ingrediente</button>
 
-            <h3>Pasos</h3>
-            <div id="pasos-form-container">
-                {{ paso_formset.management_form }}
-                {% for form in paso_formset %}
-                    <div class="formset-item">
-                        {% for hidden_field in form.hidden_fields %}{{ hidden_field }}{% endfor %}
-                        {{ form.id }}
-                        <div class="formset-fields">
-                            {{ form.orden.label_tag }} {{ form.orden }}
-                            {{ form.descripcion.label_tag }} {{ form.descripcion }}
-                            {% if form.instance.pk %}{{ form.DELETE.label_tag }} {{ form.DELETE }}{% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
+            <div class="form-group mb-4">
+                <label for="id_descripcion">Descripción:</label>
+                {{ form.descripcion }}
             </div>
-            <button type="button" id="add-paso" class="button-secondary add-item-button">Añadir Paso</button>
 
-            <button type="submit" class="button-primary submit-recipe-button">Crear Receta</button>
+            <div class="form-group mb-4">
+                <label for="id_tiempo_preparacion">Tiempo de Preparación (minutos):</label>
+                {{ form.tiempo_preparacion }}
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="id_tiempo_coccion">Tiempo de Cocción (minutos):</label>
+                {{ form.tiempo_coccion }}
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="id_porciones">Porciones:</label>
+                {{ form.porciones }}
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="id_categoria">Categoría:</label>
+                {{ form.categoria }}
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="id_imagen">Imagen:</label>
+                {{ form.imagen }}
+            </div>
+
+            <h2 class="text-2xl font-semibold mt-6 mb-4">Ingredientes</h2>
+            <div id="ingredientes-formset">
+                {{ formset_ingredientes.management_form }}
+                <div id="ingredientes-container">
+                    {% for form_ingrediente in formset_ingredientes %}
+                        <div class="ingrediente-item mb-2 p-3 border border-gray-200 rounded-lg flex items-center justify-between">
+                            {# Renderiza el formulario de ingrediente. Esto incluye los campos de nombre, cantidad y unidad. #}
+                            {{ form_ingrediente.as_p }}
+                            {% if form_ingrediente.instance.pk %}
+                                {# Si el ingrediente ya existe (tiene una PK), muestra el botón de eliminar #}
+                                <button type="button" class="remove-button" data-form-id="{{ form_ingrediente.prefix }}">Eliminar</button>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="button" id="add-ingrediente" class="add-button">Añadir Ingrediente</button>
+            </div>
+            <div class="preview-list mt-4">
+                <h3 class="font-semibold text-lg mb-2">Ingredientes actuales:</h3>
+                <ul id="ingredientes-preview">
+                    <!-- Los ingredientes añadidos dinámicamente aparecerán aquí -->
+                </ul>
+            </div>
+
+            <h2 class="text-2xl font-semibold mt-6 mb-4">Pasos</h2>
+            <div id="pasos-formset">
+                {{ formset_pasos.management_form }}
+                <div id="pasos-container">
+                    {% for form_paso in formset_pasos %}
+                        <div class="paso-item mb-2 p-3 border border-gray-200 rounded-lg flex items-center justify-between">
+                            {# Renderiza el formulario de paso. Esto incluye el campo de descripción. #}
+                            {{ form_paso.as_p }}
+                            {% if form_paso.instance.pk %}
+                                {# Si el paso ya existe (tiene una PK), muestra el botón de eliminar #}
+                                <button type="button" class="remove-button" data-form-id="{{ form_paso.prefix }}">Eliminar</button>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="button" id="add-paso" class="add-button">Añadir Paso</button>
+            </div>
+            <div class="preview-list mt-4">
+                <h3 class="font-semibold text-lg mb-2">Pasos actuales:</h3>
+                <ol id="pasos-preview">
+                    <!-- Los pasos añadidos dinámicamente aparecerán aquí -->
+                </ol>
+            </div>
+
+            <div class="flex justify-end space-x-4 mt-8">
+                <button type="submit" class="btn-primary">Guardar Receta</button>
+                <a href="{% url 'recetas_app:home' %}" class="btn-secondary">Cancelar</a>
+            </div>
         </form>
     </div>
-</div>
 
-{# JavaScript para añadir/eliminar campos de formset dinámicamente #}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="{% static 'js/jquery.formset.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Funcionalidad para ingredientes ---
+            const addIngredienteBtn = document.getElementById('add-ingrediente');
+            const ingredientesContainer = document.getElementById('ingredientes-container');
+            const ingredientesPreview = document.getElementById('ingredientes-preview');
+            // Selecciona el input oculto TOTAL_FORMS para el formset de ingredientes
+            const totalIngredienteForms = document.querySelector('#ingredientes-formset input[name$="TOTAL_FORMS"]');
+            // Plantilla HTML para un nuevo formulario de ingrediente
+            const ingredienteEmptyForm = `
+                <div class="ingrediente-item mb-2 p-3 border border-gray-200 rounded-lg flex items-center justify-between">
+                    <p>
+                        <label for="id_form-__prefix__-nombre">Nombre:</label>
+                        <input type="text" name="form-__prefix__-nombre" id="id_form-__prefix__-nombre" required>
+                    </p>
+                    <p>
+                        <label for="id_form-__prefix__-cantidad">Cantidad:</label>
+                        <input type="text" name="form-__prefix__-cantidad" id="id_form-__prefix__-cantidad" required>
+                    </p>
+                    <p>
+                        <label for="id_form-__prefix__-unidad">Unidad:</label>
+                        <input type="text" name="form-__prefix__-unidad" id="id_form-__prefix__-unidad">
+                    </p>
+                    <input type="hidden" name="form-__prefix__-id" id="id_form-__prefix__-id">
+                    <input type="hidden" name="form-__prefix__-receta" id="id_form-__prefix__-receta">
+                    <button type="button" class="remove-button">Eliminar</button>
+                </div>
+            `;
 
-<script>
-    $(function() {
-        $('#ingredientes-form-container').formset({
-            addText: 'Añadir otro Ingrediente',
-            deleteText: 'Eliminar',
-            prefix: 'ingredientes',
-            added: function (row) {
-                // Limpiar los campos del nuevo formulario
-                $(row).find('input[type="text"], input[type="number"], textarea').val('');
-                // Asegurar que el checkbox DELETE esté desmarcado
-                $(row).find('input[type="checkbox"]').prop('checked', false);
+            // Obtiene el número actual de formularios de ingrediente
+            let ingredienteFormCount = parseInt(totalIngredienteForms.value);
+
+            // Añade un evento click al botón "Añadir Ingrediente"
+            addIngredienteBtn.addEventListener('click', function() {
+                // Reemplaza el marcador de posición __prefix__ con el índice actual del formulario
+                const newFormHtml = ingredienteEmptyForm.replace(/__prefix__/g, ingredienteFormCount);
+                const newFormDiv = document.createElement('div');
+                newFormDiv.innerHTML = newFormHtml;
+                // Añade el nuevo formulario al contenedor de ingredientes
+                ingredientesContainer.appendChild(newFormDiv.firstElementChild); // Añade el div real, no el envoltorio
+
+                // Añade el listener de eventos para el nuevo botón de eliminar
+                newFormDiv.querySelector('.remove-button').addEventListener('click', removeForm);
+
+                // Añade escuchadores de eventos para los campos de entrada del nuevo formulario para actualizar la vista previa
+                const nombreInput = newFormDiv.querySelector(`[name="form-${ingredienteFormCount}-nombre"]`);
+                const cantidadInput = newFormDiv.querySelector(`[name="form-${ingredienteFormCount}-cantidad"]`);
+                const unidadInput = newFormDiv.querySelector(`[name="form-${ingredienteFormCount}-unidad"]`);
+
+                // Crea y añade el elemento de vista previa
+                const previewItem = document.createElement('li');
+                previewItem.className = 'preview-list-item';
+                previewItem.dataset.formIndex = ingredienteFormCount; // Vincula el elemento de vista previa al índice del formulario
+                ingredientesPreview.appendChild(previewItem);
+
+                // Función para actualizar el texto del elemento de vista previa
+                const updatePreview = () => {
+                    const nombre = nombreInput.value;
+                    const cantidad = cantidadInput.value;
+                    const unidad = unidadInput.value;
+                    previewItem.textContent = `${cantidad} ${unidad} de ${nombre}`;
+                };
+
+                // Añade escuchadores de eventos a los campos de entrada para actualizar la vista previa en tiempo real
+                nombreInput.addEventListener('input', updatePreview);
+                cantidadInput.addEventListener('input', updatePreview);
+                unidadInput.addEventListener('input', updatePreview);
+
+                // Incrementa el contador de formularios y actualiza el valor de TOTAL_FORMS
+                ingredienteFormCount++;
+                totalIngredienteForms.value = ingredienteFormCount;
+            });
+
+            // --- Funcionalidad para pasos ---
+            const addPasoBtn = document.getElementById('add-paso');
+            const pasosContainer = document.getElementById('pasos-container');
+            const pasosPreview = document.getElementById('pasos-preview');
+            // Selecciona el input oculto TOTAL_FORMS para el formset de pasos
+            const totalPasoForms = document.querySelector('#pasos-formset input[name$="TOTAL_FORMS"]');
+            // Plantilla HTML para un nuevo formulario de paso
+            const pasoEmptyForm = `
+                <div class="paso-item mb-2 p-3 border border-gray-200 rounded-lg flex items-center justify-between">
+                    <p>
+                        <label for="id_form-__prefix__-descripcion">Descripción:</label>
+                        <textarea name="form-__prefix__-descripcion" id="id_form-__prefix__-descripcion" rows="3" required></textarea>
+                    </p>
+                    <input type="hidden" name="form-__prefix__-id" id="id_form-__prefix__-id">
+                    <input type="hidden" name="form-__prefix__-receta" id="id_form-__prefix__-receta">
+                    <button type="button" class="remove-button">Eliminar</button>
+                </div>
+            `;
+
+            // Obtiene el número actual de formularios de paso
+            let pasoFormCount = parseInt(totalPasoForms.value);
+
+            // Añade un evento click al botón "Añadir Paso"
+            addPasoBtn.addEventListener('click', function() {
+                // Reemplaza el marcador de posición __prefix__ con el índice actual del formulario
+                const newFormHtml = pasoEmptyForm.replace(/__prefix__/g, pasoFormCount);
+                const newFormDiv = document.createElement('div');
+                newFormDiv.innerHTML = newFormHtml;
+                // Añade el nuevo formulario al contenedor de pasos
+                pasosContainer.appendChild(newFormDiv.firstElementChild); // Añade el div real, no el envoltorio
+
+                // Añade el listener de eventos para el nuevo botón de eliminar
+                newFormDiv.querySelector('.remove-button').addEventListener('click', removeForm);
+
+                // Añade escuchador de eventos para el campo de entrada del nuevo formulario para actualizar la vista previa
+                const descripcionInput = newFormDiv.querySelector(`[name="form-${pasoFormCount}-descripcion"]`);
+
+                // Crea y añade el elemento de vista previa
+                const previewItem = document.createElement('li');
+                previewItem.className = 'preview-list-item';
+                previewItem.dataset.formIndex = pasoFormCount; // Vincula el elemento de vista previa al índice del formulario
+                pasosPreview.appendChild(previewItem);
+
+                // Función para actualizar el texto del elemento de vista previa
+                const updatePreview = () => {
+                    previewItem.textContent = descripcionInput.value;
+                };
+
+                // Añade escuchador de eventos al campo de descripción para actualizar la vista previa en tiempo real
+                descripcionInput.addEventListener('input', updatePreview);
+
+                // Incrementa el contador de formularios y actualiza el valor de TOTAL_FORMS
+                pasoFormCount++;
+                totalPasoForms.value = pasoFormCount;
+            });
+
+            // --- Función para eliminar formularios y actualizar la vista previa ---
+            function removeForm(event) {
+                const button = event.target;
+                // Encuentra el elemento padre del formulario (ingrediente-item o paso-item)
+                const formItem = button.closest('.ingrediente-item') || button.closest('.paso-item');
+                if (formItem) {
+                    // Obtiene el prefijo del formulario (ej. '0', '1')
+                    // Asume que el input con name que termina en '-id' tiene el prefijo
+                    const idInput = formItem.querySelector('input[name$="-id"]');
+                    let formPrefix = null;
+                    if (idInput) {
+                        const nameParts = idInput.name.split('-');
+                        if (nameParts.length > 1) {
+                            formPrefix = nameParts[1];
+                        }
+                    }
+
+                    const formType = formItem.classList.contains('ingrediente-item') ? 'ingrediente' : 'paso';
+
+                    // Marca el formulario para eliminación (Django formsets manejan esto con un checkbox DELETE)
+                    // Para formularios añadidos dinámicamente, simplemente los eliminamos del DOM
+                    if (formPrefix !== null) {
+                        const deleteInput = formItem.querySelector(`input[name="form-${formPrefix}-DELETE"]`);
+                        if (deleteInput) {
+                            deleteInput.checked = true; // Marca el checkbox DELETE
+                            formItem.style.display = 'none'; // Oculta visualmente el formulario
+                        } else {
+                            // Si es un formulario recién añadido (sin ID existente), simplemente lo elimina
+                            formItem.remove();
+                        }
+                    } else {
+                        // Si no se pudo determinar el prefijo, simplemente elimina el elemento del DOM
+                        formItem.remove();
+                    }
+
+
+                    // Elimina el elemento correspondiente de la vista previa
+                    const previewList = formType === 'ingrediente' ? ingredientesPreview : pasosPreview;
+                    if (formPrefix !== null) {
+                        const previewItemToRemove = previewList.querySelector(`[data-form-index="${formPrefix}"]`);
+                        if (previewItemToRemove) {
+                            previewItemToRemove.remove();
+                        }
+                    }
+
+
+                    // Re-indexa los formularios si es necesario (importante para mantener el orden correcto del formset)
+                    // Esta parte puede ser complicada con los formsets de Django y podría requerir una lógica más sofisticada
+                    // Por ahora, confiaremos en el formulario de gestión de Django para manejar las eliminaciones al enviar.
+                    // Si encuentras problemas con formularios eliminados que reaparecen o datos incorrectos,
+                    // es posible que necesites una solución de re-indexación más robusta aquí.
+                    updateFormIndices(formType);
+                }
             }
-        });
 
-        $('#pasos-form-container').formset({
-            addText: 'Añadir otro Paso',
-            deleteText: 'Eliminar',
-            prefix: 'pasos',
-            added: function (row) {
-                // Limpiar los campos del nuevo formulario
-                $(row).find('input[type="text"], input[type="number"], textarea').val('');
-                // Asegurar que el checkbox DELETE esté desmarcado
-                $(row).find('input[type="checkbox"]').prop('checked', false);
+            // --- Función para re-indexar los formularios después de una eliminación ---
+            // Esta función es crucial para que Django Formsets procese correctamente los formularios
+            // después de que se eliminen elementos dinámicamente.
+            function updateFormIndices(formType) {
+                const container = formType === 'ingrediente' ? ingredientesContainer : pasosContainer;
+                const totalFormsInput = formType === 'ingrediente' ? totalIngredienteForms : totalPasoForms;
+                const previewList = formType === 'ingrediente' ? ingredientesPreview : pasosPreview;
+
+                let currentFormCount = 0;
+                container.querySelectorAll(`.${formType}-item`).forEach((item, index) => {
+                    if (item.style.display !== 'none') { // Solo re-indexa los formularios visibles
+                        item.querySelectorAll('[name]').forEach(input => {
+                            // Actualiza el atributo 'name' del input
+                            const name = input.name.replace(/form-(\d+)-/, `form-${currentFormCount}-`);
+                            input.name = name;
+                            // Actualiza el atributo 'id' del input
+                            input.id = `id_${name}`;
+                        });
+                        item.querySelectorAll('label').forEach(label => {
+                            // Actualiza el atributo 'htmlFor' de la etiqueta
+                            const htmlFor = label.htmlFor.replace(/id_form-(\d+)-/, `id_form-${currentFormCount}-`);
+                            label.htmlFor = htmlFor;
+                        });
+                        // Actualiza el data-form-id del botón de eliminar
+                        item.querySelector('.remove-button').dataset.formId = `form-${currentFormCount}`;
+                        // Actualiza el data-form-index para el elemento de vista previa
+                        // Necesitamos encontrar el elemento de vista previa por su data-form-index original
+                        // y luego actualizarlo. Esto es un poco más complejo si los índices se desordenan mucho.
+                        // Para simplificar, si el previewItem ya existe, lo actualizamos.
+                        const previewItem = previewList.querySelector(`[data-form-index="${index}"]`); // Intenta encontrar por el índice original
+                        if (previewItem) {
+                            previewItem.dataset.formIndex = currentFormCount;
+                        }
+                        currentFormCount++;
+                    }
+                });
+
+                // Actualiza el valor de TOTAL_FORMS
+                totalFormsInput.value = currentFormCount;
+                if (formType === 'ingrediente') {
+                    ingredienteFormCount = currentFormCount;
+                } else {
+                    pasoFormCount = currentFormCount;
+                }
+
+                // Vuelve a renderizar la lista de vista previa basándose en los formularios visibles actuales
+                updateAllPreviews();
             }
-        });
-    })
-</script>
 
-{% endblock content %}
+            // --- Event listeners para los botones de eliminar iniciales (si los hay) ---
+            document.querySelectorAll('.remove-button').forEach(button => {
+                button.addEventListener('click', removeForm);
+            });
+
+            // --- Inicializar la vista previa con los datos existentes ---
+            function updateAllPreviews() {
+                ingredientesPreview.innerHTML = ''; // Limpia la vista previa existente
+                pasosPreview.innerHTML = ''; // Limpia la vista previa existente
+
+                ingredientesContainer.querySelectorAll('.ingrediente-item').forEach((item, index) => {
+                    if (item.style.display !== 'none') {
+                        const nombreInput = item.querySelector('[name$="-nombre"]');
+                        const cantidadInput = item.querySelector('[name$="-cantidad"]');
+                        const unidadInput = item.querySelector('[name$="-unidad"]');
+
+                        if (nombreInput && cantidadInput) {
+                            const previewItem = document.createElement('li');
+                            previewItem.className = 'preview-list-item';
+                            // Asegurarse de que el data-form-index se corresponda con el índice actual del formulario visible
+                            previewItem.dataset.formIndex = index;
+                            previewItem.textContent = `${cantidadInput.value} ${unidadInput ? unidadInput.value : ''} de ${nombreInput.value}`;
+                            ingredientesPreview.appendChild(previewItem);
+                        }
+                    }
+                });
+
+                pasosContainer.querySelectorAll('.paso-item').forEach((item, index) => {
+                    if (item.style.display !== 'none') {
+                        const descripcionInput = item.querySelector('[name$="-descripcion"]');
+                        if (descripcionInput) {
+                            const previewItem = document.createElement('li');
+                            previewItem.className = 'preview-list-item';
+                            // Asegurarse de que el data-form-index se corresponda con el índice actual del formulario visible
+                            previewItem.dataset.formIndex = index;
+                            previewItem.textContent = descripcionInput.value;
+                            pasosPreview.appendChild(previewItem);
+                        }
+                    }
+                });
+            }
+
+            // Llama a updateAllPreviews en la carga inicial para poblar las listas de vista previa
+            updateAllPreviews();
+
+            // Añade escuchadores de eventos 'input' a los formularios existentes para actualizar la vista previa
+            ingredientesContainer.querySelectorAll('.ingrediente-item').forEach(item => {
+                const nombreInput = item.querySelector('[name$="-nombre"]');
+                const cantidadInput = item.querySelector('[name$="-cantidad"]');
+                const unidadInput = item.querySelector('[name$="-unidad"]');
+                if (nombreInput && cantidadInput) {
+                    // Obtener el índice del formulario del nombre del input
+                    const formIndexMatch = nombreInput.name.match(/form-(\d+)-/);
+                    const formIndex = formIndexMatch ? formIndexMatch[1] : null;
+
+                    let previewItem = null;
+                    if (formIndex !== null) {
+                        previewItem = ingredientesPreview.querySelector(`[data-form-index="${formIndex}"]`);
+                    }
+
+                    if (!previewItem) {
+                        previewItem = document.createElement('li');
+                        previewItem.className = 'preview-list-item';
+                        if (formIndex !== null) {
+                            previewItem.dataset.formIndex = formIndex;
+                        }
+                        ingredientesPreview.appendChild(previewItem);
+                    }
+
+                    const updatePreview = () => {
+                        previewItem.textContent = `${cantidadInput.value} ${unidadInput ? unidadInput.value : ''} de ${nombreInput.value}`;
+                    };
+                    nombreInput.addEventListener('input', updatePreview);
+                    cantidadInput.addEventListener('input', updatePreview);
+                    if (unidadInput) unidadInput.addEventListener('input', updatePreview);
+                    updatePreview(); // Actualización inicial
+                }
+            });
+
+            pasosContainer.querySelectorAll('.paso-item').forEach(item => {
+                const descripcionInput = item.querySelector('[name$="-descripcion"]');
+                if (descripcionInput) {
+                    // Obtener el índice del formulario del nombre del input
+                    const formIndexMatch = descripcionInput.name.match(/form-(\d+)-/);
+                    const formIndex = formIndexMatch ? formIndexMatch[1] : null;
+
+                    let previewItem = null;
+                    if (formIndex !== null) {
+                        previewItem = pasosPreview.querySelector(`[data-form-index="${formIndex}"]`);
+                    }
+
+                    if (!previewItem) {
+                        previewItem = document.createElement('li');
+                        previewItem.className = 'preview-list-item';
+                        if (formIndex !== null) {
+                            previewItem.dataset.formIndex = formIndex;
+                        }
+                        pasosPreview.appendChild(previewItem);
+                    }
+
+                    const updatePreview = () => {
+                        previewItem.textContent = descripcionInput.value;
+                    };
+                    descripcionInput.addEventListener('input', updatePreview);
+                    updatePreview(); // Actualización inicial
+                }
+            });
+        });
+    </script>
+</body>
+</html>

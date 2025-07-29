@@ -8,7 +8,9 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('receta/<int:pk>/', views.detalle_receta, name='detalle_receta'),
     path('receta/<int:pk>/editar/', views.editar_receta, name='editar_receta'),
+    path('receta/<int:pk>/eliminar/', views.eliminar_receta, name='eliminar_receta'),
     path('crear/', views.crear_receta, name='crear_receta'),
+    path('previsualizar/', views.previsualizar_receta, name='previsualizar_receta'), # ¡NUEVO! Ruta para previsualizar receta
     path('descubre/', views.recetas_aleatorias, name='recetas_aleatorias'),
     path('categoria/<slug:categoria_slug>/', views.recetas_por_categoria, name='recetas_por_categoria'),
 
@@ -17,7 +19,7 @@ urlpatterns = [
     path('buscar/avanzada/', views.advanced_search_view, name='advanced_search'),
     path('buscar/avanzada/resultados/', views.advanced_search_results_view, name='advanced_search_results'),
 
-    # Rutas para la gestión de Categorías (CRUD)
+    # Rutas para la gestión de Categorías
     path('categorias/', views.lista_categorias, name='lista_categorias'),
     path('categorias/crear/', views.crear_categoria, name='crear_categoria'),
     path('categorias/<slug:slug>/editar/', views.editar_categoria, name='editar_categoria'),

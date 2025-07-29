@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Previsualización de Receta{% endblock %}
+
+{% block content %}
+<div class="container recipe-detail-container">
+    <h1 class="section-title">Previsualización de Receta</h1>
+    <p class="preview-message">Esta es una previsualización de tu receta. Los cambios no han sido guardados aún.</p>
+
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h2 class="recipe-title">{{ receta.titulo }}</h2>
+            <p class="recipe-meta">
+                Por: {{ receta.autor.username }} | Categoría: {{ receta.categoria.nombre|default:"Sin categoría" }} | Fecha: {{ receta.fecha_publicacion }}
+            </p>
+        </div>
+
+        {% if receta.imagen_file %}
+            {# Si es un archivo temporal, no podemos mostrarlo directamente con un src normal #}
+            {# Aquí podrías añadir un mensaje o un placeholder para la imagen #}
+            <div class="recipe-image-container">
+                <img src="{% static 'img/placeholder_recipe.png' %}" alt="Imagen de la receta (previsualización)" class="recipe-image">
+                <p class="image-placeholder-text">La imagen se mostrará aquí una vez publicada.</p>
+            </div>
+        {% elif receta.imagen.url %}
+            {# Si ya existe una imagen (ej. al editar y previsualizar), la mostramos #}
+            <div class="recipe-image-container">
+                <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-image">
+            </div>
+        {% else %}
+            <div class="recipe-image-container">
+                <img src="{% static 'img/placeholder_recipe.png' %}" alt="Imagen de la receta (sin imagen)" class="recipe-image">
+            </div>
+        {% endif %}
+
+        <div class="recipe-description">
+            <h3>Descripción</h3>
+            <p>{{ receta.descripcion|linebreaksbr }}</p>
+        </div>
+
+        <div class="recipe-ingredients">
+            <h3>Ingredientes</h3>
+            {% if ingredientes %}
+                <ul class="ingredient-list">
+                    {% for ingrediente in ingredientes %}
+                        <li>
+                            {% if ingrediente.errors %}
+                                <span class="error-message">Error: {{ ingrediente.errors.nombre.0|default:'' }} {{ ingrediente.errors.cantidad.0|default:'' }} {{ ingrediente.errors.unidad.0|default:'' }}</span>
+                            {% endif %}
+                            {{ ingrediente.cantidad|default:'' }} {{ ingrediente.unidad|default:'' }} {{ ingrediente.nombre|default:'' }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No se han añadido ingredientes.</p>
+            {% endif %}
+        </div>
+
+        <div class="recipe-steps">
+            <h3>Instrucciones</h3>
+            {% if pasos %}
+                <ol class="step-list">
+                    {% for paso in pasos %}
+                        <li>
+                            {% if paso.errors %}
+                                <span class="error-message">Error: {{ paso.errors.descripcion.0|default:'' }}</span>
+                            {% endif %}
+                            {{ paso.descripcion|linebreaksbr }}
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% else %}
+                <p>No se han añadido pasos.</p>
+            {% endif %}
+        </div>
+        
+        <div class="form-actions mt-8">
+            <a href="{% url 'recetas_app:crear_receta' %}" class="button button-secondary">Volver a Editar</a>
+            {# El botón de Publicar aquí no tiene funcionalidad directa, es solo informativo #}
+            {# El formulario principal en crear_receta.html es el que envía para publicar #}
+            <button type="button" class="button button-primary" onclick="alert('Regresa a la página anterior para publicar tu receta.')">Publicar Receta</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
