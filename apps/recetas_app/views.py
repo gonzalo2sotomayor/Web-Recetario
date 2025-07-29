@@ -380,10 +380,10 @@ def lista_categorias(request):
 @user_passes_test(is_admin, login_url='/admin/login/')
 def crear_categoria(request):
     if request.method == 'POST':
-        form = CategoriaForm(request.POST)
+        form = CategoriaForm(request.POST, request.FILES) 
         if form.is_valid():
             categoria = form.save(commit=False)
-            categoria.slug = slugify(categoria.nombre)
+            # El slug se genera automáticamente en el método save del modelo Categoria
             categoria.save()
             messages.success(request, '¡Categoría creada exitosamente!')
             return redirect('recetas_app:lista_categorias')
@@ -402,10 +402,10 @@ def crear_categoria(request):
 def editar_categoria(request, slug):
     categoria = get_object_or_404(Categoria, slug=slug)
     if request.method == 'POST':
-        form = CategoriaForm(request.POST, instance=categoria)
+        form = CategoriaForm(request.POST, request.FILES, instance=categoria) 
         if form.is_valid():
             categoria = form.save(commit=False)
-            categoria.slug = slugify(categoria.nombre)
+            # El slug se genera automáticamente en el método save del modelo Categoria
             categoria.save()
             messages.success(request, '¡Categoría actualizada exitosamente!')
             return redirect('recetas_app:lista_categorias')

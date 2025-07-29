@@ -1,47 +1,61 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}{{ accion }} Categoría{% endblock %}
+{% block title %}{{ accion }} Categoría - El Recetario{% endblock %}
 
 {% block content %}
-<div class="container form-page-container">
-    <h1 class="section-title">{{ accion }} Categoría</h1>
+<div class="main-content-new">
+    <div class="form-container">
+        <h1 class="form-title">{{ accion }} Categoría</h1>
+        
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
-    <div class="form-card">
-        <form method="post" class="generic-form">
+        {# Asegúrate de que el formulario tenga enctype="multipart/form-data" para subir archivos #}
+        <form method="post" enctype="multipart/form-data" class="recipe-form">
             {% csrf_token %}
-            
-            <!-- Renderizar el formulario de categoría -->
-            {% for field in form %}
-            <div class="form-group">
-                <label for="{{ field.id_for_label }}" class="form-label">
-                    {{ field.label }}
-                </label>
-                {{ field }}
-                {% if field.help_text %}
-                <p class="help-text">{{ field.help_text }}</p>
-                {% endif %}
-                {% for error in field.errors %}
-                <p class="error-message">{{ error }}</p>
-                {% endfor %}
-            </div>
-            {% endfor %}
 
-            <!-- Errores no de campo (ej. errores de validación global) -->
-            {% if form.non_field_errors %}
-            <div class="alert-message error-alert">
-                {% for error in form.non_field_errors %}
-                <p>{{ error }}</p>
-                {% endfor %}
+            <div class="form-section">
+                <div class="form-field">
+                    {# Usamos form.nombre aquí, pero la etiqueta se ha cambiado en forms.py a "Título de la Categoría" #}
+                    {{ form.nombre.label_tag }}
+                    {{ form.nombre }}
+                    {% if form.nombre.errors %}<div class="error-message">{{ form.nombre.errors }}</div>{% endif %}
+                </div>
+                <div class="form-field">
+                    {{ form.descripcion.label_tag }}
+                    {{ form.descripcion }}
+                    {% if form.descripcion.errors %}<div class="error-message">{{ form.descripcion.errors }}</div>{% endif %}
+                </div>
+                <div class="form-field">
+                    {{ form.imagen.label_tag }} {# Nuevo campo de imagen #}
+                    {{ form.imagen }}
+                    {% if form.imagen.errors %}<div class="error-message">{{ form.imagen.errors }}</div>{% endif %}
+                    {% if form.instance.imagen and accion == 'Editar' %}
+                        <div class="current-image-preview mt-2">
+                            <p>Imagen actual:</p>
+                            <img src="{{ form.instance.imagen.url }}" alt="{{ form.instance.nombre }}" class="w-32 h-32 object-cover rounded-lg shadow">
+                        </div>
+                    {% endif %}
+                </div>
+                {# El slug se genera automáticamente, no necesitamos un campo para editarlo directamente #}
+                {# Si quisieras mostrarlo solo como información, podrías añadir: #}
+                {% if accion == 'Editar' %}
+                    <div class="form-field">
+                        <label>Slug (automático):</label>
+                        <p class="form-text-display">{{ categoria.slug }}</p>
+                    </div>
+                {% endif %}
             </div>
-            {% endif %}
 
             <div class="form-actions">
-                <a href="{% url 'recetas_app:lista_categorias' %}" class="button button-secondary">
-                    Cancelar
-                </a>
-                <button type="submit" class="button button-primary">
-                    {{ accion }} Categoría
-                </button>
+                <button type="submit" class="button-primary submit-button">Guardar Categoría</button>
+                <a href="{% url 'recetas_app:lista_categorias' %}" class="button-secondary cancel-button">Cancelar</a>
             </div>
         </form>
     </div>

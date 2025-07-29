@@ -6,13 +6,13 @@ from .models import Comentario, Receta, Ingrediente, Paso, Categoria
 class ComentarioForm(forms.ModelForm):
     class Meta:
         model = Comentario
-        fields = ['texto', 'respuesta_a'] 
+        fields = ['contenido', 'respuesta_a'] 
         widgets = {
-            'texto': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 4, 'placeholder': 'Escribe tu comentario aquí...'}),
+            'contenido': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 4, 'placeholder': 'Escribe tu comentario aquí...'}),
             'respuesta_a': forms.HiddenInput(), 
         }
         labels = {
-            'texto': 'Tu Comentario',
+            'contenido': 'Tu Comentario', # CAMBIO AQUÍ: 'texto' a 'contenido'
         }
 
 # Formulario para crear o editar una receta
@@ -84,12 +84,14 @@ PasoFormSet = inlineformset_factory(
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria
-        fields = ['nombre', 'descripcion'] 
+        fields = ['nombre', 'descripcion', 'imagen'] 
         widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Nombre de la Categoría'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Título de la Categoría'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 3, 'placeholder': 'Descripción de la categoría (opcional)'}), 
+            'imagen': forms.ClearableFileInput(attrs={'class': 'form-input'}), # Nuevo widget para la imagen
         }
         labels = {
-            'nombre': 'Nombre de la Categoría',
+            'nombre': 'Título de la Categoría', 
             'descripcion': 'Descripción de la Categoría',
+            'imagen': 'Imagen de la Categoría', 
         }

@@ -1,17 +1,18 @@
-# blog-base/apps/recetas_app/models.py
 from django.db import models
-from django.contrib.auth.models import User # Importamos el modelo User de Django
-from apps.usuarios.models import CategoriaFavorita 
+from django.contrib.auth.models import User
+from django.utils import timezone
 from django.utils.text import slugify
 
-#Modelo para las categorías de recetas
+# Modelo para Categorías de Recetas
 class Categoria(models.Model):
-    nombre = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(unique=True, blank=True, null=True)
-    descripcion = models.TextField(blank=True, null=True) 
+    nombre = models.CharField(max_length=100, unique=True, verbose_name="Título de la Categoría") # Renombrado para la UI
+    descripcion = models.TextField(blank=True)
+    slug = models.SlugField(unique=True, max_length=100, blank=True, help_text="Se generará automáticamente a partir del título.")
+    imagen = models.ImageField(upload_to='categorias_imagenes/', blank=True, null=True, verbose_name="Imagen de la Categoría") # Nuevo campo
 
     class Meta:
-        verbose_name_plural = "Categorías"
+        verbose_name_plural = "Categorías" # Nombre para el admin
+        ordering = ['nombre']
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -21,89 +22,76 @@ class Categoria(models.Model):
     def __str__(self):
         return self.nombre
 
+# Modelo para Recetas
 class Receta(models.Model):
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField()
-    fecha_publicacion = models.DateTimeField(auto_now_add=True)
-    # Cambiado related_name para ser consistente o dejarlo sin él si no se usa explícitamente
-    autor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recetas_creadas') 
-    imagen = models.ImageField(upload_to='recetas_imagenes/', null=True, blank=True)
-    tipo = models.CharField(max_length=50, blank=True, null=True) # Campo 'tipo' mantenido
-    # Cambiado related_name para ser consistente o dejarlo como estaba si 'recetas_por_categoria' es preferido
-    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, related_name='recetas') 
-    tiempo_preparacion = models.IntegerField(help_text="Tiempo en minutos", blank=True, null=True)
-    porciones = models.IntegerField(help_text="Número de porciones", blank=True, null=True)
-    
+    imagen = models.ImageField(upload_to='recetas_imagenes/', blank=True, null=True)
+    fecha_publicacion = models.DateTimeField(default=timezone.now)
+    autor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recetas_creadas')
+    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, related_name='recetas')
+    tiempo_preparacion = models.IntegerField(help_text="En minutos", blank=True, null=True)
+    porciones = models.IntegerField(blank=True, null=True)
+
     class Meta:
-        ordering = ['-fecha_publicacion'] # Re-añadido para ordenar recetas por fecha
-        verbose_name_plural = "Recetas" # Re-añadido para nombre plural
+        ordering = ['-fecha_publicacion'] # Ordenar por fecha de publicación descendente
+        verbose_name_plural = "Recetas"
 
     def __str__(self):
         return self.titulo
 
+# Modelo para Ingredientes de una Receta
 class Ingrediente(models.Model):
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE, related_name='ingredientes')
-    cantidad = models.CharField(max_length=50) 
-    unidad = models.CharField(max_length=50, blank=True, null=True) 
-    nombre = models.CharField(max_length=100) # Nombre movido al final para consistencia
+    nombre = models.CharField(max_length=100)
+    cantidad = models.CharField(max_length=50) # Cambiado a CharField para permitir "2 tazas", "un puñado", etc.
+    unidad = models.CharField(max_length=50, blank=True, null=True) # Ej: gramos, ml, tazas, unidades
+
+    class Meta:
+        ordering = ['nombre']
+        verbose_name_plural = "Ingredientes"
 
     def __str__(self):
-        # Ajustado para mostrar correctamente si la unidad es nula
-        if self.unidad:
-            return f"{self.cantidad} {self.unidad} de {self.nombre}"
-        return f"{self.cantidad} de {self.nombre}"
-
+        return f"{self.cantidad} {self.unidad or ''} de {self.nombre} ({self.receta.titulo[:20]}...)"
 
 # Modelo para Pasos de una Receta
 class Paso(models.Model):
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE, related_name='pasos')
     titulo = models.CharField(max_length=200, help_text="Ej: Preparación de la salsa, Cocción de la pasta")
     descripcion = models.TextField()
+
     class Meta:
         ordering = ['id'] # Mantiene el orden de creación si no hay un campo de orden explícito
         verbose_name_plural = "Pasos"
+
     def __str__(self):
         return f"{self.titulo} ({self.receta.titulo[:20]}...)"
-    
-#Modelo de Comentario
+
+# Modelo para Comentarios en Recetas
 class Comentario(models.Model):
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE, related_name='comentarios')
-    # Cambiado related_name para ser consistente o dejarlo como estaba si 'comentarios_hechos' es preferido
-    autor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mis_comentarios') 
-    texto = models.TextField()
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    # Campo opcional para respuestas a comentarios (comentarios anidados)
-    respuesta_a = models.ForeignKey(
-        'self',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name='respuestas'
-    )
+    autor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comentarios_hechos')
+    contenido = models.TextField()
+    fecha_creacion = models.DateTimeField(default=timezone.now)
+    # Para respuestas a comentarios
+    respuesta_a = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='respuestas')
 
     class Meta:
-        ordering = ['fecha_creacion'] # Ordenar comentarios por fecha
+        ordering = ['fecha_creacion']
+        verbose_name_plural = "Comentarios"
 
     def __str__(self):
         return f'Comentario de {self.autor.username} en {self.receta.titulo}'
-    
-# Modelo para las recetas favoritas de un usuario (mantenido como lo tenías)
+
+# Modelo para Recetas Favoritas de Usuarios
 class RecetaFavorita(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recetas_favoritas')
-    receta = models.ForeignKey('Receta', on_delete=models.CASCADE) # Relación con el modelo Receta
-    categoria = models.ForeignKey(
-        'usuarios.CategoriaFavorita', # Referencia de cadena, ya que CategoriaFavorita está en usuarios
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='recetas'
-    )
-    fecha_agregado = models.DateTimeField(auto_now_add=True)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recetas_favoritas')
+    receta = models.ForeignKey(Receta, on_delete=models.CASCADE)
+    fecha_agregado = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        verbose_name = "Receta Favorita"
+        unique_together = ('usuario', 'receta') # Un usuario solo puede tener una receta como favorita una vez
         verbose_name_plural = "Recetas Favoritas"
-        unique_together = ('user', 'receta')
 
     def __str__(self):
-        return f"{self.receta.titulo} - {self.user.username}"
+        return f'{self.usuario.username} - {self.receta.titulo}'
