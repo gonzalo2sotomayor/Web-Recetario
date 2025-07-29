@@ -1,6 +1,19 @@
 # blog-base/apps/recetas_app/models.py
 from django.db import models
 from django.contrib.auth.models import User # Importamos el modelo User de Django
+from apps.usuarios.models import CategoriaFavorita
+
+#Modelo para las categorías de recetas
+class Categoria(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True)
+
+    class Meta:
+        verbose_name = "Categoría de Receta"
+        verbose_name_plural = "Categorías de Recetas"
+
+    def __str__(self):
+        return self.nombre
 
 class Receta(models.Model):
     titulo = models.CharField(max_length=200)
@@ -9,6 +22,7 @@ class Receta(models.Model):
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
     imagen = models.ImageField(upload_to='recetas_imagenes/', null=True, blank=True)
     tipo = models.CharField(max_length=50, blank=True, null=True)
+    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, related_name='recetas_por_categoria')
 
     def __str__(self):
         return self.titulo
@@ -59,7 +73,7 @@ class RecetaFavorita(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recetas_favoritas')
     receta = models.ForeignKey('Receta', on_delete=models.CASCADE) # Relación con el modelo Receta
     categoria = models.ForeignKey(
-        'usuarios.CategoriaFavorita', 
+        'usuarios.CategoriaFavorita', # Referencia de cadena, ya que CategoriaFavorita está en usuarios
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import inlineformset_factory 
-from .models import Comentario, Receta, Ingrediente, Paso
+from .models import Comentario, Receta, Ingrediente, Paso, Categoria
 
 # Formulario para que los usuarios dejen comentarios en las recetas
 class ComentarioForm(forms.ModelForm):
@@ -17,9 +17,16 @@ class ComentarioForm(forms.ModelForm):
 
 # Formulario para crear o editar una receta
 class RecetaForm(forms.ModelForm):
+    categoria = forms.ModelChoiceField(
+        queryset=Categoria.objects.all(),
+        empty_label="Selecciona una categoría", # Opción por defecto
+        required=False, # Permite que la categoría sea opcional
+        label="Categoría"
+    )
+
     class Meta:
         model = Receta
-        fields = ['titulo', 'descripcion', 'imagen'] # 'autor' y 'fecha_publicacion' se asignan en la vista
+        fields = ['titulo', 'descripcion', 'imagen', 'categoria'] 
         widgets = {
             'titulo': forms.TextInput(attrs={'placeholder': 'Título de la Receta'}),
             'descripcion': forms.Textarea(attrs={'rows': 6, 'placeholder': 'Una breve descripción de la receta...'}),
@@ -28,6 +35,7 @@ class RecetaForm(forms.ModelForm):
             'titulo': 'Título',
             'descripcion': 'Descripción',
             'imagen': 'Imagen Principal',
+            'categoria': 'Categoría', 
         }
 
 # Formulario para agregar ingredientes a una receta
@@ -56,3 +64,15 @@ PasoFormSet = inlineformset_factory(
         'descripcion': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Describe este paso...'}),
     }
 )
+
+# Formulario para crear o editar una categoría
+class CategoriaForm(forms.ModelForm):
+    class Meta:
+        model = Categoria
+        fields = ['nombre'] 
+        widgets = {
+            'nombre': forms.TextInput(attrs={'placeholder': 'Nombre de la Categoría'}),
+        }
+        labels = {
+            'nombre': 'Nombre de la Categoría',
+        }

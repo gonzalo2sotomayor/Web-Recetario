@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Eliminación de Categoría{% endblock %}
+
+{% block content %}
+<div class="container confirm-page-container">
+    <h1 class="section-title">Eliminar Categoría</h1>
+
+    <div class="confirm-card">
+        <p class="confirm-message">
+            ¿Estás seguro de que quieres eliminar la categoría "<strong class="highlight-text">{{ categoria.nombre }}</strong>"?
+        </p>
+        <p class="warning-message">
+            ¡Esta acción es irreversible y eliminará todas las recetas asociadas a esta categoría!
+        </p>
+
+        <form method="post" class="form-actions">
+            {% csrf_token %}
+            <a href="{% url 'recetas_app:lista_categorias' %}" class="button button-secondary">
+                Cancelar
+            </a>
+            <button type="submit" class="button button-danger">
+                Confirmar Eliminación
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

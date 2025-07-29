@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}El Recetario{% endblock title %}</title>
+    <title>{% block title %}El Recetario{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
-    {% block extra_head %}{% endblock extra_head %}
+    {% block extra_head %}{% endblock %}
 </head>
 <body class="light-theme">
 
@@ -26,8 +26,9 @@
                 <li><a href="{% url 'recetas_app:recetas_aleatorias' %}" class="nav-link-new"><span class="nav-icon">&#128269;</span> Descubre</a></li>
                 <li><a href="{% url 'recetas_app:advanced_search' %}" class="nav-link-new"><span class="nav-icon">&#128269;</span> Búsqueda Avanzada</a></li>
                 <li><a href="/comunidades/" class="nav-link-new"><span class="nav-icon">&#128101;</span> Comunidades</a></li>
-                {% if user.is_authenticated and user.is_staff %} {# Solo visible para administradores #}
-                    <li><a href="{% url 'recetas_app:crear_receta' %}" class="nav-link-new"><span class="nav-icon">&#128221;</span> Crear Receta</a></li> {# Icono de documento/escritura #}
+                {# NEW! Enlace consolidado para opciones de administración #}
+                {% if user.is_authenticated and user.is_staff %}
+                    <li><a href="{% url 'recetas_app:admin_options' %}" class="nav-link-new"><span class="nav-icon">&#128736;</span> Opciones Admin</a></li>
                 {% endif %}
             </ul>
 
@@ -78,7 +79,7 @@
         <div class="hero-overlay">
             
             <div class="hero-content-slider">
-                <div id="slide-search" class="hero-slide active-slide" data-background-image="{% static 'img/paella_banner.jpg' %}">
+                <div id="slide-search" class="hero-slide active-slide" data-background-image="{% static 'img/paella_banner.jpg' %}" data-url="{% url 'recetas_app:simple_search' %}">
                     <h1 class="hero-title">El Recetario</h1>
                     <div class="hero-search-container">
                         <form action="{% url 'recetas_app:simple_search' %}" method="GET" class="hero-search-form">
@@ -90,12 +91,14 @@
                     </div>
                 </div>
                 
-                <div id="slide-daily-recipe" class="hero-slide clickable-slide" data-background-image="{% static 'img/daily_recipe_banner.jpg' %}" onclick="window.location.href='/receta/123/'">
+                {# Usamos data-url en lugar de onclick #}
+                <div id="slide-daily-recipe" class="hero-slide clickable-slide" data-background-image="{% static 'img/daily_recipe_banner.jpg' %}" data-url="/receta/123/">
                     <h2 class="slide-title">Receta del Día</h2>
                     <p class="slide-description">Descubre nuestra deliciosa receta destacada para hoy. ¡No te la pierdas!</p>
                 </div>
 
-                <div id="slide-popular-recipes" class="hero-slide clickable-slide" data-background-image="{% static 'img/popular_recipes_banner.jpg' %}" onclick="window.location.href='/recetas/populares/'">
+                {# Usamos data-url en lugar de onclick #}
+                <div id="slide-popular-recipes" class="hero-slide clickable-slide" data-background-image="{% static 'img/popular_recipes_banner.jpg' %}" data-url="/recetas/populares/">
                     <h2 class="slide-title">Recetas Populares</h2>
                     <p class="slide-description">Explora las recetas más votadas y comentadas por nuestra comunidad.</p>
                 </div>
@@ -111,7 +114,7 @@
 
     <main class="main-content-new">
         {% block content %}
-        {% endblock content %}
+        {% endblock %}
     </main>
 
     <footer class="main-footer-new">
@@ -176,6 +179,24 @@
                     const targetSlideId = this.dataset.targetSlide;
                     updateSlide(targetSlideId);
                 });
+            });
+
+            // Lógica para manejar clics en elementos con data-url (movido aquí para ser global)
+            const clickableElements = document.querySelectorAll('[data-url]');
+            clickableElements.forEach(element => {
+                if (element.tagName === 'A' && element.classList.contains('featured-recipe-button')) {
+                } else {
+                    element.addEventListener('click', function(event) {
+                        // Si el clic fue en un enlace dentro de la tarjeta, dejar que el enlace haga su trabajo
+                        if (event.target.tagName === 'A' || event.target.closest('a')) {
+                            return; 
+                        }
+                        const url = this.dataset.url;
+                        if (url) {
+                            window.location.href = url;
+                        }
+                    });
+                }
             });
         });
     </script>

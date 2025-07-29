@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ receta.titulo }} - El Recetario{% endblock title %}
+{% block title %}{{ receta.titulo }} - El Recetario{% endblock %}
 
 {% block content %}
 <div class="main-content-new">
@@ -11,6 +11,10 @@
         <div class="recipe-header-info">
             <span class="recipe-author">Por: {{ receta.autor.username }}</span>
             <span class="recipe-date">Publicado el: {{ receta.fecha_publicacion|date:"d M Y" }}</span>
+            {# NEW! Display the recipe category #}
+            {% if receta.categoria %}
+                <span class="recipe-category">Categoría: {{ receta.categoria.nombre }}</span>
+            {% endif %}
         </div>
 
         {% if receta.imagen %}
@@ -19,11 +23,11 @@
             <img src="{% static 'img/default_recipe.png' %}" alt="Imagen por defecto" class="recipe-detail-image">
         {% endif %}
 
-        {# Botón para añadir/eliminar de favoritos #}
+        {# Button to add/remove from favorites #}
         {% if user.is_authenticated %}
             <form action="{% url 'usuarios:toggle_favorito' receta_pk=receta.pk %}" method="post" class="favorite-form">
                 {% csrf_token %}
-                {% if es_favorita %} {# Usamos la variable 'es_favorita' del contexto #}
+                {% if es_favorita %} {# Use the 'es_favorita' variable from the context #}
                     <button type="submit" class="button-secondary favorite-button favorited">
                         &#9733; Quitar de Favoritos
                     </button>
@@ -33,6 +37,12 @@
                     </button>
                 {% endif %}
             </form>
+            {# Link for admin to edit the recipe #}
+            {% if user.is_staff %}
+                <a href="{% url 'recetas_app:editar_receta' pk=receta.pk %}" class="button-primary edit-recipe-button">
+                    Editar Receta
+                </a>
+            {% endif %}
         {% endif %}
 
         <div class="recipe-sections">
@@ -60,18 +70,18 @@
             </div>
         </div>
 
-        {# Sección de Comentarios #}
+        {# Comments Section #}
         <div class="comments-section">
-            <h3>Comentarios ({{ comentarios_principales.count }})</h3> {# Muestra el número de comentarios #}
+            <h3>Comentarios ({{ comentarios_principales.count }})</h3>
 
-            {# Formulario para dejar un comentario principal #}
+            {# Form to leave a main comment #}
             {% if user.is_authenticated %}
                 <div class="comment-form-container">
                     <h4>Deja tu comentario:</h4>
                     <form method="post" action="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
                         {% csrf_token %}
-                        {{ form.texto }} {# Solo el campo de texto #}
-                        {{ form.respuesta_a }} {# Campo oculto para manejar respuestas (estará vacío para comentarios principales) #}
+                        {{ form.texto }}
+                        {{ form.respuesta_a }}
                         <button type="submit" class="button-primary comment-submit-button">Publicar Comentario</button>
                     </form>
                 </div>
@@ -81,7 +91,7 @@
                 </p>
             {% endif %}
 
-            {# Listado de comentarios #}
+            {# Comments list #}
             {% if comentarios_principales %}
                 <ul class="comments-list">
                     {% for comentario in comentarios_principales %}
@@ -92,27 +102,27 @@
                             </div>
                             <p class="comment-text-content">{{ comentario.texto }}</p>
                             
-                            {# Botón para responder #}
+                            {# Reply button #}
                             {% if user.is_authenticated %}
                                 <button class="button-secondary reply-button" data-comment-id="{{ comentario.pk }}">Responder</button>
                             {% endif %}
 
-                            {# Formulario de respuesta (oculto por defecto) #}
+                            {# Reply form (hidden by default) #}
                             {% if user.is_authenticated %}
                                 <div class="reply-form-container" id="reply-form-{{ comentario.pk }}" style="display: none;">
                                     <h4>Responder a {{ comentario.autor.username }}:</h4>
                                     <form method="post" action="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
                                         {% csrf_token %}
-                                        {{ form.texto.label_tag }} {# Etiqueta para el campo de texto #}
-                                        {{ form.texto }} {# Campo de texto para la respuesta #}
-                                        <input type="hidden" name="respuesta_a" value="{{ comentario.pk }}"> {# Campo oculto con el ID del comentario padre #}
+                                        {{ form.texto.label_tag }}
+                                        {{ form.texto }}
+                                        <input type="hidden" name="respuesta_a" value="{{ comentario.pk }}">
                                         <button type="submit" class="button-primary comment-submit-button">Publicar Respuesta</button>
                                         <button type="button" class="button-secondary cancel-reply-button">Cancelar</button>
                                     </form>
                                 </div>
                             {% endif %}
 
-                            {# Respuestas a este comentario #}
+                            {# Replies to this comment #}
                             {% if comentario.respuestas.all %}
                                 <ul class="replies-list">
                                     {% for respuesta in comentario.respuestas.all %}
@@ -136,10 +146,9 @@
     </div>
 </div>
 
-{# JavaScript para la funcionalidad de responder #}
+{# JavaScript for reply functionality #}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Seleccionar todos los botones de "Responder"
         const replyButtons = document.querySelectorAll('.reply-button');
 
         replyButtons.forEach(button => {
@@ -147,17 +156,14 @@
                 const commentId = this.dataset.commentId;
                 const replyFormContainer = document.getElementById(`reply-form-${commentId}`);
                 
-                // Ocultar todos los formularios de respuesta abiertos
                 document.querySelectorAll('.reply-form-container').forEach(form => {
                     if (form.id !== `reply-form-${commentId}`) {
                         form.style.display = 'none';
                     }
                 });
 
-                // Alternar la visibilidad del formulario de respuesta actual
                 if (replyFormContainer) {
                     replyFormContainer.style.display = replyFormContainer.style.display === 'none' ? 'block' : 'none';
-                    // Enfocar el textarea si el formulario se muestra
                     if (replyFormContainer.style.display === 'block') {
                         replyFormContainer.querySelector('textarea').focus();
                     }
@@ -165,44 +171,16 @@
             });
         });
 
-        // Manejar los botones de "Cancelar" en los formularios de respuesta
         const cancelReplyButtons = document.querySelectorAll('.cancel-reply-button');
         cancelReplyButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const replyFormContainer = this.closest('.reply-form-container');
                 if (replyFormContainer) {
                     replyFormContainer.style.display = 'none';
-                    // Limpiar el textarea al cancelar
                     replyFormContainer.querySelector('textarea').value = '';
                 }
             });
         });
-
-        // Función para obtener el token CSRF de la cookie
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-
-        // Configurar el token CSRF para todas las solicitudes AJAX (si se usaran en el futuro)
-        // const csrftoken = getCookie('csrftoken');
-        // function csrfSafeMethod(method) {
-        //     // these HTTP methods do not require CSRF protection
-        //     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-        // }
-        // axios.defaults.headers.common['X-CSRFToken'] = csrftoken;
-        // fetch.defaults.headers.common['X-CSRFToken'] = csrftoken;
     });
 </script>
-{% endblock content %}
+{% endblock %}

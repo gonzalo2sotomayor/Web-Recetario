@@ -20,6 +20,8 @@
     --dark-font: #1A1A1A; /* Color de fuente muy oscuro */
     --gray-button-bg: #C0B8AE; /* Fondo de botón gris/marrón neutro */
     --gray-button-hover: #A8A096; /* Fondo de botón gris/marrón neutro en hover */
+    --red-danger: #E74C3C; /* Rojo para acciones peligrosas */
+    --red-danger-hover: #C0392B; /* Rojo más oscuro para hover */
 }
 
 /* Estilos Base HTML y Body */
@@ -428,6 +430,7 @@ body.light-theme {
     .featured-recipe-content {
         flex-direction: row;
         text-align: left;
+        align-items: flex-start;
     }
 }
 
@@ -511,7 +514,7 @@ body.light-theme {
 /* Estilos de Cuadrícula de Recetas */
 .recipe-grid, .latest-recipes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 25px;
     justify-content: center;
     align-items: start;
@@ -798,13 +801,17 @@ body.light-theme {
     margin-top: 40px;
 }
 
-.button-primary, .button-secondary {
+/* Estilos para botones generales */
+.button {
     padding: 12px 25px;
     border-radius: 8px;
     font-weight: 600;
     text-decoration: none;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     white-space: nowrap;
+    display: inline-block; /* Para que los enlaces se comporten como botones */
+    border: none; /* Por defecto sin borde */
+    cursor: pointer;
 }
 
 .button-primary {
@@ -823,6 +830,15 @@ body.light-theme {
 
 .button-secondary:hover {
     background-color: var(--gray-button-hover);
+}
+
+.button-danger {
+    background-color: var(--red-danger);
+    color: var(--white-text);
+}
+
+.button-danger:hover {
+    background-color: var(--red-danger-hover);
 }
 
 
@@ -1467,101 +1483,476 @@ body.light-theme {
     text-decoration: underline;
 }
 
-/* Estilos específicos para la página de creación de recetas */
-.formset-item {
+/* Estilos específicos para la gestión de categorías */
+.container {
+    max-width: 950px; /* Ancho consistente con otras secciones de contenido */
+    margin: 30px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end; /* Alinea el botón a la derecha */
+    margin-bottom: 30px;
+    padding-right: 10px; /* Pequeño padding para que no se pegue al borde */
+}
+
+.list-container {
+    background-color: var(--secondary-bg);
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px var(--shadow-color);
+    padding: 20px;
+}
+
+.item-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background-color: var(--primary-bg);
     border: 1px solid var(--input-border);
     border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0px 2px 5px var(--shadow-color);
-    position: relative; /* Para el botón de eliminar */
-}
-
-.formset-fields {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
-}
-
-@media (min-width: 600px) {
-    .formset-fields {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    }
-}
-
-.formset-item label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    font-size: 18px;
     color: var(--text-color);
 }
 
-.formset-item input[type="text"],
-.formset-item input[type="number"],
-.formset-item textarea {
+.list-item:last-child {
+    margin-bottom: 0;
+}
+
+.item-name {
+    font-weight: 600;
+    flex-grow: 1; /* Permite que el nombre ocupe el espacio disponible */
+}
+
+.item-actions {
+    display: flex;
+    gap: 10px;
+    margin-left: 20px; /* Espacio entre el nombre y las acciones */
+}
+
+.action-link {
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+}
+
+.edit-link {
+    background-color: var(--gray-button-bg);
+    color: var(--white-text);
+}
+
+.edit-link:hover {
+    background-color: var(--gray-button-hover);
+}
+
+.delete-link {
+    background-color: var(--red-danger);
+    color: var(--white-text);
+}
+
+.delete-link:hover {
+    background-color: var(--red-danger-hover);
+}
+
+.empty-message {
+    text-align: center;
+    font-size: 18px;
+    color: var(--light-text);
+    padding: 30px 0;
+}
+
+/* Estilos para formularios de creación/edición de categoría */
+.form-page-container {
+    max-width: 700px; /* Un poco más estrecho para formularios */
+    margin: 30px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.form-card {
+    background-color: var(--secondary-bg);
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px var(--shadow-color);
+    padding: 30px;
+}
+
+.generic-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espacio entre grupos de formulario */
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 16px;
+}
+
+.generic-form input[type="text"],
+.generic-form textarea,
+.generic-form select {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: 1px solid var(--input-border);
-    border-radius: 6px;
+    border-radius: 8px;
     box-sizing: border-box;
     background-color: var(--input-bg);
     color: var(--dark-font);
-    font-size: 15px;
+    font-size: 16px;
+}
+
+.generic-form textarea {
+    min-height: 100px;
     resize: vertical;
 }
 
-.formset-item textarea {
-    min-height: 80px;
+.help-text {
+    font-size: 13px;
+    color: var(--light-text);
+    margin-top: 5px;
+    margin-bottom: 0;
 }
 
-.add-item-button {
-    margin-top: 10px;
-    margin-bottom: 20px;
-    padding: 10px 20px;
-    font-size: 16px;
+.error-message {
+    font-size: 13px;
+    color: var(--red-danger);
+    margin-top: 5px;
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+.alert-message {
+    padding: 15px;
     border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+    margin-bottom: 20px;
+    font-size: 15px;
+    font-weight: 500;
 }
 
-.submit-recipe-button {
-    margin-top: 30px;
-    width: auto;
-    padding: 15px 40px;
-    font-size: 20px;
+.error-alert {
+    background-color: rgba(231, 76, 60, 0.1); /* Fondo rojo muy claro */
+    color: var(--red-danger);
+    border: 1px solid var(--red-danger);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* Estilos para la página de confirmación de eliminación */
+.confirm-page-container {
+    max-width: 600px; /* Más estrecho para confirmaciones */
+    margin: 50px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.confirm-card {
+    background-color: var(--secondary-bg);
     border-radius: 10px;
+    box-shadow: 0px 4px 10px var(--shadow-color);
+    padding: 30px;
 }
 
-/* Estilos para el checkbox de eliminar en formsets */
-.formset-item input[type="checkbox"] {
-    margin-left: 5px;
-    vertical-align: middle;
+.confirm-message {
+    font-size: 20px;
+    color: var(--text-color);
+    margin-bottom: 15px;
+    line-height: 1.5;
 }
 
-.formset-item .delete-row { /* Estilo para el texto "Eliminar" */
-    font-size: 14px;
-    color: #E74C3C; /* Rojo para eliminar */
-    text-decoration: none;
+.warning-message {
+    font-size: 16px;
+    color: var(--red-danger);
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+.highlight-text {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+/* Media Queries para Responsividad */
+@media (max-width: 768px) {
+    .main-nav-new {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 20px;
+    }
+
+    .nav-links-new {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        margin-top: 15px;
+        gap: 10px;
+    }
+
+    .nav-right {
+        margin-top: 15px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .hero-title {
+        font-size: 40px;
+    }
+
+    .slide-title {
+        font-size: 30px;
+    }
+
+    .section-title {
+        font-size: 24px;
+        text-align: center;
+        padding-left: 0;
+    }
+
+    .featured-recipe-content {
+        flex-direction: column;
+    }
+
+    .featured-recipe-image {
+        max-width: 100%;
+    }
+
+    .recipe-grid, .latest-recipes-grid, .category-grid, .tip-grid {
+        grid-template-columns: 1fr; /* Una columna en móvil */
+    }
+
+    .search-navigation-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .button-container {
+        justify-content: center; /* Centrar el botón en móvil */
+        padding-right: 0;
+    }
+
+    .list-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .item-actions {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .form-actions .button {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 30px;
+    }
+    .slide-title {
+        font-size: 24px;
+    }
+    .slide-description {
+        font-size: 16px;
+    }
+    .hero-section {
+        height: 300px;
+        min-height: 300px;
+    }
+    .hero-content-slider {
+        height: 120px;
+    }
+}
+
+/* --- Estilos para Opciones de Administración (admin_options.html) --- */
+
+.admin-options-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: var(--background-light);
+    border-radius: 12px;
+    box-shadow: var(--shadow-medium);
+    text-align: center;
+}
+
+.admin-options-container .section-title {
+    color: var(--primary-color);
+    font-size: 2.5em;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.admin-options-container .section-description {
+    color: var(--text-color-secondary);
+    font-size: 1.1em;
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    justify-content: center;
+    align-items: stretch; /* Asegura que las tarjetas tengan la misma altura */
+}
+
+.option-card {
+    background-color: var(--card-background);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow-small);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    position: relative; /* Para el icono */
+    overflow: hidden; /* Para asegurar que el icono no se desborde */
+}
+
+.option-card.clickable-card {
     cursor: pointer;
+}
+
+.option-card.clickable-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-large);
+    background-color: var(--hover-background);
+}
+
+.option-card .option-title {
+    color: var(--text-color-primary);
+    font-size: 1.6em;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.option-card .option-description {
+    color: var(--text-color-secondary);
+    font-size: 0.95em;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    flex-grow: 1; /* Permite que la descripción ocupe espacio y empuje el icono hacia abajo */
+}
+
+.option-card .option-icon {
+    font-size: 3.5em; /* Tamaño del icono Unicode/Emoji */
+    color: var(--primary-color);
+    margin-top: 15px;
+    transition: transform 0.3s ease;
+}
+
+.option-card.clickable-card:hover .option-icon {
+    transform: scale(1.1); /* Ligeramente más grande al pasar el ratón */
+}
+
+/* Estilos para tarjetas "Próximamente" */
+.option-card.coming-soon-card {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background-color: var(--background-secondary);
+    border: 1px dashed var(--border-color);
+}
+
+.option-card.coming-soon-card .option-title,
+.option-card.coming-soon-card .option-description,
+.option-card.coming-soon-card .option-icon {
+    color: var(--text-color-secondary);
+}
+
+.option-card.coming-soon-card::after {
+    content: "Próximamente";
     position: absolute;
     top: 10px;
-    right: 15px;
-    font-weight: 600;
-    transition: color 0.2s ease;
-}
-
-.formset-item .delete-row:hover {
-    color: #C0392B;
-}
-
-/* Ajuste para el campo de imagen en el formulario principal */
-.form-container input[type="file"] {
-    padding: 10px;
-    border: 1px solid var(--input-border);
+    right: 10px;
+    background-color: var(--accent-color);
+    color: #fff;
+    padding: 5px 10px;
     border-radius: 8px;
-    background-color: var(--input-bg);
-    color: var(--dark-font);
-    font-size: 16px;
-    width: auto; /* Para que no ocupe todo el ancho */
+    font-size: 0.8em;
+    font-weight: bold;
+    transform: rotate(5deg);
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+    .admin-options-container {
+        margin: 20px auto;
+        padding: 15px;
+    }
+
+    .admin-options-container .section-title {
+        font-size: 2em;
+    }
+
+    .admin-options-container .section-description {
+        font-size: 1em;
+        margin-bottom: 30px;
+    }
+
+    .options-grid {
+        grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
+        gap: 20px;
+    }
+
+    .option-card {
+        padding: 25px;
+    }
+
+    .option-card .option-title {
+        font-size: 1.4em;
+    }
+
+    .option-card .option-icon {
+        font-size: 3em;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-options-container {
+        padding: 10px;
+    }
+
+    .admin-options-container .section-title {
+        font-size: 1.8em;
+    }
+
+    .option-card {
+        padding: 20px;
+    }
 }

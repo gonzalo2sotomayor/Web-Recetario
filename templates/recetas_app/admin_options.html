@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Opciones de Administración{% endblock %}
+
+{% block content %}
+<div class="container admin-options-container">
+    <h1 class="section-title">Opciones de Administración</h1>
+    <p class="section-description">Selecciona una opción para gestionar el contenido de tu sitio.</p>
+
+    <div class="options-grid">
+        <div class="option-card clickable-card" data-url="{% url 'recetas_app:crear_receta' %}">
+            <h3 class="option-title">Crear Nueva Receta</h3>
+            <p class="option-description">Añade una nueva receta al recetario.</p>
+            <span class="option-icon">&#128221;</span> {# Icono de documento/escritura #}
+        </div>
+
+        <div class="option-card clickable-card" data-url="{% url 'recetas_app:lista_categorias' %}">
+            <h3 class="option-title">Gestionar Categorías</h3>
+            <p class="option-description">Crea, edita o elimina categorías de recetas.</p>
+            <span class="option-icon">&#128202;</span> {# Icono de lista/gráfico #}
+        </div>
+
+        {# Puedes añadir más opciones aquí en el futuro #}
+        {# Ejemplo: Gestionar Usuarios, Ver Comentarios Pendientes, etc. #}
+        <div class="option-card coming-soon-card">
+            <h3 class="option-title">Gestionar Usuarios</h3>
+            <p class="option-description">Próximamente: Administra los usuarios de la plataforma.</p>
+            <span class="option-icon">&#128100;</span> {# Icono de persona #}
+        </div>
+
+        <div class="option-card coming-soon-card">
+            <h3 class="option-title">Moderar Comentarios</h3>
+            <p class="option-description">Próximamente: Revisa y modera los comentarios de las recetas.</p>
+            <span class="option-icon">&#128172;</span> {# Icono de burbuja de diálogo #}
+        </div>
+    </div>
+</div>
+{% endblock %}

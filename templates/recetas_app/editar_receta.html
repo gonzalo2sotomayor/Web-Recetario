@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Crear Nueva Receta - El Recetario{% endblock %}
+{% block title %}Editar Receta - {{ receta.titulo }} - El Recetario{% endblock %}
 
 {% block content %}
 <div class="main-content-new">
-    <h2 class="section-title">Crear Nueva Receta</h2>
+    <h2 class="section-title">Editar Receta: {{ receta.titulo }}</h2>
     <div class="form-container">
-        <p class="form-description">Completa los detalles de tu receta, añade ingredientes y los pasos.</p>
+        <p class="form-description">Modifica los detalles de tu receta, ingredientes y pasos.</p>
 
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" action="{% url 'recetas_app:editar_receta' pk=receta.pk %}">
             {% csrf_token %}
 
             <h3>Información de la Receta</h3>
@@ -50,7 +50,7 @@
             </div>
             <button type="button" id="add-paso" class="button-secondary add-item-button">Añadir Paso</button>
 
-            <button type="submit" class="button-primary submit-recipe-button">Crear Receta</button>
+            <button type="submit" class="button-primary submit-recipe-button">Actualizar Receta</button>
         </form>
     </div>
 </div>
