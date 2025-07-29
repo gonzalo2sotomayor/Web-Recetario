@@ -1696,7 +1696,7 @@ body.light-theme {
     font-weight: bold;
 }
 
-/* --- NUEVOS ESTILOS PARA DETALLE DE RECETA --- */
+/* --- ESTILOS PARA DETALLE DE RECETA --- */
 
 .recipe-detail-container {
     max-width: 950px;
@@ -1922,4 +1922,15 @@ body.light-theme {
     .hero-content-slider {
         height: 120px;
     }
+}
+
+.recipe-info-item {
+    background-color: var(--primary-bg);
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: 1px solid var(--input-border);
+    white-space: nowrap; /* Evita que el texto se rompa */
+    display: inline-block; /* Para que se comporten como bloques y respeten el padding/margin */
+    margin-right: 10px; /* Espacio entre ellos */
+    margin-bottom: 10px; /* Para responsividad en pantallas pequeñas */
 }

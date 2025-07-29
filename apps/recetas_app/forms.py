@@ -6,10 +6,10 @@ from .models import Comentario, Receta, Ingrediente, Paso, Categoria
 class ComentarioForm(forms.ModelForm):
     class Meta:
         model = Comentario
-        fields = ['texto', 'respuesta_a'] # 'respuesta_a' se usará para hilos de comentarios
+        fields = ['texto', 'respuesta_a'] 
         widgets = {
-            'texto': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Escribe tu comentario aquí...'}),
-            'respuesta_a': forms.HiddenInput(), # Campo oculto para manejar respuestas a comentarios
+            'texto': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 4, 'placeholder': 'Escribe tu comentario aquí...'}),
+            'respuesta_a': forms.HiddenInput(), 
         }
         labels = {
             'texto': 'Tu Comentario',
@@ -19,49 +19,59 @@ class ComentarioForm(forms.ModelForm):
 class RecetaForm(forms.ModelForm):
     categoria = forms.ModelChoiceField(
         queryset=Categoria.objects.all(),
-        empty_label="Selecciona una categoría", # Opción por defecto
-        required=False, # Permite que la categoría sea opcional
-        label="Categoría"
+        empty_label="Selecciona una categoría", 
+        required=False, 
+        label="Categoría",
+        widget=forms.Select(attrs={'class': 'form-select'}) 
     )
 
     class Meta:
         model = Receta
-        fields = ['titulo', 'descripcion', 'imagen', 'categoria'] 
+        fields = ['titulo', 'descripcion', 'imagen', 'categoria', 'tiempo_preparacion', 'porciones'] 
         widgets = {
-            'titulo': forms.TextInput(attrs={'placeholder': 'Título de la Receta'}),
-            'descripcion': forms.Textarea(attrs={'rows': 6, 'placeholder': 'Una breve descripción de la receta...'}),
+            'titulo': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Título de la Receta'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 6, 'placeholder': 'Una breve descripción de la receta...'}),
+            'imagen': forms.ClearableFileInput(attrs={'class': 'form-input'}), 
+            'tiempo_preparacion': forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Minutos'}), 
+            'porciones': forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Ej: 4'}),             
         }
         labels = {
             'titulo': 'Título',
             'descripcion': 'Descripción',
             'imagen': 'Imagen Principal',
             'categoria': 'Categoría', 
+            'tiempo_preparacion': 'Tiempo de Preparación (minutos)', 
+            'porciones': 'Porciones',                                
         }
 
 # Formulario para agregar ingredientes a una receta
 IngredienteFormSet = inlineformset_factory(
-    Receta, # Modelo padre
-    Ingrediente, # Modelo hijo
+    Receta, 
+    Ingrediente, 
     fields=['nombre', 'cantidad', 'unidad'],
-    extra=1, # Número de formularios vacíos a mostrar inicialmente
-    can_delete=True, # Permite eliminar ingredientes existentes
+    extra=1, 
+    can_delete=True, 
+    max_num=None, # Permitir un número ilimitado de formularios
+    min_num=0,    # Permitir 0 formularios si no hay ingredientes
     widgets={
-        'nombre': forms.TextInput(attrs={'placeholder': 'Ej: Harina'}),
-        'cantidad': forms.NumberInput(attrs={'placeholder': 'Ej: 250'}),
-        'unidad': forms.TextInput(attrs={'placeholder': 'Ej: gramos'}),
+        'nombre': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej: Harina'}),
+        'cantidad': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej: 250 gramos / 2 tazas'}), 
+        'unidad': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej: gramos, tazas (opcional)'}), 
     }
 )
 
 # Formulario para agregar pasos a una receta
 PasoFormSet = inlineformset_factory(
-    Receta, # Modelo padre
-    Paso, # Modelo hijo
+    Receta, 
+    Paso, 
     fields=['orden', 'descripcion'],
-    extra=1, # Número de formularios vacíos a mostrar inicialmente
-    can_delete=True, # Permite eliminar pasos existentes
+    extra=1, 
+    can_delete=True, 
+    max_num=None, # Permitir un número ilimitado de formularios
+    min_num=0,    # Permitir 0 formularios si no hay pasos
     widgets={
-        'orden': forms.NumberInput(attrs={'placeholder': 'Ej: 1'}),
-        'descripcion': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Describe este paso...'}),
+        'orden': forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Ej: 1'}),
+        'descripcion': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 3, 'placeholder': 'Describe este paso...'}),
     }
 )
 
@@ -69,10 +79,12 @@ PasoFormSet = inlineformset_factory(
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria
-        fields = ['nombre'] 
+        fields = ['nombre', 'descripcion'] 
         widgets = {
-            'nombre': forms.TextInput(attrs={'placeholder': 'Nombre de la Categoría'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Nombre de la Categoría'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 3, 'placeholder': 'Descripción de la categoría (opcional)'}), 
         }
         labels = {
             'nombre': 'Nombre de la Categoría',
+            'descripcion': 'Descripción de la Categoría',
         }

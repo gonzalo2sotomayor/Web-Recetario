@@ -14,6 +14,12 @@
             {% if receta.categoria %}
                 <span class="recipe-category">Categoría: {{ receta.categoria.nombre }}</span>
             {% endif %}
+            {% if receta.tiempo_preparacion %}
+                <span class="recipe-info-item">Preparación: {{ receta.tiempo_preparacion }} min</span>
+            {% endif %}
+            {% if receta.porciones %}
+                <span class="recipe-info-item">Porciones: {{ receta.porciones }}</span>
+            {% endif %}
         </div>
 
         {% if receta.imagen %}
@@ -22,11 +28,10 @@
             <img src="{% static 'img/default_recipe.png' %}" alt="Imagen por defecto" class="recipe-detail-image">
         {% endif %}
 
-        {# Botón para añadir/eliminar de favoritos #}
         {% if user.is_authenticated %}
             <form action="{% url 'usuarios:toggle_favorito' receta_pk=receta.pk %}" method="post" class="favorite-form">
                 {% csrf_token %}
-                {% if es_favorita %} {# Usamos la variable 'es_favorita' del contexto #}
+                {% if es_favorita %}
                     <button type="submit" class="button-secondary favorite-button favorited">
                         &#9733; Quitar de Favoritos
                     </button>
@@ -36,13 +41,11 @@
                     </button>
                 {% endif %}
             </form>
-            {# Enlaces de administración para la receta (Editar y Eliminar) #}
             {% if user.is_authenticated and user.is_staff %}
                 <div class="admin-recipe-actions">
                     <a href="{% url 'recetas_app:editar_receta' pk=receta.pk %}" class="button-primary edit-recipe-button">
                         Editar Receta
                     </a>
-                    {# NEW! Botón para eliminar la receta #}
                     <a href="{% url 'recetas_app:eliminar_receta' pk=receta.pk %}" class="button-danger delete-recipe-button">
                         Eliminar Receta
                     </a>
@@ -60,7 +63,9 @@
                 <h3>Ingredientes</h3>
                 <ul>
                     {% for ingrediente in receta.ingredientes.all %}
-                        <li>{{ ingrediente.cantidad }} {{ ingrediente.unidad }} de {{ ingrediente.nombre }}</li>
+                        <li>{{ ingrediente.cantidad }} {% if ingrediente.unidad %}{{ ingrediente.unidad }}{% endif %} de {{ ingrediente.nombre }}</li>
+                    {% empty %}
+                        <li>No se han añadido ingredientes.</li>
                     {% endfor %}
                 </ul>
             </div>
@@ -69,7 +74,9 @@
                 <h3>Instrucciones</h3>
                 <ol>
                     {% for paso in receta.pasos.all %}
-                        <li>{{ paso.descripcion }}</li>
+                        <li>{{ paso.orden }}. {{ paso.descripcion }}</li>
+                    {% empty %}
+                        <li>No se han añadido instrucciones.</li>
                     {% endfor %}
                 </ol>
             </div>
@@ -79,7 +86,6 @@
         <div class="comments-section">
             <h3>Comentarios ({{ comentarios_principales.count }})</h3>
 
-            {# Formulario para dejar un comentario principal #}
             {% if user.is_authenticated %}
                 <div class="comment-form-container">
                     <h4>Deja tu comentario:</h4>
@@ -96,7 +102,6 @@
                 </p>
             {% endif %}
 
-            {# Listado de comentarios #}
             {% if comentarios_principales %}
                 <ul class="comments-list">
                     {% for comentario in comentarios_principales %}
@@ -107,12 +112,10 @@
                             </div>
                             <p class="comment-text-content">{{ comentario.texto }}</p>
                             
-                            {# Botón para responder #}
                             {% if user.is_authenticated %}
                                 <button class="button-secondary reply-button" data-comment-id="{{ comentario.pk }}">Responder</button>
                             {% endif %}
 
-                            {# Formulario de respuesta (oculto por defecto) #}
                             {% if user.is_authenticated %}
                                 <div class="reply-form-container" id="reply-form-{{ comentario.pk }}" style="display: none;">
                                     <h4>Responder a {{ comentario.autor.username }}:</h4>
@@ -127,7 +130,6 @@
                                 </div>
                             {% endif %}
 
-                            {# Respuestas a este comentario #}
                             {% if comentario.respuestas.all %}
                                 <ul class="replies-list">
                                     {% for respuesta in comentario.respuestas.all %}

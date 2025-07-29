@@ -1,16 +1,22 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.forms import inlineformset_factory
+from django.forms import inlineformset_factory 
 from django.db import transaction
+from django.urls import reverse_lazy
 from django.db.models import Q
 import random
 from django.utils.text import slugify
 from django.contrib import messages
+from django.views.generic import ListView, DetailView 
+from django.utils import timezone 
+
 
 # Importaciones consolidadas de modelos y formularios
 from .models import Receta, Ingrediente, Paso, Comentario, Categoria
-from .forms import ComentarioForm, RecetaForm, IngredienteFormSet, PasoFormSet, CategoriaForm
+# Importamos los Formsets directamente, ya que los definimos en forms.py
+from .forms import ComentarioForm, RecetaForm, IngredienteFormSet, PasoFormSet, CategoriaForm 
+
 
 # Función para verificar si el usuario es administrador (is_staff)
 def is_admin(user):
@@ -49,6 +55,19 @@ def home(request):
 def detalle_receta(request, pk):
     receta = get_object_or_404(Receta, pk=pk)
     
+    # --- INICIO DE CÓDIGO DE DEPURACIÓN (Mantener si es útil, sino se puede quitar) ---
+    print(f"\n--- Depuración para Receta ID: {receta.pk} ---")
+    print(f"Título de la receta: {receta.titulo}")
+    print(f"Número de ingredientes relacionados: {receta.ingredientes.count()}")
+    for i, ingrediente in enumerate(receta.ingredientes.all()):
+        print(f"  Ingrediente {i+1}: {ingrediente.cantidad} {ingrediente.unidad} de {ingrediente.nombre}")
+    
+    print(f"Número de pasos relacionados: {receta.pasos.count()}")
+    for i, paso in enumerate(receta.pasos.all()):
+        print(f"  Paso {i+1}: Orden {paso.orden}, Descripción: {paso.descripcion[:30]}...")
+    print("---------------------------------------\n")
+    # --- FIN DE CÓDIGO DE DEPURACIÓN ---
+
     comentarios_principales = Comentario.objects.filter(
         receta=receta,
         respuesta_a__isnull=True
@@ -169,33 +188,59 @@ def crear_receta(request):
         ingrediente_formset = IngredienteFormSet(request.POST, prefix='ingredientes')
         paso_formset = PasoFormSet(request.POST, prefix='pasos')
 
+        # --- INICIO DE DEPURACIÓN DE FORMSETS EN VIEWS.PY ---
+        print("\n--- Depuración de Formsets en crear_receta (POST) ---")
+        print(f"Receta Formulario es válido: {receta_form.is_valid()}")
+        print(f"Ingrediente Formset es válido: {ingrediente_formset.is_valid()}")
+        print(f"Paso Formset es válido: {paso_formset.is_valid()}")
+
+        if not receta_form.is_valid():
+            print("Errores en Receta Form:")
+            print(receta_form.errors)
+        
+        if not ingrediente_formset.is_valid():
+            print("Errores en Ingrediente Formset:")
+            for i, form in enumerate(ingrediente_formset):
+                if form.errors:
+                    print(f"  Formulario Ingrediente {i}: {form.errors}")
+        else:
+            print("Ingrediente Formset - Cleaned Data:")
+            for i, form in enumerate(ingrediente_formset):
+                if form.cleaned_data:
+                    print(f"  Formulario Ingrediente {i}: {form.cleaned_data}")
+
+        if not paso_formset.is_valid():
+            print("Errores en Paso Formset:")
+            for i, form in enumerate(paso_formset):
+                if form.errors:
+                    print(f"  Formulario Paso {i}: {form.errors}")
+        else:
+            print("Paso Formset - Cleaned Data:")
+            for i, form in enumerate(paso_formset):
+                if form.cleaned_data:
+                    print(f"  Formulario Paso {i}: {form.cleaned_data}")
+        print("---------------------------------------------------\n")
+        # --- FIN DE DEPURACIÓN DE FORMSETS EN VIEWS.PY ---
+
         if receta_form.is_valid() and ingrediente_formset.is_valid() and paso_formset.is_valid():
             try:
                 with transaction.atomic():
                     receta = receta_form.save(commit=False)
                     receta.autor = request.user
                     receta.save()
-
-                    # Guardar ingredientes y asociarlos a la receta
-                    for form_ingrediente in ingrediente_formset:
-                        if form_ingrediente.cleaned_data and not form_ingrediente.cleaned_data.get('DELETE', False):
-                            ingrediente = form_ingrediente.save(commit=False)
-                            ingrediente.receta = receta
-                            ingrediente.save()
                     
-                    # Guardar pasos y asociarlos a la receta
-                    for form_paso in paso_formset:
-                        if form_paso.cleaned_data and not form_paso.cleaned_data.get('DELETE', False):
-                            paso = form_paso.save(commit=False)
-                            paso.receta = receta
-                            paso.save()
+                    ingrediente_formset.instance = receta 
+                    ingrediente_formset.save()
+                    
+                    paso_formset.instance = receta 
+                    paso_formset.save()
 
                 messages.success(request, '¡Receta creada exitosamente!')
                 return redirect('recetas_app:detalle_receta', pk=receta.pk)
 
             except Exception as e:
                 messages.error(request, f"Error al crear receta: {e}")
-                print(f"Error al crear receta: {e}") # Para depuración en consola
+                print(f"Error al crear receta: {e}") 
         else:
             messages.error(request, 'Por favor, corrige los errores en el formulario.')
     else:
@@ -225,12 +270,48 @@ def editar_receta(request, pk):
         ingrediente_formset = IngredienteFormSet(request.POST, instance=receta, prefix='ingredientes')
         paso_formset = PasoFormSet(request.POST, instance=receta, prefix='pasos')
 
+        # --- INICIO DE DEPURACIÓN DE FORMSETS EN VIEWS.PY (Editar) ---
+        print("\n--- Depuración de Formsets en editar_receta (POST) ---")
+        print(f"Receta Formulario es válido: {receta_form.is_valid()}")
+        print(f"Ingrediente Formset es válido: {ingrediente_formset.is_valid()}")
+        print(f"Paso Formset es válido: {paso_formset.is_valid()}")
+
+        if not receta_form.is_valid():
+            print("Errores en Receta Form (Editar):")
+            print(receta_form.errors)
+        
+        if not ingrediente_formset.is_valid():
+            print("Errores en Ingrediente Formset (Editar):")
+            for i, form in enumerate(ingrediente_formset):
+                if form.errors:
+                    print(f"  Formulario Ingrediente {i}: {form.errors}")
+        else:
+            print("Ingrediente Formset - Cleaned Data (Editar):")
+            for i, form in enumerate(ingrediente_formset):
+                if form.cleaned_data:
+                    print(f"  Formulario Ingrediente {i}: {form.cleaned_data}")
+
+        if not paso_formset.is_valid():
+            print("Errores en Paso Formset (Editar):")
+            for i, form in enumerate(paso_formset):
+                if form.errors:
+                    print(f"  Formulario Paso {i}: {form.errors}")
+        else:
+            print("Paso Formset - Cleaned Data (Editar):")
+            for i, form in enumerate(paso_formset):
+                if form.cleaned_data:
+                    print(f"  Formulario Paso {i}: {form.cleaned_data}")
+        print("---------------------------------------------------\n")
+        # --- FIN DE DEPURACIÓN DE FORMSETS EN VIEWS.PY (Editar) ---
+
+
         if receta_form.is_valid() and ingrediente_formset.is_valid() and paso_formset.is_valid():
             try:
                 with transaction.atomic():
                     receta = receta_form.save()
-                    ingrediente_formset.save() # Guarda los cambios, añade nuevos, elimina marcados
-                    paso_formset.save() # Guarda los cambios, añade nuevos, elimina marcados
+                    
+                    ingrediente_formset.save()
+                    paso_formset.save()
 
                 messages.success(request, '¡Receta actualizada exitosamente!')
                 return redirect('recetas_app:detalle_receta', pk=receta.pk)
@@ -266,7 +347,7 @@ def eliminar_receta(request, pk):
     if request.method == 'POST':
         receta.delete()
         messages.success(request, 'Receta eliminada exitosamente.')
-        return redirect('recetas_app:home') # Redirigir a la página principal o a una lista de recetas
+        return redirect('recetas_app:home') 
     context = {
         'receta': receta
     }
@@ -367,77 +448,74 @@ def previsualizar_receta(request):
         receta_form = RecetaForm(request.POST, request.FILES)
         ingrediente_formset = IngredienteFormSet(request.POST, prefix='ingredientes')
         paso_formset = PasoFormSet(request.POST, prefix='pasos')
+
         receta_data = {
-            'titulo': receta_form['titulo'].value(),
-            'descripcion': receta_form['descripcion'].value(),
+            'titulo': receta_form['titulo'].value() if receta_form['titulo'].value() is not None else '',
+            'descripcion': receta_form['descripcion'].value() if receta_form['descripcion'].value() is not None else '',
+            'tiempo_preparacion': receta_form['tiempo_preparacion'].value() if receta_form['tiempo_preparacion'].value() is not None else None,
+            'porciones': receta_form['porciones'].value() if receta_form['porciones'].value() is not None else None,
             'autor': request.user,
-            'fecha_publicacion': 'Previsualización', # Indicador para la previsualización
+            'fecha_publicacion': timezone.now(), 
         }
 
-        # Manejo de la categoría
         categoria_id = receta_form['categoria'].value()
         if categoria_id:
             try:
                 receta_data['categoria'] = Categoria.objects.get(pk=categoria_id)
             except Categoria.DoesNotExist:
-                receta_data['categoria'] = None # Si la categoría no existe, se muestra como None
+                receta_data['categoria'] = None 
+        else:
+            receta_data['categoria'] = None
 
-        # Manejo de la imagen: si es un archivo subido, pasamos el objeto.
-        # La plantilla deberá manejar que no es una URL de imagen persistente.
         if 'imagen' in request.FILES:
             receta_data['imagen_file'] = request.FILES['imagen']
+            receta_data['imagen'] = None 
         else:
             receta_data['imagen_file'] = None
+            receta_data['imagen'] = None 
         
-        # Procesar ingredientes y pasos del formset
         ingredientes_preview = []
-        for i, form in enumerate(ingrediente_formset):
-            # Solo procesar si el formulario no está marcado para eliminación
-            if form.is_valid() and not form.cleaned_data.get('DELETE', False):
-                ingredientes_preview.append(form.cleaned_data)
-            elif not form.is_valid() and any(form.errors):
-                # Si el formulario tiene errores, lo incluimos con sus errores
-                # para que el usuario pueda ver qué campos necesitan corrección.
-                data_with_errors = form.data.copy()
-                data_with_errors['errors'] = form.errors
-                ingredientes_preview.append(data_with_errors)
-            elif form.cleaned_data and form.cleaned_data.get('DELETE', False):
-                # Si está marcado para eliminar, no lo incluimos en la previsualización
-                pass
-            elif any(field.value() for field in form.fields.values()):
-                data_with_errors = form.data.copy()
-                data_with_errors['errors'] = form.errors 
-                ingredientes_preview.append(data_with_errors)
+        for form_ingrediente in ingrediente_formset:
+            # Solo procesar formularios que no estén marcados para DELETE y que tengan algún valor
+            if not form_ingrediente.cleaned_data.get('DELETE', False) and any(field.value() for field in form_ingrediente.fields.values()):
+                if form_ingrediente.is_valid():
+                    ingredientes_preview.append(form_ingrediente.cleaned_data)
+                else:
+                    # Incluir datos y errores para depuración en la previsualización
+                    data_with_errors = {
+                        'nombre': form_ingrediente.data.get(form_ingrediente.add_prefix('nombre'), ''),
+                        'cantidad': form_ingrediente.data.get(form_ingrediente.add_prefix('cantidad'), ''),
+                        'unidad': form_ingrediente.data.get(form_ingrediente.add_prefix('unidad'), ''),
+                        'errors': form_ingrediente.errors
+                    }
+                    ingredientes_preview.append(data_with_errors)
 
 
         pasos_preview = []
-        for i, form in enumerate(paso_formset):
-            if form.is_valid() and not form.cleaned_data.get('DELETE', False):
-                pasos_preview.append(form.cleaned_data)
-            elif not form.is_valid() and any(form.errors):
-                data_with_errors = form.data.copy()
-                data_with_errors['errors'] = form.errors
-                pasos_preview.append(data_with_errors)
-            elif form.cleaned_data and form.cleaned_data.get('DELETE', False):
-                pass
-            elif any(field.value() for field in form.fields.values()):
-                data_with_errors = form.data.copy()
-                data_with_errors['errors'] = form.errors
-                pasos_preview.append(data_with_errors)
-
+        for form_paso in paso_formset:
+            # Solo procesar formularios que no estén marcados para DELETE y que tengan algún valor
+            if not form_paso.cleaned_data.get('DELETE', False) and any(field.value() for field in form_paso.fields.values()):
+                if form_paso.is_valid():
+                    pasos_preview.append(form_paso.cleaned_data)
+                else:
+                    # Incluir datos y errores para depuración en la previsualización
+                    data_with_errors = {
+                        'orden': form_paso.data.get(form_paso.add_prefix('orden'), ''),
+                        'descripcion': form_paso.data.get(form_paso.add_prefix('descripcion'), ''),
+                        'errors': form_paso.errors
+                    }
+                    pasos_preview.append(data_with_errors)
 
         context = {
             'receta': receta_data,
             'ingredientes': ingredientes_preview,
             'pasos': pasos_preview,
-            'is_preview': True, # Bandera para indicar que es una previsualización
-            'receta_form': receta_form, # Pasar el formulario principal para errores
-            'ingrediente_formset': ingrediente_formset, # Pasar los formsets para errores
-            'paso_formset': paso_formset,
+            'is_preview': True, 
+            'form': receta_form, 
+            'formset_ingredientes': ingrediente_formset, 
+            'formset_pasos': paso_formset,
         }
         return render(request, 'recetas_app/previsualizar_receta.html', context)
     else:
-        # Si se accede directamente sin POST, redirigir o mostrar un error
         messages.error(request, 'Acceso no válido para previsualizar receta. Por favor, crea una receta primero.')
         return redirect('recetas_app:crear_receta')
-

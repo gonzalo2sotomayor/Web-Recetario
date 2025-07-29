@@ -12,25 +12,43 @@
         <div class="recipe-header">
             <h2 class="recipe-title">{{ receta.titulo }}</h2>
             <p class="recipe-meta">
-                Por: {{ receta.autor.username }} | Categoría: {{ receta.categoria.nombre|default:"Sin categoría" }} | Fecha: {{ receta.fecha_publicacion }}
+                Por: {{ receta.autor.username }} | Categoría: {{ receta.categoria.nombre|default:"Sin categoría" }} | Fecha: {{ receta.fecha_publicacion|date:"d M Y" }}
             </p>
+            {# CAMPOS DE TIEMPO Y PORCIONES EN PREVISUALIZACIÓN #}
+            <div class="recipe-header-info">
+                {% if receta.tiempo_preparacion %}
+                    <span class="recipe-info-item">Preparación: {{ receta.tiempo_preparacion }} min</span>
+                {% endif %}
+                {# ELIMINADO: Tiempo de Cocción #}
+                {# {% if receta.tiempo_coccion %} #}
+                {#     <span class="recipe-info-item">Cocción: {{ receta.tiempo_coccion }} min</span> #}
+                {# {% endif %} #}
+                {% if receta.porciones %}
+                    <span class="recipe-info-item">Porciones: {{ receta.porciones }}</span>
+                {% endif %}
+            </div>
+            {# FIN CAMPOS DE TIEMPO Y PORCIONES EN PREVISUALIZACIÓN #}
         </div>
 
         {% if receta.imagen_file %}
-            {# Si es un archivo temporal, no podemos mostrarlo directamente con un src normal #}
-            {# Aquí podrías añadir un mensaje o un placeholder para la imagen #}
+            {# Si es un archivo temporal, no podemos mostrarlo directamente. Usamos un placeholder. #}
             <div class="recipe-image-container">
-                <img src="{% static 'img/placeholder_recipe.png' %}" alt="Imagen de la receta (previsualización)" class="recipe-image">
-                <p class="image-placeholder-text">La imagen se mostrará aquí una vez publicada.</p>
+                <img src="{% static 'img/placeholder_recipe.png' %}" alt="Imagen de la receta (previsualización)" class="recipe-detail-image">
+                <p class="image-placeholder-text text-center text-gray-600 mt-2">
+                    La imagen se cargará y mostrará aquí una vez que publiques la receta.
+                </p>
             </div>
         {% elif receta.imagen.url %}
             {# Si ya existe una imagen (ej. al editar y previsualizar), la mostramos #}
             <div class="recipe-image-container">
-                <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-image">
+                <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-detail-image">
             </div>
         {% else %}
             <div class="recipe-image-container">
-                <img src="{% static 'img/placeholder_recipe.png' %}" alt="Imagen de la receta (sin imagen)" class="recipe-image">
+                <img src="{% static 'img/placeholder_recipe.png' %}" alt="Imagen de la receta (sin imagen)" class="recipe-detail-image">
+                <p class="image-placeholder-text text-center text-gray-600 mt-2">
+                    No se ha seleccionado ninguna imagen para esta receta.
+                </p>
             </div>
         {% endif %}
 
@@ -43,12 +61,18 @@
             <h3>Ingredientes</h3>
             {% if ingredientes %}
                 <ul class="ingredient-list">
+                    {# ¡Esta es la iteración clave para los ingredientes en previsualización! #}
                     {% for ingrediente in ingredientes %}
                         <li>
+                            {# Mostrar errores si los hay en la previsualización #}
                             {% if ingrediente.errors %}
-                                <span class="error-message">Error: {{ ingrediente.errors.nombre.0|default:'' }} {{ ingrediente.errors.cantidad.0|default:'' }} {{ ingrediente.errors.unidad.0|default:'' }}</span>
+                                <span class="error-message">Error: 
+                                    {% for field_name, error_list in ingrediente.errors.items %}
+                                        {{ field_name }}: {{ error_list|join:", " }}
+                                    {% endfor %}
+                                </span>
                             {% endif %}
-                            {{ ingrediente.cantidad|default:'' }} {{ ingrediente.unidad|default:'' }} {{ ingrediente.nombre|default:'' }}
+                            {{ ingrediente.cantidad|default:'' }} {{ ingrediente.unidad|default:'' }} de {{ ingrediente.nombre|default:'' }}
                         </li>
                     {% endfor %}
                 </ul>
@@ -61,10 +85,16 @@
             <h3>Instrucciones</h3>
             {% if pasos %}
                 <ol class="step-list">
+                    {# ¡Esta es la iteración clave para los pasos en previsualización! #}
                     {% for paso in pasos %}
                         <li>
+                            {# Mostrar errores si los hay en la previsualización #}
                             {% if paso.errors %}
-                                <span class="error-message">Error: {{ paso.errors.descripcion.0|default:'' }}</span>
+                                <span class="error-message">Error: 
+                                    {% for field_name, error_list in paso.errors.items %}
+                                        {{ field_name }}: {{ error_list|join:", " }}
+                                    {% endfor %}
+                                </span>
                             {% endif %}
                             {{ paso.descripcion|linebreaksbr }}
                         </li>
@@ -78,7 +108,6 @@
         <div class="form-actions mt-8">
             <a href="{% url 'recetas_app:crear_receta' %}" class="button button-secondary">Volver a Editar</a>
             {# El botón de Publicar aquí no tiene funcionalidad directa, es solo informativo #}
-            {# El formulario principal en crear_receta.html es el que envía para publicar #}
             <button type="button" class="button button-primary" onclick="alert('Regresa a la página anterior para publicar tu receta.')">Publicar Receta</button>
         </div>
     </div>
