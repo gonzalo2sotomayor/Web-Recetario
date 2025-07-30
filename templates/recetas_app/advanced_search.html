@@ -1,15 +1,159 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Búsqueda Avanzada - El Recetario{% endblock title %}
+{% block title %}Búsqueda Avanzada - El Recetario{% endblock %}
 
 {% block content %}
 <div class="main-content-new">
-    <h2 class="section-title">Búsqueda Avanzada</h2>
-    <div class="form-container">
-        <p class="form-description">Aquí podrás realizar búsquedas más específicas por ingredientes, categorías, tiempo de preparación, etc.</p>
-        <p>¡Esta funcionalidad está en construcción!</p>
-        {# Aquí irá el formulario de búsqueda avanzada en el futuro #}
+    <h2 class="section-title">Búsqueda Avanzada de Recetas</h2>
+    <p class="section-description">Afina tu búsqueda utilizando múltiples criterios.</p>
+
+    <div class="search-form-container">
+        <form action="{% url 'recetas_app:advanced_search_results' %}" method="GET" class="advanced-search-form">
+            <div class="form-group">
+                <label for="exact_phrase" class="form-label">Frase Exacta:</label>
+                <input type="text" id="exact_phrase" name="exact_phrase" 
+                       placeholder="Ej: 'pollo al horno con papas'" class="form-input"
+                       value="{{ request.GET.exact_phrase|default:'' }}">
+                <p class="form-help-text">Busca recetas que contengan esta frase exacta en el título o descripción.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="similar_words" class="form-label">Palabras Clave (similares):</label>
+                <input type="text" id="similar_words" name="similar_words" 
+                       placeholder="Ej: 'vegetariano saludable rápido'" class="form-input"
+                       value="{{ request.GET.similar_words|default:'' }}">
+                <p class="form-help-text">Busca recetas que contengan alguna de estas palabras en el título, descripción o ingredientes.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="ingredient" class="form-label">Ingrediente Específico:</label>
+                <input type="text" id="ingredient" name="ingredient" 
+                       placeholder="Ej: 'tomate' o 'queso'" class="form-input"
+                       value="{{ request.GET.ingredient|default:'' }}">
+                <p class="form-help-text">Encuentra recetas que utilicen este ingrediente.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="category" class="form-label">Categoría:</label>
+                <select id="category" name="category" class="form-select">
+                    <option value="">Todas las categorías</option>
+                    {% for category in categories %}
+                        <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>
+                            {{ category.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <p class="form-help-text">Filtra recetas por una categoría específica.</p>
+            </div>
+
+            <button type="submit" class="btn-primary-large">Buscar Recetas</button>
+            <a href="{% url 'recetas_app:advanced_search' %}" class="btn-secondary-large">Limpiar Búsqueda</a>
+        </form>
     </div>
 </div>
-{% endblock content %}
+
+<style>
+    /* Estilos específicos para la búsqueda avanzada */
+    .search-form-container {
+        background-color: #ffffff;
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: 2rem auto;
+    }
+
+    .advanced-search-form .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .advanced-search-form .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+        font-size: 1.1rem;
+    }
+
+    .advanced-search-form .form-input,
+    .advanced-search-form .form-select {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        color: #555;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .advanced-search-form .form-input:focus,
+    .advanced-search-form .form-select:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        outline: none;
+    }
+
+    .advanced-search-form .form-help-text {
+        font-size: 0.85rem;
+        color: #777;
+        margin-top: 0.4rem;
+    }
+
+    .btn-primary-large,
+    .btn-secondary-large {
+        display: inline-block;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        border: none;
+        margin-right: 1rem;
+    }
+
+    .btn-primary-large {
+        background-color: #4CAF50;
+        color: white;
+        box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-primary-large:hover {
+        background-color: #45a049;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn-secondary-large {
+        background-color: #f0f0f0;
+        color: #555;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-secondary-large:hover {
+        background-color: #e0e0e0;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .search-form-container {
+            padding: 1.5rem;
+            margin: 1rem auto;
+        }
+
+        .btn-primary-large,
+        .btn-secondary-large {
+            display: block;
+            width: 100%;
+            margin-right: 0;
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+{% endblock %}

@@ -211,9 +211,13 @@ def simple_search_view(request):
     }
     return render(request, 'recetas_app/search_results.html', context)
 
-# Vista para el formulario de búsqueda avanzada
+ # Vista para el formulario de búsqueda avanzada
 def advanced_search_view(request):
-    return render(request, 'recetas_app/advanced_search.html', {})
+    categorias = Categoria.objects.all() # Obtener todas las categorías
+    context = {
+        'categories': categorias, # Pasar las categorías al template
+    }
+    return render(request, 'recetas_app/advanced_search.html', context)
 
 # Vista para procesar los resultados de la búsqueda avanzada
 def advanced_search_results_view(request):
