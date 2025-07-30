@@ -93,13 +93,19 @@
                     </div>
                 </div>
                 
-                {# Usamos data-url en lugar de onclick #}
-                <div id="slide-daily-recipe" class="hero-slide clickable-slide" data-background-image="{% static 'img/daily_recipe_banner.jpg' %}" data-url="/receta/123/">
-                    <h2 class="slide-title">Receta del Día</h2>
-                    <p class="slide-description">Descubre nuestra deliciosa receta destacada para hoy. ¡No te la pierdas!</p>
+                {# CAMBIO CLAVE AQUÍ: Receta de la Semana en el banner principal #}
+                <div id="slide-daily-recipe" class="hero-slide clickable-slide" 
+                     data-background-image="{% if receta_de_la_semana and receta_de_la_semana.imagen %}{{ receta_de_la_semana.imagen.url }}{% else %}{% static 'img/default_daily_recipe_banner.jpg' %}{% endif %}" 
+                     data-url="{% if receta_de_la_semana %}{% url 'recetas_app:detalle_receta' pk=receta_de_la_semana.pk %}{% else %}{% url 'recetas_app:home' %}{% endif %}">
+                    <h2 class="slide-title">Receta de la Semana</h2>
+                    {% if receta_de_la_semana %}
+                        <p class="slide-description">{{ receta_de_la_semana.titulo }} - {{ receta_de_la_semana.descripcion|truncatechars:100 }}</p>
+                    {% else %}
+                        <p class="slide-description">¡Pronto tendremos una deliciosa receta destacada para ti!</p>
+                    {% endif %}
                 </div>
 
-                {# CAMBIO CLAVE AQUÍ: Usar {% url %} para el enlace de Recetas Populares #}
+                {# Recetas Populares en el banner principal #}
                 <div id="slide-popular-recipes" class="hero-slide clickable-slide" data-background-image="{% static 'img/popular_recipes_banner.jpg' %}" data-url="{% url 'recetas_app:recetas_populares_page' %}">
                     <h2 class="slide-title">Recetas Populares</h2>
                     <p class="slide-description">Explora las recetas más votadas y comentadas por nuestra comunidad.</p>
@@ -121,7 +127,7 @@
 
     <footer class="main-footer-new">
         <p>&copy; 2025 El Recetario</p>
-        <div class="footer-links"> {# Nuevo div para los enlaces #}
+        <div class="footer-links">
             <a href="{% url 'recetas_app:acerca_de' %}" class="footer-link">Acerca de</a>
             <span class="footer-link-separator">|</span>
             <a href="{% url 'recetas_app:contacto' %}" class="footer-link">Contacto</a>
@@ -189,7 +195,7 @@
             });
 
             // Lógica para manejar clics en elementos con data-url (movido aquí para ser global)
-            const clickableElements = document.querySelectorAll('.clickable-slide, .clickable-card'); // Añadido .clickable-slide
+            const clickableElements = document.querySelectorAll('.clickable-slide, .clickable-card');
             clickableElements.forEach(element => {
                 // Evitar que el clic en un botón o enlace dentro de un elemento clickeable active el data-url del padre
                 element.addEventListener('click', function(event) {

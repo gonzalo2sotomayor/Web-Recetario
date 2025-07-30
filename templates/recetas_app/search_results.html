@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load recetas_extras %} 
 
 {% block title %}Resultados de Búsqueda - El Recetario{% endblock title %}
 
@@ -9,75 +10,38 @@
     <div class="search-results-container">
         {% if query %}
             <p class="search-query-info">Mostrando resultados para: "<strong>{{ query }}</strong>"</p>
-        {% elif exact_phrase or similar_words or ingredient or recipe_type %}
+        {% elif exact_phrase or similar_words or ingredient or selected_category %}
             <p class="search-query-info">Mostrando resultados para tu búsqueda avanzada.</p>
-            {# Mostrar criterios de búsqueda avanzada si están presentes #}
             <ul class="advanced-search-criteria">
                 {% if exact_phrase %}<li><span class="criteria-label">Frase exacta:</span> "{{ exact_phrase }}"</li>{% endif %}
                 {% if similar_words %}<li><span class="criteria-label">Palabras similares:</span> "{{ similar_words }}"</li>{% endif %}
                 {% if ingredient %}<li><span class="criteria-label">Ingrediente:</span> "{{ ingredient }}"</li>{% endif %}
-                {% if selected_category %}<li><span class="criteria-label">Categoría:</span> {{ categories|get_item:selected_category }}</li>{% endif %}
-                {# Asumiendo que 'categories' es un queryset y 'get_item' es un filtro personalizado o que puedes acceder al nombre directamente #}
+                
+                {% if selected_category %}
+                    <li><span class="criteria-label">Categoría:</span> {{ categories|get_item:selected_category }}</li>
+                {% endif %}
             </ul>
         {% endif %}
 
-        {# Controles de Ordenamiento (NUEVO) #}
+        {# Controles de Ordenamiento #}
         <div class="sort-options-container">
             <span class="sort-label">Ordenar por:</span>
-            {% comment %}
-                Construimos la URL base para el ordenamiento, manteniendo los parámetros de búsqueda existentes.
-                Para ello, verificamos si es una búsqueda simple o avanzada y construimos la query string.
-            {% endcomment %}
-            {% if search_type == 'simple' %}
-                {% with base_query_params='q='|add:query %}
-                    <a href="?{{ base_query_params }}&order_by=fecha_publicacion&direction=desc"
-                       class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'desc' %}active{% endif %}">
-                        Más Recientes
-                    </a>
-                    <a href="?{{ base_query_params }}&order_by=fecha_publicacion&direction=asc"
-                       class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'asc' %}active{% endif %}">
-                        Más Antiguas
-                    </a>
-                    <a href="?{{ base_query_params }}&order_by=titulo&direction=asc"
-                       class="sort-button {% if current_order_by == 'titulo' and current_direction == 'asc' %}active{% endif %}">
-                        Título (A-Z)
-                    </a>
-                    <a href="?{{ base_query_params }}&order_by=titulo&direction=desc"
-                       class="sort-button {% if current_order_by == 'titulo' and current_direction == 'desc' %}active{% endif %}">
-                        Título (Z-A)
-                    </a>
-                {% endwith %}
-            {% else %} {# search_type == 'advanced' #}
-                {% comment %}
-                    Construimos la query string para búsqueda avanzada.
-                    Usamos un filtro personalizado 'build_query_string' o lo construimos manualmente aquí.
-                    Para simplificar, lo construiremos manualmente.
-                {% endcomment %}
-                {% with base_query_params='' %}
-                    {% if exact_phrase %}{% with base_query_params=base_query_params|add:'exact_phrase='|add:exact_phrase|add:'&' %}{% endwith %}{% endif %}
-                    {% if similar_words %}{% with base_query_params=base_query_params|add:'similar_words='|add:similar_words|add:'&' %}{% endwith %}{% endif %}
-                    {% if ingredient %}{% with base_query_params=base_query_params|add:'ingredient='|add:ingredient|add:'&' %}{% endwith %}{% endif %}
-                    {% if selected_category %}{% with base_query_params=base_query_params|add:'category='|add:selected_category|add:'&' %}{% endwith %}{% endif %}
-                    {# Asegurarse de quitar el último '&' si no hay más parámetros, o manejarlo en la vista #}
-
-                    <a href="?{{ base_query_params }}order_by=fecha_publicacion&direction=desc"
-                       class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'desc' %}active{% endif %}">
-                        Más Recientes
-                    </a>
-                    <a href="?{{ base_query_params }}order_by=fecha_publicacion&direction=asc"
-                       class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'asc' %}active{% endif %}">
-                        Más Antiguas
-                    </a>
-                    <a href="?{{ base_query_params }}order_by=titulo&direction=asc"
-                       class="sort-button {% if current_order_by == 'titulo' and current_direction == 'asc' %}active{% endif %}">
-                        Título (A-Z)
-                    </a>
-                    <a href="?{{ base_query_params }}order_by=titulo&direction=desc"
-                       class="sort-button {% if current_order_by == 'titulo' and current_direction == 'desc' %}active{% endif %}">
-                        Título (Z-A)
-                    </a>
-                {% endwith %}
-            {% endif %}
+            <a href="?{{ base_query_string }}{% if base_query_string %}&{% endif %}order_by=fecha_publicacion&direction=desc"
+               class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'desc' %}active{% endif %}">
+                Más Recientes
+            </a>
+            <a href="?{{ base_query_string }}{% if base_query_string %}&{% endif %}order_by=fecha_publicacion&direction=asc"
+               class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'asc' %}active{% endif %}">
+                Más Antiguas
+            </a>
+            <a href="?{{ base_query_string }}{% if base_query_string %}&{% endif %}order_by=titulo&direction=asc"
+               class="sort-button {% if current_order_by == 'titulo' and current_direction == 'asc' %}active{% endif %}">
+                Título (A-Z)
+            </a>
+            <a href="?{{ base_query_string }}{% if base_query_string %}&{% endif %}order_by=titulo&direction=desc"
+               class="sort-button {% if current_order_by == 'titulo' and current_direction == 'desc' %}active{% endif %}">
+                Título (Z-A)
+            </a>
         </div>
 
         {% if results %}
@@ -100,3 +64,4 @@
         {% endif %}
     </div>
 </div>
+{% endblock content %} 

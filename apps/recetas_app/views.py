@@ -11,7 +11,7 @@ from django.utils.text import slugify
 from django.contrib import messages
 from django.views.generic import ListView, DetailView
 from django.utils import timezone
-
+from urllib.parse import urlencode 
 
 # Importaciones consolidadas de modelos y formularios
 from .models import Receta, Ingrediente, Paso, Comentario, Categoria
@@ -75,7 +75,7 @@ def home(request):
         'current_order_by': order_by,
         'current_direction': direction,
         'receta_de_la_semana': receta_de_la_semana,
-        'recetas_populares': recetas_populares_home, # Cambiado el nombre para evitar confusión con la nueva vista
+        'recetas_populares': recetas_populares_home, 
     }
     return render(request, 'recetas_app/home.html', context)
 
@@ -174,12 +174,19 @@ def recetas_aleatorias(request):
 def simple_search_view(request):
     query = request.GET.get('q', '').strip()
     results = []
+    
+    # --- Construir base_query_params en la vista ---
+    base_query_params = {}
     if query:
         results = Receta.objects.filter(
             Q(titulo__icontains=query) | Q(descripcion__icontains=query)
         ).distinct()
+        base_query_params['q'] = query
     
-    # --- Lógica de Ordenamiento para búsqueda simple ---
+    # Convertir el diccionario a una cadena de consulta URL-encoded
+    base_query_string = urlencode(base_query_params)
+
+    # --- Lógica de Ordenamiento ---
     order_by = request.GET.get('order_by', 'fecha_publicacion')
     direction = request.GET.get('direction', 'desc')
 
@@ -200,6 +207,7 @@ def simple_search_view(request):
         'search_type': 'simple',
         'current_order_by': order_by,
         'current_direction': direction,
+        'base_query_string': base_query_string, # Pasar la cadena de consulta al template
     }
     return render(request, 'recetas_app/search_results.html', context)
 
@@ -217,8 +225,11 @@ def advanced_search_results_view(request):
 
     queryset = Receta.objects.all()
 
+    # --- Construir base_query_params en la vista (NUEVO) ---
+    base_query_params = {}
     if exact_phrase:
         queryset = queryset.filter(Q(titulo__icontains=exact_phrase) | Q(descripcion__icontains=exact_phrase))
+        base_query_params['exact_phrase'] = exact_phrase
 
     if similar_words:
         words = similar_words.split()
@@ -228,20 +239,26 @@ def advanced_search_results_view(request):
             q_objects |= Q(descripcion__icontains=word)
             q_objects |= Q(ingredientes__nombre__icontains=word)
         queryset = queryset.filter(q_objects)
+        base_query_params['similar_words'] = similar_words
 
     if ingredient:
         queryset = queryset.filter(ingredientes__nombre__icontains=ingredient)
+        base_query_params['ingredient'] = ingredient
 
     if category_slug:
         try:
             category_obj = Categoria.objects.get(slug=category_slug)
             queryset = queryset.filter(categoria=category_obj)
+            base_query_params['category'] = category_slug
         except Categoria.DoesNotExist:
             pass
 
     results = queryset.distinct()
+    
+    # Convertir el diccionario a una cadena de consulta URL-encoded
+    base_query_string = urlencode(base_query_params)
 
-    # --- Lógica de Ordenamiento para búsqueda avanzada ---
+    # --- Lógica de Ordenamiento ---
     order_by = request.GET.get('order_by', 'fecha_publicacion')
     direction = request.GET.get('direction', 'desc')
 
@@ -267,9 +284,9 @@ def advanced_search_results_view(request):
         'selected_category': category_slug,
         'current_order_by': order_by,
         'current_direction': direction,
+        'base_query_string': base_query_string, # Pasar la cadena de consulta al template
     }
     return render(request, 'recetas_app/search_results.html', context)
-
 
 # Vista: Crear Receta (solo para administradores/staff)
 @login_required

@@ -4,42 +4,6 @@
 {% block title %}Inicio - El Recetario{% endblock %}
 
 {% block content %}
-{# Sección para la Receta de la Semana (DINÁMICO AHORA) #}
-<div class="featured-recipe-of-week-card">
-    <h2 class="section-title text-center">Receta de la Semana</h2>
-    <div class="featured-recipe-content">
-        {% if receta_de_la_semana %}
-            {# Si hay una receta destacada, muestra sus datos #}
-            {% if receta_de_la_semana.imagen %}
-                <img src="{{ receta_de_la_semana.imagen.url }}" alt="{{ receta_de_la_semana.titulo }}" class="featured-recipe-image">
-            {% else %}
-                {# Imagen por defecto si la receta destacada no tiene una imagen #}
-                <img src="{% static 'img/default_featured_recipe.jpg' %}" alt="Imagen de Receta Destacada por defecto" class="featured-recipe-image">
-            {% endif %}
-            <div class="featured-recipe-text">
-                <h3 class="featured-recipe-title">{{ receta_de_la_semana.titulo }}</h3>
-                <p class="featured-recipe-description">
-                    {# Trunca la descripción para que no sea demasiado larga en el banner #}
-                    {{ receta_de_la_semana.descripcion|truncatechars:200 }}
-                </p>
-                {# Enlace al detalle de la receta destacada #}
-                <a href="{% url 'recetas_app:detalle_receta' pk=receta_de_la_semana.pk %}" class="featured-recipe-button">Ver Receta Completa</a>
-            </div>
-        {% else %}
-            {# Contenido por defecto si no hay ninguna receta marcada como destacada #}
-            <img src="{% static 'img/featured_recipe_of_week.jpg' %}" alt="Receta de la Semana: Lasaña Casera" class="featured-recipe-image">
-            <div class="featured-recipe-text">
-                <h3 class="featured-recipe-title">¡Pronto una Receta Destacada!</h3>
-                <p class="featured-recipe-description">
-                    Mantente atento a nuestras actualizaciones. ¡La receta de la semana estará aquí pronto!
-                </p>
-                {# Enlace a la página de inicio general para explorar otras recetas #}
-                <a href="{% url 'recetas_app:home' %}" class="featured-recipe-button">Explorar Recetas</a>
-            </div>
-        {% endif %}
-    </div>
-</div>
-
 {# Sección de Últimas Recetas Añadidas (DINÁMICA) #}
 <div class="section-wrapper section-bg-primary">
     <h2 class="section-title">
@@ -48,7 +12,7 @@
         {% elif filtro_categoria_aplicado and not categoria_encontrada %}
             Categoría inexistente
         {% else %}
-            Últimas Recetas Añadidas
+            ¡Recetas Deliciosas!
         {% endif %}
     </h2>
 
@@ -100,7 +64,7 @@
 
 {# Sección de Explora por Categorías Populares (DINÁMICA) #}
 <div class="section-wrapper section-bg-secondary">
-    <h2 class="section-title">Explora por Categorías Populares</h2>
+    <h2 class="section-title">Nuestras Categorías</h2>
     <div class="category-grid">
         {% for categoria in categorias %}
             {# Usamos data-url para la navegación en las tarjetas de categoría #}
