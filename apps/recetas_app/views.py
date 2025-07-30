@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.forms import inlineformset_factory
 from django.db import transaction
 from django.urls import reverse_lazy
-from django.db.models import Q, Count # Importar Count
+from django.db.models import Q, Count
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger # NUEVO: Importaciones para paginación
 import random
 from django.utils.text import slugify
 from django.contrib import messages
@@ -49,21 +50,21 @@ def home(request):
     if order_by == 'fecha_publicacion':
         if direction == 'asc':
             recetas = recetas.order_by('fecha_publicacion')
-        else: 
+        else: # 'desc'
             recetas = recetas.order_by('-fecha_publicacion')
     elif order_by == 'titulo':
         if direction == 'asc':
             recetas = recetas.order_by('titulo')
-        else: 
+        else: # 'desc'
             recetas = recetas.order_by('-titulo')
 
     # --- Obtener la Receta de la Semana ---
     receta_de_la_semana = Receta.objects.filter(is_featured=True).order_by('-fecha_publicacion').first()
 
-    # --- Obtener Recetas Más Populares ---
-    recetas_populares = Receta.objects.annotate(
+    # --- Obtener Recetas Más Populares (para la sección de la página de inicio) ---
+    recetas_populares_home = Receta.objects.annotate(
         num_favoritos=Count('recetafavorita')
-    ).order_by('-num_favoritos')[:5] # Limitar a, por ejemplo, las 5 más populares
+    ).order_by('-num_favoritos')[:6] # Limitar a, por ejemplo, las 6 más populares para la home
 
     context = {
         'recetas': recetas,
@@ -74,9 +75,38 @@ def home(request):
         'current_order_by': order_by,
         'current_direction': direction,
         'receta_de_la_semana': receta_de_la_semana,
-        'recetas_populares': recetas_populares, # Pasar las recetas populares al template
+        'recetas_populares': recetas_populares_home, # Cambiado el nombre para evitar confusión con la nueva vista
     }
     return render(request, 'recetas_app/home.html', context)
+
+
+# --- VISTA: Recetas Populares (Página dedicada con paginación) ---
+def recetas_populares_page(request):
+    # Obtener todas las recetas, anotarlas con el número de favoritos
+    # y ordenarlas de forma descendente.
+    all_recetas_populares = Receta.objects.annotate(
+        num_favoritos=Count('recetafavorita')
+    ).order_by('-num_favoritos')
+
+    # Configurar la paginación
+    paginator = Paginator(all_recetas_populares, 12) # Mostrar 12 recetas por página
+    page_number = request.GET.get('page') # Obtener el número de página de la URL
+
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        # Si el parámetro de página no es un entero, entregar la primera página.
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        # Si la página está fuera de rango (ej. 9999), entregar la última página de resultados.
+        page_obj = paginator.page(paginator.num_pages)
+
+    context = {
+        'recetas_populares': page_obj, # Ahora pasamos el objeto de página, no el queryset completo
+        'page_obj': page_obj, # También pasamos el objeto de página para los controles de paginación
+    }
+    return render(request, 'recetas_app/recetas_populares.html', context)
+
 
 # Vista para el detalle de una receta específica
 def detalle_receta(request, pk):
@@ -156,12 +186,12 @@ def simple_search_view(request):
     if order_by == 'fecha_publicacion':
         if direction == 'asc':
             results = results.order_by('fecha_publicacion')
-        else: 
+        else: # 'desc'
             results = results.order_by('-fecha_publicacion')
     elif order_by == 'titulo':
         if direction == 'asc':
             results = results.order_by('titulo')
-        else:
+        else: # 'desc'
             results = results.order_by('-titulo')
 
     context = {

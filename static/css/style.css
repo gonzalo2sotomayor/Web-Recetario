@@ -3524,3 +3524,91 @@ body.light-theme {
         font-weight: 600;
         color: var(--text-color); /* Reutiliza una variable de color */
     }
+
+/* Estilos para el banner de Recetas Populares */
+.popular-recipes-banner {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer; /* Indica que es clickeable */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 0; /* Eliminar padding del section-wrapper para que la imagen ocupe todo */
+    margin-bottom: 3rem; /* Espacio debajo del banner */
+}
+
+.popular-recipes-banner:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.popular-banner-content {
+    position: relative;
+    width: 100%;
+    height: 300px; /* Altura fija para el banner, ajusta si es necesario */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popular-banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Asegura que la imagen cubra el área sin distorsionarse */
+    filter: brightness(0.6); /* Oscurece la imagen para que el texto resalte */
+}
+
+.popular-banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Capa semi-transparente para el texto */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    color: white;
+}
+
+.popular-banner-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+.popular-banner-description {
+    font-size: 1.3rem;
+    max-width: 80%;
+    line-height: 1.5;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+/* Ajustes responsivos para el banner */
+@media (max-width: 768px) {
+    .popular-banner-content {
+        height: 250px; /* Ajusta la altura en móviles */
+    }
+    .popular-banner-title {
+        font-size: 2rem;
+    }
+    .popular-banner-description {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .popular-banner-content {
+        height: 200px;
+    }
+    .popular-banner-title {
+        font-size: 1.5rem;
+    }
+    .popular-banner-description {
+        font-size: 0.9rem;
+    }
+}

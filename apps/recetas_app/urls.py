@@ -13,8 +13,9 @@ urlpatterns = [
     path('previsualizar/', views.previsualizar_receta, name='previsualizar_receta'),
     path('descubre/', views.recetas_aleatorias, name='recetas_aleatorias'),
     path('categoria/<slug:categoria_slug>/', views.recetas_por_categoria, name='recetas_por_categoria'),
+    path('populares/', views.recetas_populares_page, name='recetas_populares_page'), 
 
-    # Rutas de Comentarios (NUEVAS)
+    # Rutas de Comentarios
     path('comentario/<int:pk>/editar/', views.editar_comentario, name='editar_comentario'),
     path('comentario/<int:pk>/eliminar/', views.eliminar_comentario, name='eliminar_comentario'),
 
@@ -31,4 +32,8 @@ urlpatterns = [
 
     # Ruta para las opciones de administración
     path('admin-options/', views.admin_options_view, name='admin_options'),
+
+    #RUTAS: Acerca de y Contacto
+    path('acerca-de/', views.acerca_de, name='acerca_de'),
+    path('contacto/', views.contacto, name='contacto'),
 ]

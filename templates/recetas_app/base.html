@@ -7,6 +7,8 @@
     <title>{% block title %}El Recetario{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+    {# Font Awesome para iconos como el corazón de favoritos #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     {% block extra_head %}{% endblock %}
 </head>
 <body class="light-theme">
@@ -97,8 +99,8 @@
                     <p class="slide-description">Descubre nuestra deliciosa receta destacada para hoy. ¡No te la pierdas!</p>
                 </div>
 
-                {# Usamos data-url en lugar de onclick #}
-                <div id="slide-popular-recipes" class="hero-slide clickable-slide" data-background-image="{% static 'img/popular_recipes_banner.jpg' %}" data-url="/recetas/populares/">
+                {# CAMBIO CLAVE AQUÍ: Usar {% url %} para el enlace de Recetas Populares #}
+                <div id="slide-popular-recipes" class="hero-slide clickable-slide" data-background-image="{% static 'img/popular_recipes_banner.jpg' %}" data-url="{% url 'recetas_app:recetas_populares_page' %}">
                     <h2 class="slide-title">Recetas Populares</h2>
                     <p class="slide-description">Explora las recetas más votadas y comentadas por nuestra comunidad.</p>
                 </div>
@@ -119,6 +121,11 @@
 
     <footer class="main-footer-new">
         <p>&copy; 2025 El Recetario</p>
+        <div class="footer-links"> {# Nuevo div para los enlaces #}
+            <a href="{% url 'recetas_app:acerca_de' %}" class="footer-link">Acerca de</a>
+            <span class="footer-link-separator">|</span>
+            <a href="{% url 'recetas_app:contacto' %}" class="footer-link">Contacto</a>
+        </div>
     </footer>
 
     <script>
@@ -182,21 +189,18 @@
             });
 
             // Lógica para manejar clics en elementos con data-url (movido aquí para ser global)
-            const clickableElements = document.querySelectorAll('[data-url]');
+            const clickableElements = document.querySelectorAll('.clickable-slide, .clickable-card'); // Añadido .clickable-slide
             clickableElements.forEach(element => {
-                if (element.tagName === 'A' && element.classList.contains('featured-recipe-button')) {
-                } else {
-                    element.addEventListener('click', function(event) {
-                        // Si el clic fue en un enlace dentro de la tarjeta, dejar que el enlace haga su trabajo
-                        if (event.target.tagName === 'A' || event.target.closest('a')) {
-                            return; 
-                        }
-                        const url = this.dataset.url;
-                        if (url) {
-                            window.location.href = url;
-                        }
-                    });
-                }
+                // Evitar que el clic en un botón o enlace dentro de un elemento clickeable active el data-url del padre
+                element.addEventListener('click', function(event) {
+                    if (event.target.tagName === 'A' || event.target.closest('a')) {
+                        return; 
+                    }
+                    const url = this.dataset.url;
+                    if (url) {
+                        window.location.href = url;
+                    }
+                });
             });
         });
     </script>

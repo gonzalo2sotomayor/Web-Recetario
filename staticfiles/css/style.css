@@ -3524,3 +3524,37 @@ body.light-theme {
         font-weight: 600;
         color: var(--text-color); /* Reutiliza una variable de color */
     }
+
+/* Estilos para el pie de página */
+.main-footer-new {
+    background-color: var(--dark-bg); /* O el color de fondo que uses para tu footer */
+    color: var(--light-text);
+    padding: 20px 0;
+    text-align: center;
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; /* Espacio entre el copyright y los enlaces */
+}
+
+.footer-links {
+    display: flex;
+    gap: 15px; /* Espacio entre los enlaces del footer */
+    align-items: center;
+}
+
+.footer-link {
+    color: var(--light-text);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: var(--accent-color); /* Color de acento al pasar el ratón */
+    text-decoration: underline;
+}
+
+.footer-link-separator {
+    color: var(--light-text);
+}

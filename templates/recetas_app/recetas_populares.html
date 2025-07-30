@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Recetas Más Populares - El Recetario{% endblock %}
+
+{% block content %}
+<div class="main-content-new">
+    <h2 class="section-title">Nuestras Recetas Más Populares</h2>
+    <p class="section-description">Descubre las recetas favoritas de nuestra comunidad, ¡las que más veces han sido guardadas!</p>
+
+    <div class="grid-container">
+        {% if recetas_populares %}
+            {% for receta in recetas_populares %} {# 'recetas_populares' ahora es page_obj.object_list #}
+                <div class="recipe-card clickable-card" data-url="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
+                    {% if receta.imagen %}
+                        <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-card-image">
+                    {% else %}
+                        <img src="{% static 'img/default_recipe.png' %}" alt="Imagen por defecto" class="recipe-card-image">
+                    {% endif %}
+                    <h3 class="recipe-card-title">{{ receta.titulo }}</h3>
+                    <p class="recipe-card-description">{{ receta.descripcion|truncatechars:100 }}</p>
+                    <p class="recipe-card-favorites">
+                        <i class="fas fa-heart"></i> {{ receta.num_favoritos }} Favoritos
+                    </p>
+                    <a href="{% url 'recetas_app:detalle_receta' pk=receta.pk %}" class="btn-primary">Ver Receta</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-results-message">Aún no hay recetas populares. ¡Sé el primero en añadir una a favoritos!</p>
+        {% endif %}
+    </div>
+
+    {# Controles de Paginación (NUEVO) #}
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">Anterior</a>
+            {% endif %}
+
+            <span class="current">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">Siguiente</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+
+<style>
+    /* Estilos específicos para esta página, si no están ya en styles.css */
+    .main-content-new {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: #f9f9f9;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .section-title {
+        color: #333;
+        text-align: center;
+        margin-bottom: 0.5rem;
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .section-description {
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+        color: #666;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        padding: 1rem;
+    }
+
+    .recipe-card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-bottom: 1rem;
+    }
+
+    .recipe-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .recipe-card-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid #eee;
+    }
+
+    .recipe-title {
+        font-size: 1.5rem;
+        color: #333;
+        margin: 1rem 1rem 0.5rem;
+        font-weight: 600;
+    }
+
+    .recipe-description {
+        font-size: 0.95rem;
+        color: #666;
+        margin: 0 1rem 1rem;
+        line-height: 1.5;
+        flex-grow: 1;
+    }
+
+    .recipe-card-favorites {
+        text-align: center;
+        color: #E91E63; /* Un color rosa para los corazones */
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .recipe-card-favorites i {
+        margin-right: 5px;
+    }
+
+    .btn-primary {
+        display: block;
+        width: calc(100% - 2rem);
+        padding: 0.8rem 1.2rem;
+        margin: 0 1rem;
+        background-color: #4CAF50;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        font-weight: 600;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary:hover {
+        background-color: #45a049;
+        transform: translateY(-2px);
+    }
+
+    .no-results-message {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #777;
+        padding: 2rem;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .main-content-new {
+            padding: 1rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .grid-container {
+            grid-template-columns: 1fr;
+            padding: 0.5rem;
+        }
+
+        .recipe-card {
+            margin: 0 auto;
+            max-width: 350px;
+        }
+    }
+
+    /* Estilos para la paginación */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+
+    .step-links {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .pagination-btn {
+        background-color: #007bff; /* Color azul, puedes ajustar */
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+        font-weight: 600;
+    }
+
+    .pagination-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .pagination .current {
+        font-size: 1.1rem;
+        color: #555;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
