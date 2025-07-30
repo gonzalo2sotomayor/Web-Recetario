@@ -64,7 +64,7 @@ def perfil_seguridad(request):
                 update_session_auth_hash(request, password_form.user)
                 # Recordarme: Añadir un mensaje de éxito
                 return redirect('usuarios:seguridad_perfil')
-        
+            
         if 'seguridad_settings_submit' in request.POST:
             if seguridad_form.is_valid():
                 seguridad_form.save()
@@ -82,14 +82,17 @@ def perfil_seguridad(request):
 
 @login_required
 def perfil_favoritos(request):
-    recetas_favoritas = RecetaFavorita.objects.filter(user=request.user).order_by('-fecha_agregado')
-    categorias_favoritas = CategoriaFavorita.objects.filter(user=request.user).order_by('nombre')
+    # Corregido: 'user' a 'usuario'
+    recetas_favoritas = RecetaFavorita.objects.filter(usuario=request.user).order_by('-fecha_agregado')
+    # Corregido: 'user' a 'usuario'
+    categorias_favoritas = CategoriaFavorita.objects.filter(usuario=request.user).order_by('nombre')
 
     if request.method == 'POST':
         categoria_form = CategoriaFavoritaForm(request.POST)
         if categoria_form.is_valid():
             nueva_categoria = categoria_form.save(commit=False)
-            nueva_categoria.user = request.user
+            # Corregido: 'user' a 'usuario'
+            nueva_categoria.usuario = request.user
             nueva_categoria.save()
             # Recordarme: Añadir un mensaje de éxito
             return redirect('usuarios:favoritos_perfil')
@@ -121,7 +124,7 @@ def ver_perfil(request):
     perfil = request.user.perfil
 
     # Obtener las recetas favoritas del usuario
-    recetas_favoritas = RecetaFavorita.objects.filter(user=request.user).order_by('-fecha_agregado')
+    recetas_favoritas = RecetaFavorita.objects.filter(usuario=request.user).order_by('-fecha_agregado')
     
     # Obtener los comentarios más recientes del usuario (ej. los últimos 5)
     ultimos_comentarios = Comentario.objects.filter(autor=request.user).order_by('-fecha_creacion')[:5]
@@ -229,14 +232,16 @@ def marcar_como_leido(request, mensaje_id):
 @login_required
 def toggle_favorito(request, receta_pk):
     receta = get_object_or_404(Receta, pk=receta_pk)
-    favorito_existente = RecetaFavorita.objects.filter(user=request.user, receta=receta)
+    # Corregido: 'user' a 'usuario'
+    favorito_existente = RecetaFavorita.objects.filter(usuario=request.user, receta=receta)
 
     if favorito_existente.exists():
         favorito_existente.delete()
         # Recordarme: Añadir mensaje de éxito/eliminación
         es_favorito = False
     else:
-        RecetaFavorita.objects.create(user=request.user, receta=receta)
+        # Corregido: 'user' a 'usuario'
+        RecetaFavorita.objects.create(usuario=request.user, receta=receta)
         # Recordarme: Añadir mensaje de éxito/adición
         es_favorito = True
     
@@ -248,8 +253,10 @@ def add_to_category(request, receta_pk):
     if request.method == 'POST':
         categoria_id = request.POST.get('categoria_id')
         if categoria_id:
-            categoria = get_object_or_404(CategoriaFavorita, pk=categoria_id, user=request.user)
-            receta_favorita, created = RecetaFavorita.objects.get_or_create(user=request.user, receta=receta)
+            # Corregido: 'user' a 'usuario'
+            categoria = get_object_or_404(CategoriaFavorita, pk=categoria_id, usuario=request.user)
+            # Corregido: 'user' a 'usuario'
+            receta_favorita, created = RecetaFavorita.objects.get_or_create(usuario=request.user, receta=receta)
             receta_favorita.categoria = categoria
             receta_favorita.save()
             # Recordarme: Añadir mensaje de éxito

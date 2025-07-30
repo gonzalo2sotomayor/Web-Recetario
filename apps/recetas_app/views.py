@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.forms import inlineformset_factory
 from django.db import transaction
 from django.urls import reverse_lazy
-from django.db.models import Q
+from django.db.models import Q, Count # Importar Count
 import random
 from django.utils.text import slugify
 from django.contrib import messages
@@ -49,17 +49,21 @@ def home(request):
     if order_by == 'fecha_publicacion':
         if direction == 'asc':
             recetas = recetas.order_by('fecha_publicacion')
-        else: # 'desc'
+        else: 
             recetas = recetas.order_by('-fecha_publicacion')
     elif order_by == 'titulo':
         if direction == 'asc':
             recetas = recetas.order_by('titulo')
-        else: # 'desc'
+        else: 
             recetas = recetas.order_by('-titulo')
 
-    # --- Obtener la Receta de la Semana (NUEVO) ---
-    # Intenta obtener la receta más reciente marcada como destacada
+    # --- Obtener la Receta de la Semana ---
     receta_de_la_semana = Receta.objects.filter(is_featured=True).order_by('-fecha_publicacion').first()
+
+    # --- Obtener Recetas Más Populares ---
+    recetas_populares = Receta.objects.annotate(
+        num_favoritos=Count('recetafavorita')
+    ).order_by('-num_favoritos')[:5] # Limitar a, por ejemplo, las 5 más populares
 
     context = {
         'recetas': recetas,
@@ -69,7 +73,8 @@ def home(request):
         'categoria_nombre': categoria_nombre,
         'current_order_by': order_by,
         'current_direction': direction,
-        'receta_de_la_semana': receta_de_la_semana, # Pasar la receta destacada al template
+        'receta_de_la_semana': receta_de_la_semana,
+        'recetas_populares': recetas_populares, # Pasar las recetas populares al template
     }
     return render(request, 'recetas_app/home.html', context)
 
@@ -151,12 +156,12 @@ def simple_search_view(request):
     if order_by == 'fecha_publicacion':
         if direction == 'asc':
             results = results.order_by('fecha_publicacion')
-        else: # 'desc'
+        else: 
             results = results.order_by('-fecha_publicacion')
     elif order_by == 'titulo':
         if direction == 'asc':
             results = results.order_by('titulo')
-        else: # 'desc'
+        else:
             results = results.order_by('-titulo')
 
     context = {

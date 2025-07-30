@@ -98,8 +98,34 @@
     </div>
 </div>
 
-{# Sección de Explora por Categorías Populares (DINÁMICA) #}
+{# Sección de Recetas Más Populares (NUEVO) #}
 <div class="section-wrapper section-bg-secondary">
+    <h2 class="section-title">Recetas Más Populares</h2>
+    <div class="recipe-grid"> {# Reutilizamos la clase recipe-grid para el diseño en cuadrícula #}
+        {% if recetas_populares %}
+            {% for receta in recetas_populares %}
+                <div class="recipe-card clickable-card" data-url="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
+                    {% if receta.imagen %}
+                        <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-card-image">
+                    {% else %}
+                        <img src="{% static 'img/default_recipe.png' %}" alt="Imagen por defecto" class="recipe-card-image">
+                    {% endif %}
+                    <h3 class="recipe-card-title">{{ receta.titulo }}</h3>
+                    <p class="recipe-card-description">{{ receta.descripcion|truncatechars:100 }}</p>
+                    {# Opcional: Mostrar el número de favoritos si quieres #}
+                    {# <p class="recipe-card-favorites">Favoritos: {{ receta.num_favoritos }}</p> #}
+                    <a href="{% url 'recetas_app:detalle_receta' pk=receta.pk %}" class="recipe-card-link">Ver Receta</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-recipes-message">Aún no hay recetas populares. ¡Sé el primero en añadir una a favoritos!</p>
+        {% endif %}
+    </div>
+</div>
+
+
+{# Sección de Explora por Categorías Populares (DINÁMICA) #}
+<div class="section-wrapper section-bg-primary">
     <h2 class="section-title">Explora por Categorías Populares</h2>
     <div class="category-grid">
         {% for categoria in categorias %}
@@ -120,7 +146,7 @@
 </div>
 
 {# Sección de Consejos de Cocina (NO DINÁMICO) #}
-<div class="section-wrapper section-bg-primary">
+<div class="section-wrapper section-bg-secondary">
     <h2 class="section-title">Consejos de Cocina</h2>
     <div class="tip-grid">
         {# También usamos data-url para los consejos #}
@@ -144,7 +170,7 @@
 
 {# Este bloque solo se mostrará si no estoy autenticada #}
 {% if not user.is_authenticated %}
-    <div class="section-wrapper section-bg-secondary">
+    <div class="section-wrapper section-bg-primary"> {# Cambiado a primary para alternar colores #}
         <div class="call-to-action-card">
             <h2 class="call-to-action-title">¡Únete a Nuestra Comunidad!</h2>
             <p class="call-to-action-text">Regístrate para guardar tus recetas favoritas, compartir las tuyas y conectar con otros amantes de la cocina.</p>
@@ -184,4 +210,4 @@
         }
     });
 </script>
-{% endblock content %}
+{% endblock %}
