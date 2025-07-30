@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Acerca de - El Recetario{% endblock %}
+
+{% block content %}
+<div class="main-content-new">
+    <div class="page-container">
+        <h1 class="page-title">Acerca de El Recetario</h1>
+        <p class="page-description">
+            Bienvenido a El Recetario, tu fuente de inspiración culinaria. Aquí encontrarás una vasta colección de recetas para cada ocasión, desde platos tradicionales hasta creaciones innovadoras. Nuestra misión es simple: hacer que cocinar sea accesible, divertido y delicioso para todos.
+        </p>
+
+        <div class="about-section">
+            <h2 class="section-heading">Nuestra Historia</h2>
+            <p>
+                El Recetario nació de una pasión compartida por la buena comida y el deseo de conectar a las personas a través de la cocina. Comenzamos como un pequeño blog y hemos crecido hasta convertirnos en una comunidad vibrante donde chefs caseros y entusiastas de la comida pueden compartir sus creaciones, aprender nuevas técnicas y descubrir sabores de todo el mundo.
+            </p>
+            <p>
+                Creemos que la comida es más que sustento; es cultura, es memoria, es amor. Por eso, nos esforzamos por ofrecer recetas claras, probadas y con ingredientes fáciles de encontrar, para que cualquier persona pueda recrear la magia en su propia cocina.
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2 class="section-heading">Nuestro Equipo</h2>
+            <p>
+                Detrás de cada receta y cada artículo hay un equipo dedicado de cocineros, escritores y desarrolladores que trabajan incansablemente para traerte el mejor contenido. Nos encanta experimentar en la cocina, investigar sobre ingredientes y técnicas, y, por supuesto, ¡comer!
+            </p>
+            <div class="team-members">
+                <div class="team-member-card">
+                    <img src="{% static 'img/chef_placeholder.png' %}" alt="Chef Placeholder" class="team-member-image">
+                    <h3 class="team-member-name">Chef Isabella Rossi</h3>
+                    <p class="team-member-role">Fundadora y Chef Principal</p>
+                    <p class="team-member-bio">Con más de 20 años de experiencia en la cocina mediterránea, Isabella es el corazón de El Recetario. Su pasión por los ingredientes frescos y las técnicas tradicionales es contagiosa.</p>
+                </div>
+                <div class="team-member-card">
+                    <img src="{% static 'img/food_writer_placeholder.png' %}" alt="Food Writer Placeholder" class="team-member-image">
+                    <h3 class="team-member-name">Marco Bianchi</h3>
+                    <p class="team-member-role">Redactor Culinario Senior</p>
+                    <p class="team-member-bio">Marco es nuestro experto en historias detrás de los platos. Su habilidad para transformar una receta en una narrativa cautivadora hace que cada lectura sea una delicia.</p>
+                </div>
+                <div class="team-member-card">
+                    <img src="{% static 'img/developer_placeholder.png' %}" alt="Developer Placeholder" class="team-member-image">
+                    <h3 class="team-member-name">Sofía García</h3>
+                    <p class="team-member-role">Desarrolladora Web</p>
+                    <p class="team-member-bio">Sofía es la mente detrás de la experiencia de usuario. Se asegura de que El Recetario sea fácil de navegar, rápido y visualmente atractivo en todos los dispositivos.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <h2 class="section-heading">Únete a Nuestra Comunidad</h2>
+            <p>
+                Te invitamos a explorar nuestras recetas, dejar tus comentarios y compartir tus propias creaciones. ¡Juntos, podemos hacer de El Recetario el mejor lugar para los amantes de la comida!
+            </p>
+            <a href="{% url 'usuarios:registro' %}" class="call-to-action-button">Regístrate Hoy</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

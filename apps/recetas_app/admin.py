@@ -18,6 +18,7 @@ class PasoInline(admin.TabularInline):
 @admin.register(Receta)
 class RecetaAdmin(admin.ModelAdmin):
     inlines = [IngredienteInline, PasoInline] 
-    list_display = ('titulo', 'autor', 'fecha_publicacion', 'categoria')
+    list_display = ('titulo', 'autor', 'fecha_publicacion', 'categoria', 'is_featured') # Añadido 'is_featured'
     search_fields = ('titulo', 'descripcion', 'autor__username', 'categoria__nombre')
-    list_filter = ('autor', 'fecha_publicacion', 'categoria')
+    list_filter = ('autor', 'fecha_publicacion', 'categoria', 'is_featured') # Añadido 'is_featured' para filtrar
+    

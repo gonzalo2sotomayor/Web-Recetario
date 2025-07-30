@@ -116,14 +116,22 @@
                             <p class="comment-text-content">{{ comentario.contenido }}</p>
                             
                             {% if user.is_authenticated %}
-                                <button class="button-secondary reply-button" data-comment-id="{{ comentario.pk }}">Responder</button>
+                                <div class="comment-actions">
+                                    <button class="button-secondary reply-button" data-comment-id="{{ comentario.pk }}">Responder</button>
+                                    {% if user == comentario.autor %}
+                                        <a href="{% url 'recetas_app:editar_comentario' pk=comentario.pk %}" class="edit-comment-button">Editar</a>
+                                        <a href="{% url 'recetas_app:eliminar_comentario' pk=comentario.pk %}" class="delete-comment-button">Eliminar</a>
+                                    {% elif user.is_staff %} {# Admin puede eliminar cualquier comentario #}
+                                        <a href="{% url 'recetas_app:eliminar_comentario' pk=comentario.pk %}" class="admin-delete-comment-button">Eliminar (Admin)</a>
+                                    {% endif %}
+                                </div>
                             {% endif %}
 
                             {% if user.is_authenticated %}
                                 <div class="reply-form-container" id="reply-form-{{ comentario.pk }}" style="display: none;">
                                     <h4>Responder a {{ comentario.autor.username }}:</h4>
                                     {# La acción del formulario de respuesta apunta a la vista 'responder_comentario' #}
-                                    <form method="post" action="{% url 'recetas_app:responder_comentario' comentario.pk %}">
+                                    <form method="post" action="{% url 'recetas_app:detalle_receta' pk=receta.pk %}"> {# Apunta a detalle_receta para manejar la respuesta #}
                                         {% csrf_token %}
                                         {# Usar 'contenido' en lugar de 'texto' #}
                                         {{ form.contenido.label_tag }}
@@ -145,6 +153,16 @@
                                             </div>
                                             {# Usar 'contenido' en lugar de 'texto' #}
                                             <p class="comment-text-content">{{ respuesta.contenido }}</p>
+                                            {% if user.is_authenticated %}
+                                                <div class="comment-actions">
+                                                    {% if user == respuesta.autor %}
+                                                        <a href="{% url 'recetas_app:editar_comentario' pk=respuesta.pk %}" class="edit-comment-button">Editar</a>
+                                                        <a href="{% url 'recetas_app:eliminar_comentario' pk=respuesta.pk %}" class="delete-comment-button">Eliminar</a>
+                                                    {% elif user.is_staff %} {# Admin puede eliminar cualquier respuesta #}
+                                                        <a href="{% url 'recetas_app:eliminar_comentario' pk=respuesta.pk %}" class="admin-delete-comment-button">Eliminar (Admin)</a>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
                                         </li>
                                     {% endfor %}
                                 </ul>

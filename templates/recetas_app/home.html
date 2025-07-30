@@ -4,19 +4,39 @@
 {% block title %}Inicio - El Recetario{% endblock %}
 
 {% block content %}
-{# Sección para la Receta de la Semana (NO DINÁMICO) #}
+{# Sección para la Receta de la Semana (DINÁMICO AHORA) #}
 <div class="featured-recipe-of-week-card">
     <h2 class="section-title text-center">Receta de la Semana</h2>
     <div class="featured-recipe-content">
-        <img src="{% static 'img/featured_recipe_of_week.jpg' %}" alt="Receta de la Semana: Lasaña Casera" class="featured-recipe-image">
-        <div class="featured-recipe-text">
-            <h3 class="featured-recipe-title">Lasaña Casera al Horno</h3>
-            <p class="featured-recipe-description">
-                Descubre el secreto de la lasaña perfecta, con capas de pasta fresca, una rica salsa boloñesa, bechamel cremosa y mucho queso. Ideal para compartir en familia.
-            </p>
-            {# Usamos data-url para la navegación #}
-            <a href="#" class="featured-recipe-button" data-url="{% url 'recetas_app:detalle_receta' pk=1 %}">Ver Receta Completa</a> {# Considera hacer esta receta destacada dinámica #}
-        </div>
+        {% if receta_de_la_semana %}
+            {# Si hay una receta destacada, muestra sus datos #}
+            {% if receta_de_la_semana.imagen %}
+                <img src="{{ receta_de_la_semana.imagen.url }}" alt="{{ receta_de_la_semana.titulo }}" class="featured-recipe-image">
+            {% else %}
+                {# Imagen por defecto si la receta destacada no tiene una imagen #}
+                <img src="{% static 'img/default_featured_recipe.jpg' %}" alt="Imagen de Receta Destacada por defecto" class="featured-recipe-image">
+            {% endif %}
+            <div class="featured-recipe-text">
+                <h3 class="featured-recipe-title">{{ receta_de_la_semana.titulo }}</h3>
+                <p class="featured-recipe-description">
+                    {# Trunca la descripción para que no sea demasiado larga en el banner #}
+                    {{ receta_de_la_semana.descripcion|truncatechars:200 }}
+                </p>
+                {# Enlace al detalle de la receta destacada #}
+                <a href="{% url 'recetas_app:detalle_receta' pk=receta_de_la_semana.pk %}" class="featured-recipe-button">Ver Receta Completa</a>
+            </div>
+        {% else %}
+            {# Contenido por defecto si no hay ninguna receta marcada como destacada #}
+            <img src="{% static 'img/featured_recipe_of_week.jpg' %}" alt="Receta de la Semana: Lasaña Casera" class="featured-recipe-image">
+            <div class="featured-recipe-text">
+                <h3 class="featured-recipe-title">¡Pronto una Receta Destacada!</h3>
+                <p class="featured-recipe-description">
+                    Mantente atento a nuestras actualizaciones. ¡La receta de la semana estará aquí pronto!
+                </p>
+                {# Enlace a la página de inicio general para explorar otras recetas #}
+                <a href="{% url 'recetas_app:home' %}" class="featured-recipe-button">Explorar Recetas</a>
+            </div>
+        {% endif %}
     </div>
 </div>
 
@@ -31,6 +51,28 @@
             Últimas Recetas Añadidas
         {% endif %}
     </h2>
+
+    {# Controles de Ordenamiento #}
+    <div class="sort-options-container">
+        <span class="sort-label">Ordenar por:</span>
+        <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=fecha_publicacion&direction=desc"
+           class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'desc' %}active{% endif %}">
+            Más Recientes
+        </a>
+        <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=fecha_publicacion&direction=asc"
+           class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'asc' %}active{% endif %}">
+            Más Antiguas
+        </a>
+        <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=titulo&direction=asc"
+           class="sort-button {% if current_order_by == 'titulo' and current_direction == 'asc' %}active{% endif %}">
+            Título (A-Z)
+        </a>
+        <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=titulo&direction=desc"
+           class="sort-button {% if current_order_by == 'titulo' and current_direction == 'desc' %}active{% endif %}">
+            Título (Z-A)
+        </a>
+    </div>
+
     <div class="latest-recipes-grid">
         {% if filtro_categoria_aplicado and not categoria_encontrada %}
             <p class="text-center text-red-500 font-bold">Lo sentimos, la categoría que buscas no existe.</p>
@@ -64,7 +106,11 @@
             {# Usamos data-url para la navegación en las tarjetas de categoría #}
             <div class="category-card clickable-card" data-url="{% url 'recetas_app:home' %}?categoria={{ categoria.slug }}">
                 {# Puedes añadir imágenes específicas para categorías si las tienes #}
-                <img src="{% static 'img/default_category.jpg' %}" alt="{{ categoria.nombre }}" class="category-card-image"> {# Placeholder para imágenes de categoría #}
+                {% if categoria.imagen %}
+                    <img src="{{ categoria.imagen.url }}" alt="{{ categoria.nombre }}" class="category-card-image">
+                {% else %}
+                    <img src="{% static 'img/default_category.jpg' %}" alt="{{ categoria.nombre }}" class="category-card-image"> {# Placeholder para imágenes de categoría #}
+                {% endif %}
                 <h3 class="category-card-title">{{ categoria.nombre }}</h3>
             </div>
         {% empty %}
@@ -138,4 +184,4 @@
         }
     });
 </script>
-{% endblock %}
+{% endblock content %}

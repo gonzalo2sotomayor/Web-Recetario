@@ -1,21 +1,21 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.forms import inlineformset_factory 
+from django.forms import inlineformset_factory
 from django.db import transaction
 from django.urls import reverse_lazy
 from django.db.models import Q
 import random
 from django.utils.text import slugify
 from django.contrib import messages
-from django.views.generic import ListView, DetailView 
-from django.utils import timezone 
+from django.views.generic import ListView, DetailView
+from django.utils import timezone
 
 
 # Importaciones consolidadas de modelos y formularios
 from .models import Receta, Ingrediente, Paso, Comentario, Categoria
-# Importamos los Formsets directamente, ya que los definimos en forms.py
-from .forms import ComentarioForm, RecetaForm, IngredienteFormSet, PasoFormSet, CategoriaForm 
+# Importamos los Formsets y formularios directamente, ya que los definimos en forms.py
+from .forms import ComentarioForm, ComentarioEditForm, RecetaForm, IngredienteFormSet, PasoFormSet, CategoriaForm
 
 
 # Función para verificar si el usuario es administrador (is_staff)
@@ -42,29 +42,51 @@ def home(request):
             recetas = Receta.objects.none()
             categoria_encontrada = False
 
+    # --- Lógica de Ordenamiento ---
+    order_by = request.GET.get('order_by', 'fecha_publicacion') # Por defecto, ordenar por fecha de publicación
+    direction = request.GET.get('direction', 'desc') # Por defecto, descendente
+
+    if order_by == 'fecha_publicacion':
+        if direction == 'asc':
+            recetas = recetas.order_by('fecha_publicacion')
+        else: # 'desc'
+            recetas = recetas.order_by('-fecha_publicacion')
+    elif order_by == 'titulo':
+        if direction == 'asc':
+            recetas = recetas.order_by('titulo')
+        else: # 'desc'
+            recetas = recetas.order_by('-titulo')
+
+    # --- Obtener la Receta de la Semana (NUEVO) ---
+    # Intenta obtener la receta más reciente marcada como destacada
+    receta_de_la_semana = Receta.objects.filter(is_featured=True).order_by('-fecha_publicacion').first()
+
     context = {
         'recetas': recetas,
         'categorias': categorias,
         'filtro_categoria_aplicado': filtro_categoria_aplicado,
         'categoria_encontrada': categoria_encontrada,
         'categoria_nombre': categoria_nombre,
+        'current_order_by': order_by,
+        'current_direction': direction,
+        'receta_de_la_semana': receta_de_la_semana, # Pasar la receta destacada al template
     }
     return render(request, 'recetas_app/home.html', context)
 
 # Vista para el detalle de una receta específica
 def detalle_receta(request, pk):
     receta = get_object_or_404(Receta, pk=pk)
-    
+
     # --- INICIO DE CÓDIGO DE DEPURACIÓN ---
     print(f"\n--- Depuración para Receta ID: {receta.pk} ---")
     print(f"Título de la receta: {receta.titulo}")
     print(f"Número de ingredientes relacionados: {receta.ingredientes.count()}")
     for i, ingrediente in enumerate(receta.ingredientes.all()):
-        print(f"  Ingrediente {i+1}: {ingrediente.cantidad} {ingrediente.unidad} de {ingrediente.nombre}")
-    
+        print(f"    Ingrediente {i+1}: {ingrediente.cantidad} {ingrediente.unidad} de {ingrediente.nombre}")
+
     print(f"Número de pasos relacionados: {receta.pasos.count()}")
     for i, paso in enumerate(receta.pasos.all()):
-        print(f"  Paso {i+1}: Título: {paso.titulo}, Descripción: {paso.descripcion[:30]}...")
+        print(f"    Paso {i+1}: Título: {paso.titulo}, Descripción: {paso.descripcion[:30]}...")
     print("---------------------------------------\n")
     # --- FIN DE CÓDIGO DE DEPURACIÓN ---
 
@@ -121,10 +143,28 @@ def simple_search_view(request):
         results = Receta.objects.filter(
             Q(titulo__icontains=query) | Q(descripcion__icontains=query)
         ).distinct()
+    
+    # --- Lógica de Ordenamiento para búsqueda simple ---
+    order_by = request.GET.get('order_by', 'fecha_publicacion')
+    direction = request.GET.get('direction', 'desc')
+
+    if order_by == 'fecha_publicacion':
+        if direction == 'asc':
+            results = results.order_by('fecha_publicacion')
+        else: # 'desc'
+            results = results.order_by('-fecha_publicacion')
+    elif order_by == 'titulo':
+        if direction == 'asc':
+            results = results.order_by('titulo')
+        else: # 'desc'
+            results = results.order_by('-titulo')
+
     context = {
         'query': query,
         'results': results,
-        'search_type': 'simple'
+        'search_type': 'simple',
+        'current_order_by': order_by,
+        'current_direction': direction,
     }
     return render(request, 'recetas_app/search_results.html', context)
 
@@ -138,7 +178,7 @@ def advanced_search_results_view(request):
     similar_words = request.GET.get('similar_words', '').strip()
     ingredient = request.GET.get('ingredient', '').strip()
     recipe_type = request.GET.get('recipe_type', '').strip()
-    category_slug = request.GET.get('category', '').strip() 
+    category_slug = request.GET.get('category', '').strip()
 
     queryset = Receta.objects.all()
 
@@ -156,15 +196,30 @@ def advanced_search_results_view(request):
 
     if ingredient:
         queryset = queryset.filter(ingredientes__nombre__icontains=ingredient)
-    
+
     if category_slug:
         try:
             category_obj = Categoria.objects.get(slug=category_slug)
             queryset = queryset.filter(categoria=category_obj)
         except Categoria.DoesNotExist:
-            pass 
+            pass
 
     results = queryset.distinct()
+
+    # --- Lógica de Ordenamiento para búsqueda avanzada ---
+    order_by = request.GET.get('order_by', 'fecha_publicacion')
+    direction = request.GET.get('direction', 'desc')
+
+    if order_by == 'fecha_publicacion':
+        if direction == 'asc':
+            results = results.order_by('fecha_publicacion')
+        else: # 'desc'
+            results = results.order_by('-fecha_publicacion')
+    elif order_by == 'titulo':
+        if direction == 'asc':
+            results = results.order_by('titulo')
+        else: # 'desc'
+            results = results.order_by('-titulo')
 
     context = {
         'exact_phrase': exact_phrase,
@@ -173,8 +228,10 @@ def advanced_search_results_view(request):
         'recipe_type': recipe_type,
         'results': results,
         'search_type': 'advanced',
-        'categories': Categoria.objects.all(), 
-        'selected_category': category_slug, 
+        'categories': Categoria.objects.all(),
+        'selected_category': category_slug,
+        'current_order_by': order_by,
+        'current_direction': direction,
     }
     return render(request, 'recetas_app/search_results.html', context)
 
@@ -197,29 +254,29 @@ def crear_receta(request):
         if not receta_form.is_valid():
             print("Errores en Receta Form:")
             print(receta_form.errors)
-        
+
         if not ingrediente_formset.is_valid():
             print("Errores en Ingrediente Formset:")
             for i, form in enumerate(ingrediente_formset):
                 if form.errors:
-                    print(f"  Formulario Ingrediente {i}: {form.errors}")
+                    print(f"    Formulario Ingrediente {i}: {form.errors}")
         else:
             print("Ingrediente Formset - Cleaned Data:")
             for i, form in enumerate(ingrediente_formset):
                 if form.cleaned_data:
-                    print(f"  Formulario Ingrediente {i}: {form.cleaned_data}")
+                    print(f"    Formulario Ingrediente {i}: {form.cleaned_data}")
 
         if not paso_formset.is_valid():
             print("Errores en Paso Formset:")
             for i, form in enumerate(paso_formset):
                 if form.errors:
-                    print(f"  Formulario Paso {i}: {form.errors}")
+                    print(f"    Formulario Paso {i}: {form.errors}")
         else:
             print("Paso Formset - Cleaned Data:")
             for i, form in enumerate(paso_formset):
                 if form.cleaned_data:
                     # CAMBIO AQUÍ: 'orden' se cambia a 'titulo'
-                    print(f"  Formulario Paso {i}: {{'titulo': {form.cleaned_data.get('titulo')}, 'descripcion': {form.cleaned_data.get('descripcion')}}}")
+                    print(f"    Formulario Paso {i}: {{'titulo': {form.cleaned_data.get('titulo')}, 'descripcion': {form.cleaned_data.get('descripcion')}}}")
         print("---------------------------------------------------\n")
         # --- FIN DE DEPURACIÓN DE FORMSETS EN VIEWS.PY ---
 
@@ -229,11 +286,11 @@ def crear_receta(request):
                     receta = receta_form.save(commit=False)
                     receta.autor = request.user
                     receta.save()
-                    
-                    ingrediente_formset.instance = receta 
+
+                    ingrediente_formset.instance = receta
                     ingrediente_formset.save()
-                    
-                    paso_formset.instance = receta 
+
+                    paso_formset.instance = receta
                     paso_formset.save()
 
                 messages.success(request, '¡Receta creada exitosamente!')
@@ -241,7 +298,7 @@ def crear_receta(request):
 
             except Exception as e:
                 messages.error(request, f"Error al crear receta: {e}")
-                print(f"Error al crear receta: {e}") 
+                print(f"Error al crear receta: {e}")
         else:
             messages.error(request, 'Por favor, corrige los errores en el formulario.')
     else:
@@ -250,7 +307,7 @@ def crear_receta(request):
         paso_formset = PasoFormSet(prefix='pasos')
 
     context = {
-        'form': receta_form, 
+        'form': receta_form,
         'formset_ingredientes': ingrediente_formset,
         'formset_pasos': paso_formset,
     }
@@ -280,29 +337,29 @@ def editar_receta(request, pk):
         if not receta_form.is_valid():
             print("Errores en Receta Form (Editar):")
             print(receta_form.errors)
-        
+
         if not ingrediente_formset.is_valid():
             print("Errores en Ingrediente Formset (Editar):")
             for i, form in enumerate(ingrediente_formset):
                 if form.errors:
-                    print(f"  Formulario Ingrediente {i}: {form.errors}")
+                    print(f"    Formulario Ingrediente {i}: {form.errors}")
         else:
             print("Ingrediente Formset - Cleaned Data (Editar):")
             for i, form in enumerate(ingrediente_formset):
                 if form.cleaned_data:
-                    print(f"  Formulario Ingrediente {i}: {form.cleaned_data}")
+                    print(f"    Formulario Ingrediente {i}: {form.cleaned_data}")
 
         if not paso_formset.is_valid():
-            print("Errores en Paso Formset (Editar):")
+            print("Errores en Paso Formset:")
             for i, form in enumerate(paso_formset):
                 if form.errors:
-                    print(f"  Formulario Paso {i}: {form.errors}")
+                    print(f"    Formulario Paso {i}: {form.errors}")
         else:
             print("Paso Formset - Cleaned Data (Editar):")
             for i, form in enumerate(paso_formset):
                 if form.cleaned_data:
                     # CAMBIO AQUÍ: 'orden' se cambia a 'titulo'
-                    print(f"  Formulario Paso {i}: {{'titulo': {form.cleaned_data.get('titulo')}, 'descripcion': {form.cleaned_data.get('descripcion')}}}")
+                    print(f"    Formulario Paso {i}: {{'titulo': {form.cleaned_data.get('titulo')}, 'descripcion': {form.cleaned_data.get('descripcion')}}}")
         print("---------------------------------------------------\n")
         # --- FIN DE DEPURACIÓN DE FORMSETS EN VIEWS.PY (Editar) ---
 
@@ -310,7 +367,7 @@ def editar_receta(request, pk):
             try:
                 with transaction.atomic():
                     receta = receta_form.save()
-                    
+
                     ingrediente_formset.save()
                     paso_formset.save()
 
@@ -328,7 +385,7 @@ def editar_receta(request, pk):
         paso_formset = PasoFormSet(instance=receta, prefix='pasos')
 
     context = {
-        'form': receta_form, 
+        'form': receta_form,
         'formset_ingredientes': ingrediente_formset,
         'formset_pasos': paso_formset,
         'receta': receta,
@@ -348,17 +405,69 @@ def eliminar_receta(request, pk):
     if request.method == 'POST':
         receta.delete()
         messages.success(request, 'Receta eliminada exitosamente.')
-        return redirect('recetas_app:home') 
+        return redirect('recetas_app:home')
     context = {
         'receta': receta
     }
     return render(request, 'recetas_app/receta_confirm_delete.html', context)
 
+
+#  Editar Comentario
+@login_required
+def editar_comentario(request, pk):
+    comentario = get_object_or_404(Comentario, pk=pk)
+    # Asegurarse de que solo el autor pueda editar su comentario
+    if comentario.autor != request.user:
+        messages.error(request, 'No tienes permiso para editar este comentario.')
+        return redirect('recetas_app:detalle_receta', pk=comentario.receta.pk)
+
+    if request.method == 'POST':
+        form = ComentarioEditForm(request.POST, instance=comentario)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '¡Comentario actualizado exitosamente!')
+            return redirect('recetas_app:detalle_receta', pk=comentario.receta.pk)
+        else:
+            messages.error(request, 'Hubo un error al actualizar el comentario.')
+    else:
+        form = ComentarioEditForm(instance=comentario)
+
+    context = {
+        'form': form,
+        'comentario': comentario,
+        'receta': comentario.receta, # Para poder volver a la receta
+    }
+    return render(request, 'recetas_app/editar_comentario.html', context)
+
+
+#  Eliminar Comentario
+@login_required
+def eliminar_comentario(request, pk):
+    comentario = get_object_or_404(Comentario, pk=pk)
+    # Asegurarse de que solo el autor o un admin pueda eliminar su comentario
+    # (La lógica de admin ya está en detalle_receta.html, aquí solo verificamos)
+    if not (request.user == comentario.autor or request.user.is_staff):
+        messages.error(request, 'No tienes permiso para eliminar este comentario.')
+        return redirect('recetas_app:detalle_receta', pk=comentario.receta.pk)
+
+    if request.method == 'POST':
+        receta_pk = comentario.receta.pk # Guardamos la PK de la receta antes de eliminar el comentario
+        comentario.delete()
+        messages.success(request, 'Comentario eliminado exitosamente.')
+        return redirect('recetas_app:detalle_receta', pk=receta_pk)
+    
+    context = {
+        'comentario': comentario,
+        'receta': comentario.receta, # Para poder volver a la receta
+    }
+    return render(request, 'recetas_app/eliminar_comentario_confirm.html', context)
+
+
 # Vista lista de recetas por categoría
 def recetas_por_categoria(request, categoria_slug):
     categoria = get_object_or_404(Categoria, slug=categoria_slug)
     recetas = Receta.objects.filter(categoria=categoria).order_by('-fecha_publicacion')
-    categorias = Categoria.objects.all() 
+    categorias = Categoria.objects.all()
     context = {
         'categoria_actual': categoria,
         'recetas': recetas,
@@ -380,7 +489,7 @@ def lista_categorias(request):
 @user_passes_test(is_admin, login_url='/admin/login/')
 def crear_categoria(request):
     if request.method == 'POST':
-        form = CategoriaForm(request.POST, request.FILES) 
+        form = CategoriaForm(request.POST, request.FILES)
         if form.is_valid():
             categoria = form.save(commit=False)
             # El slug se genera automáticamente en el método save del modelo Categoria
@@ -402,7 +511,7 @@ def crear_categoria(request):
 def editar_categoria(request, slug):
     categoria = get_object_or_404(Categoria, slug=slug)
     if request.method == 'POST':
-        form = CategoriaForm(request.POST, request.FILES, instance=categoria) 
+        form = CategoriaForm(request.POST, request.FILES, instance=categoria)
         if form.is_valid():
             categoria = form.save(commit=False)
             # El slug se genera automáticamente en el método save del modelo Categoria
@@ -456,7 +565,7 @@ def previsualizar_receta(request):
             'tiempo_preparacion': receta_form['tiempo_preparacion'].value() if receta_form['tiempo_preparacion'].value() is not None else None,
             'porciones': receta_form['porciones'].value() if receta_form['porciones'].value() is not None else None,
             'autor': request.user,
-            'fecha_publicacion': timezone.now(), 
+            'fecha_publicacion': timezone.now(),
         }
 
         categoria_id = receta_form['categoria'].value()
@@ -464,17 +573,17 @@ def previsualizar_receta(request):
             try:
                 receta_data['categoria'] = Categoria.objects.get(pk=categoria_id)
             except Categoria.DoesNotExist:
-                receta_data['categoria'] = None 
+                receta_data['categoria'] = None
         else:
             receta_data['categoria'] = None
 
         if 'imagen' in request.FILES:
             receta_data['imagen_file'] = request.FILES['imagen']
-            receta_data['imagen'] = None 
+            receta_data['imagen'] = None
         else:
             receta_data['imagen_file'] = None
-            receta_data['imagen'] = None 
-        
+            receta_data['imagen'] = None
+
         ingredientes_preview = []
         for form_ingrediente in ingrediente_formset:
             # Solo procesar formularios que no estén marcados para DELETE y que tengan algún valor
@@ -511,12 +620,26 @@ def previsualizar_receta(request):
             'receta': receta_data,
             'ingredientes': ingredientes_preview,
             'pasos': pasos_preview,
-            'is_preview': True, 
-            'form': receta_form, 
-            'formset_ingredientes': ingrediente_formset, 
+            'is_preview': True,
+            'form': receta_form,
+            'formset_ingredientes': ingrediente_formset,
             'formset_pasos': paso_formset,
         }
         return render(request, 'recetas_app/previsualizar_receta.html', context)
     else:
         messages.error(request, 'Acceso no válido para previsualizar receta. Por favor, crea una receta primero.')
         return redirect('recetas_app:crear_receta')
+
+# Acerca de y Contacto
+def acerca_de(request):
+    """
+    Vista para la página "Acerca de".
+    """
+    return render(request, 'recetas_app/acerca_de.html')
+
+def contacto(request):
+    """
+    Vista para la página de contacto.
+    """
+    # Añadir lógica para un formulario de contacto aquí si lo necesitamos
+    return render(request, 'recetas_app/contacto.html')

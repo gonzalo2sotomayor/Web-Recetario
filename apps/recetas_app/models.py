@@ -32,6 +32,7 @@ class Receta(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, related_name='recetas')
     tiempo_preparacion = models.IntegerField(help_text="En minutos", blank=True, null=True)
     porciones = models.IntegerField(blank=True, null=True)
+    is_featured = models.BooleanField(default=False, verbose_name="¿Receta de la Semana?")
 
     class Meta:
         ordering = ['-fecha_publicacion'] # Ordenar por fecha de publicación descendente
