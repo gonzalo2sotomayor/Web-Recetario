@@ -1,0 +1,41 @@
+{# apps/usuarios/compose.html #}
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Nuevo Mensaje{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-4 max-w-lg">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Componer Nuevo Mensaje</h1>
+    
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <form method="post" action="{% url 'usuarios:compose_message' %}">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+                <label for="{{ form.destinatario.id_for_label }}" class="block text-gray-700 font-bold mb-2">Destinatario:</label>
+                {{ form.destinatario }}
+            </div>
+            
+            <div class="mb-4">
+                <label for="{{ form.asunto.id_for_label }}" class="block text-gray-700 font-bold mb-2">Asunto:</label>
+                {{ form.asunto }}
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ form.cuerpo.id_for_label }}" class="block text-gray-700 font-bold mb-2">Mensaje:</label>
+                {{ form.cuerpo }}
+            </div>
+
+            <div class="flex justify-between items-center">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition duration-300">
+                    Enviar Mensaje
+                </button>
+                <a href="{% url 'usuarios:inbox' %}" class="text-gray-600 hover:text-gray-800 transition duration-300">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

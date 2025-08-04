@@ -65,10 +65,8 @@ class CategoriaFavoritaForm(forms.ModelForm):
 
 #Formulario para enviar mensajes privados
 class MensajeForm(forms.ModelForm):
-    # Campo para seleccionar el destinatario. Excluye al usuario actual.
-    # Se llenará en la vista para filtrar por usuarios válidos.
     destinatario = forms.ModelChoiceField(
-        queryset=User.objects.all(), # Se ajustará en la vista
+        queryset=User.objects.all(), 
         label='Para',
         empty_label="Selecciona un usuario"
     )
@@ -91,4 +89,26 @@ class MensajeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if sender_user:
             # Asegura que el usuario no pueda enviarse mensajes a sí mismo
-            self.fields['destinatario'].queryset = User.objects.exclude(id=sender_user.id)        
+            self.fields['destinatario'].queryset = User.objects.exclude(id=sender_user.id) 
+
+# Creación de nuevo mensaje
+class ComposeMessageForm(forms.ModelForm):
+    # Field para seleccionar el destinatario de una lista de usuarios
+    destinatario = forms.ModelChoiceField(
+        queryset=User.objects.all().exclude(username='admin'), 
+        label="Destinatario",
+        widget=forms.Select(attrs={'class': 'form-input'})
+    )
+    
+    class Meta:
+        model = Mensaje
+        fields = ['asunto', 'cuerpo']
+        widgets = {
+            'asunto': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Asunto (Opcional)'}),
+            'cuerpo': forms.Textarea(attrs={'class': 'form-input', 'rows': 5, 'placeholder': 'Escribe tu mensaje...'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'remitente' in self.fields:
+            del self.fields['remitente']       

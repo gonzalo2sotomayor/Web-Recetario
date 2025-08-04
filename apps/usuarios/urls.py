@@ -19,6 +19,7 @@ urlpatterns = [
     
     # URLs de Mensajes Privados
     path('mensajes/', views.inbox, name='inbox'),
+    path('mensajes/compose/', views.compose_new_message, name='compose_message'),
     path('mensajes/<str:username>/', views.private_message, name='private_message'),
 
     # URLs para favoritos 

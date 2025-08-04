@@ -9,7 +9,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.db.models import Q 
 from django.contrib.auth.models import User 
 
-from .forms import UserUpdateForm, PerfilUpdateForm, SeguridadPerfilForm, CategoriaFavoritaForm, MensajeForm
+from .forms import UserUpdateForm, PerfilUpdateForm, SeguridadPerfilForm, CategoriaFavoritaForm, MensajeForm, ComposeMessageForm
 from .models import Perfil, CategoriaFavorita, Mensaje
 from apps.recetas_app.models import Receta, Comentario, RecetaFavorita
 
@@ -184,7 +184,7 @@ def inbox(request):
             }
     
     conversation_list = list(conversations.values())
-
+    
     return render(request, 'usuarios/inbox.html', {
         'conversations': conversation_list,
     })
@@ -221,12 +221,66 @@ def private_message(request, username):
             return redirect('usuarios:private_message', username=username)
     else:
         form = MensajeForm()
-
+        
     return render(request, 'usuarios/private_message.html', {
         'messages': messages,
         'other_user': other_user,
         'form': form
     })
+
+@login_required
+def compose_new_message(request):
+    """
+    Vista para componer y enviar un nuevo mensaje a cualquier usuario.
+    """
+    if request.method == 'POST':
+        form = ComposeMessageForm(request.POST)
+        if form.is_valid():
+            destinatario = form.cleaned_data.get('destinatario')
+            if not destinatario:
+                pass 
+            
+            new_message = form.save(commit=False)
+            new_message.remitente = request.user
+            new_message.save()
+            return redirect('usuarios:private_message', username=destinatario.username)
+    else:
+        form = ComposeMessageForm()
+    
+    return render(request, 'usuarios/compose.html', {'form': form})
+
+
+@login_required
+def toggle_favorito(request, receta_pk):
+    """
+    Añade o quita una receta de favoritos.
+    """
+    receta = get_object_or_404(Receta, pk=receta_pk)
+    favorito_existente = RecetaFavorita.objects.filter(usuario=request.user, receta=receta)
+
+    if favorito_existente.exists():
+        favorito_existente.delete()
+        es_favorito = False
+    else:
+        RecetaFavorita.objects.create(usuario=request.user, receta=receta)
+        es_favorito = True
+    
+    return redirect('recetas_app:detalle_receta', pk=receta_pk)
+
+@login_required
+def add_to_category(request, receta_pk):
+    """
+    Añade una receta favorita a una categoría específica.
+    """
+    receta = get_object_or_404(Receta, pk=receta_pk)
+    if request.method == 'POST':
+        categoria_id = request.POST.get('categoria_id')
+        if categoria_id:
+            categoria = get_object_or_404(CategoriaFavorita, pk=categoria_id, usuario=request.user)
+            receta_favorita, created = RecetaFavorita.objects.get_or_create(usuario=request.user, receta=receta)
+            receta_favorita.categoria = categoria
+            receta_favorita.save()
+    return redirect('recetas_app:detalle_receta', pk=receta_pk)
 
 
 @login_required

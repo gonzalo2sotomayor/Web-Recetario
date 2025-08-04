@@ -1,43 +1,46 @@
-{% extends 'base.html' %}
+{# apps/usuarios/inbox.html #}
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bandeja de Entrada{% endblock %}
 
 {% block content %}
 <div class="container mx-auto p-4 max-w-2xl">
-    <div class="bg-white p-6 rounded-lg shadow-lg">
-        <h1 class="text-3xl font-bold mb-6 text-gray-800">Bandeja de Entrada</h1>
-
-        {% if conversations %}
-            <div class="space-y-4">
-                {% for conversation in conversations %}
-                    <a href="{% url 'recetas_app:private_message' username=conversation.other_user.username %}" class="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                        <div class="flex items-start space-x-4">
-                            <div class="w-12 h-12 flex-shrink-0 bg-gray-300 rounded-full flex items-center justify-center text-lg font-semibold text-gray-700">
-                                {{ conversation.other_user.username|slice:":1"|upper }}
-                            </div>
-                            <div class="flex-grow">
-                                <div class="flex justify-between items-center mb-1">
-                                    <h2 class="text-xl font-bold text-gray-800">{{ conversation.other_user.username }}</h2>
-                                    <span class="text-xs text-gray-500">{{ conversation.last_message.fecha_envio|date:"d M Y H:i" }}</span>
-                                </div>
-                                <p class="text-sm text-gray-600 mb-1">Asunto: {{ conversation.last_message.asunto|truncatechars:50 }}</p>
-                                <p class="text-sm text-gray-500 line-clamp-2">
-                                    {% if conversation.last_message.remitente == request.user %}
-                                        <span class="font-semibold text-blue-600">Tú:</span>
-                                    {% endif %}
-                                    {{ conversation.last_message.cuerpo|truncatechars:100 }}
-                                </p>
-                            </div>
-                        </div>
-                    </a>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="text-center p-8 bg-gray-100 rounded-lg">
-                <p class="text-gray-500 text-lg">No tienes conversaciones aún.</p>
-                <a href="{% url 'recetas_app:home' %}" class="mt-4 inline-block px-6 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                    Ir a la página de inicio
-                </a>
-            </div>
-        {% endif %}
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-3xl font-bold text-gray-800">Bandeja de Entrada</h1>
+        <a href="{% url 'usuarios:compose_message' %}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition duration-300">
+            Nuevo Mensaje
+        </a>
     </div>
+
+    {% if conversations %}
+        <div class="space-y-4">
+            {% for conversation in conversations %}
+            <a href="{% url 'usuarios:private_message' username=conversation.other_user.username %}" class="block bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300 {% if conversation.unread_count %}border-l-4 border-blue-500{% endif %}">
+                <div class="flex items-center space-x-4">
+                    <img src="{% if conversation.other_user.perfil.avatar %}{{ conversation.other_user.perfil.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}" 
+                         alt="Avatar de {{ conversation.other_user.username }}" 
+                         class="w-12 h-12 rounded-full object-cover">
+                    <div class="flex-1">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-lg font-semibold">{{ conversation.other_user.username }}</h2>
+                            <span class="text-sm text-gray-500">
+                                {{ conversation.last_message.fecha_envio|date:"d M Y" }}
+                            </span>
+                        </div>
+                        <p class="text-gray-600 truncate">{{ conversation.last_message.cuerpo }}</p>
+                    </div>
+                    {% if conversation.unread_count %}
+                    <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        {{ conversation.unread_count }}
+                    </span>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-500">No tienes conversaciones aún. <a href="{% url 'usuarios:compose_message' %}" class="text-blue-500 hover:underline">¡Crea una ahora!</a></p>
+    {% endif %}
 </div>
 {% endblock %}
