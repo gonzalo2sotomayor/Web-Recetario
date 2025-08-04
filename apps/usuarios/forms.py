@@ -93,9 +93,8 @@ class MensajeForm(forms.ModelForm):
 
 # Creación de nuevo mensaje
 class ComposeMessageForm(forms.ModelForm):
-    # Field para seleccionar el destinatario de una lista de usuarios
     destinatario = forms.ModelChoiceField(
-        queryset=User.objects.all().exclude(username='admin'), 
+        queryset=User.objects.all(), 
         label="Destinatario",
         widget=forms.Select(attrs={'class': 'form-input'})
     )
@@ -109,6 +108,7 @@ class ComposeMessageForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        if 'remitente' in self.fields:
-            del self.fields['remitente']       
+        if user:
+            self.fields['destinatario'].queryset = User.objects.all().exclude(pk=user.pk)    

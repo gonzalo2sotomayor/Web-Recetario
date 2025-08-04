@@ -234,18 +234,15 @@ def compose_new_message(request):
     Vista para componer y enviar un nuevo mensaje a cualquier usuario.
     """
     if request.method == 'POST':
-        form = ComposeMessageForm(request.POST)
+        form = ComposeMessageForm(request.POST, user=request.user)
         if form.is_valid():
-            destinatario = form.cleaned_data.get('destinatario')
-            if not destinatario:
-                pass 
-            
             new_message = form.save(commit=False)
             new_message.remitente = request.user
+            new_message.destinatario = form.cleaned_data['destinatario']
             new_message.save()
-            return redirect('usuarios:private_message', username=destinatario.username)
+            return redirect('usuarios:private_message', username=new_message.destinatario.username)
     else:
-        form = ComposeMessageForm()
+        form = ComposeMessageForm(user=request.user)
     
     return render(request, 'usuarios/compose.html', {'form': form})
 
