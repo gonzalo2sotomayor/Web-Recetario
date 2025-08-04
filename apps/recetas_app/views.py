@@ -687,3 +687,11 @@ def private_message(request, username):
         'form': form,
     }
     return render(request, 'recetas_app/mensajes/private_message.html', context)
+
+# CONTACTO
+
+def contacto(request):
+    """
+    Vista para la página de contacto.
+    """
+    return render(request, 'recetas_app/contacto.html')

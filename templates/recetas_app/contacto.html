@@ -1,70 +1,84 @@
-{% extends 'base.html' %}
-{% load static %}
+{# apps/recetas_app/templates/recetas_app/contacto.html #}
+{% extends "base.html" %}
 
 {% block title %}Contacto - El Recetario{% endblock %}
 
 {% block content %}
-<div class="main-content-new">
-    <div class="page-container">
-        <h1 class="page-title">Contáctanos</h1>
-        <p class="page-description">
-            ¿Tienes alguna pregunta, sugerencia o simplemente quieres saludar? ¡Nos encantaría saber de ti!
-            Puedes contactarnos a través de los siguientes medios:
-        </p>
-
-        <div class="contact-info-section">
-            <div class="contact-item">
-                <i class="fas fa-envelope contact-icon"></i>
-                <h2 class="contact-heading">Correo Electrónico</h2>
-                <p class="contact-text">Envíanos un email a: <a href="mailto:info@elrecetario.com" class="contact-link">info@elrecetario.com</a></p>
+<div class="contact-page-wrapper">
+    <div class="contact-card">
+        
+        <!-- Sección de Información de Contacto (Izquierda) -->
+        <div class="contact-info">
+            <div>
+                <h2 class="contact-info-header">Contáctanos</h2>
+                <p>
+                    ¿Tienes alguna pregunta, sugerencia o una receta que quieras compartir? ¡Nos encantaría escucharte!
+                </p>
+                
+                <div class="contact-details-list">
+                    <div class="contact-details-item">
+                        <i class="fas fa-envelope contact-icon"></i>
+                        <div>
+                            <h3>Email</h3>
+                            <p>info@elrecetario.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-details-item">
+                        <i class="fas fa-phone contact-icon"></i>
+                        <div>
+                            <h3>Teléfono</h3>
+                            <p>+54 9 11 1234-5678</p>
+                        </div>
+                    </div>
+                    <div class="contact-details-item">
+                        <i class="fas fa-map-marker-alt contact-icon"></i>
+                        <div>
+                            <h3>Dirección</h3>
+                            <p>Av. de las Recetas 123, CABA, Argentina</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="contact-item">
-                <i class="fas fa-phone-alt contact-icon"></i>
-                <h2 class="contact-heading">Teléfono</h2>
-                <p class="contact-text">Llámanos al: +34 123 456 789 (Horario de oficina: L-V 9:00 - 18:00)</p>
-            </div>
-            <div class="contact-item">
-                <i class="fas fa-map-marker-alt contact-icon"></i>
-                <h2 class="contact-heading">Dirección</h2>
-                <p class="contact-text">Calle Ficticia, 123, Ciudad del Sabor, País de la Cocina</p>
+            
+            <div class="social-links">
+                <h3>Síguenos</h3>
+                <div class="social-icons">
+                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                </div>
             </div>
         </div>
 
+        <!-- Formulario de Contacto (Derecha) -->
         <div class="contact-form-section">
-            <h2 class="section-heading">Envíanos un Mensaje</h2>
-            <p class="contact-form-intro">
-                Usa el siguiente formulario para enviarnos un mensaje directo. Nos pondremos en contacto contigo lo antes posible.
-            </p>
-            <form action="#" method="post" class="contact-form">
+            <h2 class="contact-form-header">Envíanos un mensaje</h2>
+            <form action="#" method="post">
                 {% csrf_token %}
-                <div class="form-group">
-                    <label for="id_name" class="form-label">Tu Nombre:</label>
-                    <input type="text" id="id_name" name="name" class="form-input" required placeholder="Tu nombre completo">
+                <div class="form-row">
+                    <div class="form-group-item">
+                        <label for="id_name">Nombre</label>
+                        <input type="text" name="name" id="id_name" placeholder="Tu nombre completo" required>
+                    </div>
+                    <div class="form-group-item">
+                        <label for="id_email">Email</label>
+                        <input type="email" name="email" id="id_email" placeholder="tu.email@ejemplo.com" required>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="id_email" class="form-label">Tu Correo Electrónico:</label>
-                    <input type="email" id="id_email" name="email" class="form-input" required placeholder="tu.email@ejemplo.com">
+                    <label for="id_subject">Asunto</label>
+                    <input type="text" name="subject" id="id_subject" placeholder="El asunto de tu mensaje" required>
                 </div>
                 <div class="form-group">
-                    <label for="id_subject" class="form-label">Asunto:</label>
-                    <input type="text" id="id_subject" name="subject" class="form-input" required placeholder="Asunto de tu mensaje">
+                    <label for="id_message">Mensaje</label>
+                    <textarea name="message" id="id_message" rows="5" placeholder="Escribe tu mensaje aquí..." required></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="id_message" class="form-label">Tu Mensaje:</label>
-                    <textarea id="id_message" name="message" class="form-textarea" rows="6" required placeholder="Escribe tu mensaje aquí..."></textarea>
+                <div class="form-actions">
+                    <button type="submit" class="submit-button">
+                        Enviar Mensaje
+                    </button>
                 </div>
-                <button type="submit" class="submit-button">Enviar Mensaje</button>
             </form>
-        </div>
-
-        <div class="social-media-section">
-            <h2 class="section-heading">Síguenos en Redes Sociales</h2>
-            <div class="social-icons">
-                <a href="#" class="social-icon-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="social-icon-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="social-icon-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="social-icon-link" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
-            </div>
         </div>
     </div>
 </div>

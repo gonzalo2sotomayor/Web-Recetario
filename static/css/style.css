@@ -3612,3 +3612,208 @@ body.light-theme {
         font-size: 0.9rem;
     }
 }
+
+/* Estilos para el pie de página */
+.main-footer-new {
+    background-color: var(--dark-bg); 
+    color: var(--light-text);
+    padding: 20px 0;
+    text-align: center;
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; /* Espacio entre el copyright y los enlaces */
+}
+
+.footer-links {
+    display: flex;
+    gap: 15px; /* Espacio entre los enlaces del footer */
+    align-items: center;
+}
+
+.footer-link {
+    color: var(--light-text);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: var(--accent-color); /* Color de acento al pasar el ratón */
+    text-decoration: underline;
+}
+
+.footer-link-separator {
+    color: var(--light-text);
+}
+
+/* Estilos generales para la página de contacto */
+.contact-page-wrapper {
+    background-color: #f3f4f6; 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    line-height: 1.5;
+    padding: 3rem 1rem;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.contact-card {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+/* Sección de Información de Contacto (Izquierda) */
+.contact-info {
+    background-color: #1a202c; 
+    color: #fff;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.contact-info-header {
+    font-size: 2.25rem; 
+    font-weight: 800;  
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #f97316;
+    padding-bottom: 0.5rem;
+}
+.contact-info p {
+    font-size: 1.125rem; 
+    color: #d1d5db; 
+    margin-bottom: 2rem;
+}
+.contact-details-list {
+    margin-top: 2rem;
+}
+.contact-details-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+.contact-icon {
+    font-size: 2rem;
+    color: #f97316; 
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+.contact-details-item h3 {
+    font-weight: 700; 
+    font-size: 1.25rem; 
+}
+.contact-details-item p {
+    font-size: 1rem;
+    color: #9ca3af; 
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+}
+
+/* Redes sociales */
+.social-links {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #4b5563; 
+}
+.social-links h3 {
+    font-size: 1.125rem; 
+    font-weight: 600; 
+    margin-bottom: 0.75rem;
+}
+.social-icons {
+    display: flex;
+    gap: 1rem;
+}
+.social-icon {
+    color: #9ca3af; 
+    font-size: 1.5rem;
+    transition: color 200ms ease;
+}
+.social-icon:hover {
+    color: #fff;
+}
+
+/* Formulario de Contacto (Derecha) */
+.contact-form-section {
+    padding: 2rem;
+    flex: 1;
+}
+.contact-form-header {
+    font-size: 2.25rem; 
+    font-weight: 800;
+    color: #1a202c; 
+    margin-bottom: 1.5rem;
+}
+.form-group {
+    margin-bottom: 1.5rem;
+}
+.form-group label {
+    display: block;
+    font-size: 0.875rem; 
+    font-weight: 500; 
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+.form-group input, .form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db; 
+    border-radius: 8px;
+    transition: all 200ms ease-in-out;
+}
+.form-group input:focus, .form-group textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #f97316;
+    border-color: transparent;
+}
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+.submit-button {
+    background-color: #f97316; 
+    color: #fff;
+    font-weight: 700; 
+    padding: 0.75rem 2rem;
+    border-radius: 9999px; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 300ms ease-in-out;
+    border: none;
+    cursor: pointer;
+}
+.submit-button:hover {
+    background-color: #ea580c; 
+    transform: scale(1.05);
+}
+
+.form-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    flex-direction: column; /* Por defecto en móviles */
+}
+
+.form-group-item {
+    flex: 1;
+}
+
+/* Media Queries para responsividad */
+@media (min-width: 768px) {
+    .contact-card {
+        flex-direction: row;
+    }
+    .contact-info {
+        width: 33.333333%;
+        padding: 3rem;
+    }
+    .contact-form-section {
+        width: 66.666667%;
+        padding: 3rem;
+    }
+    .form-row {
+        flex-direction: row; /* En desktop */
+    }
+}
