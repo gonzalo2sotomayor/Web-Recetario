@@ -30,6 +30,10 @@ urlpatterns = [
     path('categorias/<slug:slug>/editar/', views.editar_categoria, name='editar_categoria'),
     path('categorias/<slug:slug>/eliminar/', views.eliminar_categoria, name='eliminar_categoria'),
 
+    # Rutas de Mensajes Privados 
+    path('inbox/', views.inbox, name='inbox'),
+    path('inbox/<str:username>/', views.private_message, name='private_message'),
+
     # Ruta para las opciones de administración
     path('admin-options/', views.admin_options_view, name='admin_options'),
 

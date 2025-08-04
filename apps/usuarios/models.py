@@ -3,7 +3,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-    
+from django.utils import timezone
+
+# Modelo de Perfil de Usuario    
 class Perfil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
@@ -45,21 +47,23 @@ class CategoriaFavorita(models.Model):
     def __str__(self):
         return f"{self.nombre} ({self.user.username})"
     
+# Modelo para Mensajes Privados entre Usuarios 
 class Mensaje(models.Model):
-    remitente = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mensajes_enviados')
-    destinatario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mensajes_recibidos')
-    asunto = models.CharField(max_length=200, blank=True)
+    remitente = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mensajes_enviados_usuarios')
+    destinatario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mensajes_recibidos_usuarios')
+    asunto = models.CharField(max_length=255)
     cuerpo = models.TextField()
     fecha_envio = models.DateTimeField(auto_now_add=True)
-    leido = models.BooleanField(default=False)
+    is_leido = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['-fecha_envio']
-        verbose_name = "Mensaje Privado"
-        verbose_name_plural = "Mensajes Privados"
+        verbose_name = "Mensaje Privado de Usuarios"
+        verbose_name_plural = "Mensajes Privados de Usuarios"
 
     def __str__(self):
-        return f"De: {self.remitente.username} a: {self.destinatario.username} - Asunto: {self.asunto[:50]}"
+        return f'De: {self.remitente} - Para: {self.destinatario} - Asunto: {self.asunto}'
+
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -72,4 +76,3 @@ def save_user_profile(sender, instance, **kwargs):
         instance.perfil.save()
     else:
         Perfil.objects.create(user=instance)
-    

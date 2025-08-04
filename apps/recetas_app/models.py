@@ -96,3 +96,20 @@ class RecetaFavorita(models.Model):
 
     def __str__(self):
         return f'{self.usuario.username} - {self.receta.titulo}'
+
+# Modelo para Mensajes Privados
+class Mensaje(models.Model):
+    remitente = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mensajes_enviados_recetas')
+    destinatario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mensajes_recibidos_recetas')
+    asunto = models.CharField(max_length=255)
+    cuerpo = models.TextField()
+    fecha_envio = models.DateTimeField(auto_now_add=True)
+    is_leido = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-fecha_envio']
+        verbose_name = "Mensaje Privado"
+        verbose_name_plural = "Mensajes Privados"
+
+    def __str__(self):
+        return f'De: {self.remitente} - Para: {self.destinatario} - Asunto: {self.asunto}'

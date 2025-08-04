@@ -38,7 +38,7 @@
             <div class="nav-right">
                 {% if user.is_authenticated %}
                     {# Mensajes Privados #}
-                    <a href="{% url 'usuarios:mensajes_privados' %}" class="nav-icon-link nav-messages-link {% if unread_messages_count > 0 %}unread-messages{% endif %}">
+                    <a href="{% url 'usuarios:inbox' %}" class="nav-icon-link nav-messages-link {% if unread_messages_count > 0 %}unread-messages{% endif %}">
                         <span class="nav-icon">&#128231;</span>
                         {% if unread_messages_count > 0 %}
                             <span class="badge">{{ unread_messages_count }}</span>
@@ -194,7 +194,6 @@
                 });
             });
 
-            // Lógica para manejar clics en elementos con data-url (movido aquí para ser global)
             const clickableElements = document.querySelectorAll('.clickable-slide, .clickable-card');
             clickableElements.forEach(element => {
                 // Evitar que el clic en un botón o enlace dentro de un elemento clickeable active el data-url del padre

@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import inlineformset_factory
-from .models import Receta, Categoria, Comentario, Ingrediente, Paso
+from .models import Receta, Categoria, Comentario, Ingrediente, Paso, Mensaje
 
 # Formulario para crear/editar recetas
 class RecetaForm(forms.ModelForm):
@@ -41,11 +41,11 @@ IngredienteFormSet = inlineformset_factory(
 PasoFormSet = inlineformset_factory(
     Receta,
     Paso,
-    fields=['titulo', 'descripcion'], # Corregido de 'numero' a 'titulo'
-    extra=1, # Número inicial de formularios vacíos
-    can_delete=True, # Permite eliminar pasos existentes
+    fields=['titulo', 'descripcion'],
+    extra=1, 
+    can_delete=True, 
     widgets={
-        'titulo': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Título del Paso'}), # Añadido placeholder
+        'titulo': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Título del Paso'}),
         'descripcion': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 2, 'placeholder': 'Describe este paso...'}),
     }
 )
@@ -86,3 +86,20 @@ class CategoriaForm(forms.ModelForm):
             'nombre': 'Nombre de la Categoría',
             'imagen': 'Imagen de la Categoría (Opcional)',
         }
+
+# Formulario para enviar mensajes privados
+class MensajeForm(forms.ModelForm):
+    destinatario = forms.CharField(label="Destinatario", max_length=150, widget=forms.TextInput(attrs={'placeholder': 'Nombre de usuario'}))
+    
+    class Meta:
+        model = Mensaje
+        fields = ['destinatario', 'asunto', 'cuerpo']
+        widgets = {
+            'asunto': forms.TextInput(attrs={'placeholder': 'Asunto del mensaje'}),
+            'cuerpo': forms.Textarea(attrs={'placeholder': 'Escribe tu mensaje aquí...', 'rows': 5}),
+        }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['destinatario'].widget.attrs.update({'class': 'form-control'})
+        self.fields['asunto'].widget.attrs.update({'class': 'form-control'})
+        self.fields['cuerpo'].widget.attrs.update({'class': 'form-control'})
