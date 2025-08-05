@@ -1,3 +1,4 @@
+# apps/recetas_app/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -13,11 +14,12 @@ from django.views.generic import ListView, DetailView
 from django.utils import timezone
 from urllib.parse import urlencode 
 from django.contrib.auth.models import User
+from django.http import JsonResponse, HttpResponseRedirect
 
 # Importaciones consolidadas de modelos y formularios
-from .models import Receta, Ingrediente, Paso, Comentario, Categoria, Mensaje
+from .models import Receta, Ingrediente, Paso, Comentario, Categoria, RecetaFavorita 
 # Importamos los Formsets y formularios 
-from .forms import ComentarioForm, ComentarioEditForm, RecetaForm, IngredienteFormSet, PasoFormSet, CategoriaForm, MensajeForm
+from .forms import ComentarioForm, ComentarioEditForm, RecetaForm, IngredienteFormSet, PasoFormSet, CategoriaForm
 
 
 # Función para verificar si el usuario es administrador (is_staff)
@@ -26,22 +28,24 @@ def is_admin(user):
 
 # Vista para la página de inicio (Home)
 def home(request):
-    recetas = Receta.objects.all()
-    categorias = Categoria.objects.all()
+    # Obtener todas las categorías para la sidebar
+    categorias = Categoria.objects.all().order_by('nombre')
 
+    # Filtrado por categoría
     filtro_categoria_aplicado = False
     categoria_encontrada = True
     categoria_nombre = None
+    recetas_list = Receta.objects.all() # Inicializar con todas las recetas
 
     categoria_slug = request.GET.get('categoria')
     if categoria_slug:
         filtro_categoria_aplicado = True
         try:
             categoria_seleccionada = Categoria.objects.get(slug=categoria_slug)
-            recetas = recetas.filter(categoria=categoria_seleccionada)
+            recetas_list = recetas_list.filter(categoria=categoria_seleccionada)
             categoria_nombre = categoria_seleccionada.nombre
         except Categoria.DoesNotExist:
-            recetas = Receta.objects.none()
+            recetas_list = Receta.objects.none() # No hay recetas si la categoría no existe
             categoria_encontrada = False
 
     # --- Lógica de Ordenamiento ---
@@ -50,25 +54,34 @@ def home(request):
 
     if order_by == 'fecha_publicacion':
         if direction == 'asc':
-            recetas = recetas.order_by('fecha_publicacion')
+            recetas_list = recetas_list.order_by('fecha_publicacion')
         else: 
-            recetas = recetas.order_by('-fecha_publicacion')
+            recetas_list = recetas_list.order_by('-fecha_publicacion')
     elif order_by == 'titulo':
         if direction == 'asc':
-            recetas = recetas.order_by('titulo')
+            recetas_list = recetas_list.order_by('titulo')
         else: 
-            recetas = recetas.order_by('-titulo')
+            recetas_list = recetas_list.order_by('-titulo')
 
     # --- Obtener la Receta de la Semana ---
-    receta_de_la_semana = Receta.objects.filter(is_featured=True).order_by('-fecha_publicacion').first()
+    # Asegúrate de que el campo 'is_featured' exista en tu modelo Receta si lo usas.
+    # Si no, puedes usar una lógica aleatoria como antes:
+    # receta_de_la_semana = Receta.objects.order_by('?').first() 
+    receta_de_la_semana = Receta.objects.order_by('?').first() # Receta aleatoria
 
     # --- Obtener Recetas Más Populares (para la sección de la página de inicio) ---
     recetas_populares_home = Receta.objects.annotate(
         num_favoritos=Count('recetafavorita')
     ).order_by('-num_favoritos')[:6] # Limitar a, por ejemplo, las 6 más populares para la home
 
+    # --- Obtener los IDs de las recetas favoritas del usuario actual ---
+    favoritas_ids = set()
+    if request.user.is_authenticated:
+        # Usamos .values_list('receta__pk', flat=True) para obtener una lista plana de IDs
+        favoritas_ids = set(request.user.recetas_favoritas.values_list('receta__pk', flat=True))
+
     context = {
-        'recetas': recetas,
+        'recetas': recetas_list,
         'categorias': categorias,
         'filtro_categoria_aplicado': filtro_categoria_aplicado,
         'categoria_encontrada': categoria_encontrada,
@@ -77,6 +90,7 @@ def home(request):
         'current_direction': direction,
         'receta_de_la_semana': receta_de_la_semana,
         'recetas_populares': recetas_populares_home, 
+        'favoritas_ids': favoritas_ids, # ¡Pasamos los IDs de las recetas favoritas!
     }
     return render(request, 'recetas_app/home.html', context)
 
@@ -102,9 +116,15 @@ def recetas_populares_page(request):
         # Si la página está fuera de rango (ej. 9999), entregar la última página de resultados.
         page_obj = paginator.page(paginator.num_pages)
 
+    # Obtener los IDs de las recetas favoritas del usuario actual para los iconos
+    favoritas_ids = set()
+    if request.user.is_authenticated:
+        favoritas_ids = set(request.user.recetas_favoritas.values_list('receta__pk', flat=True))
+
     context = {
         'recetas_populares': page_obj, 
         'page_obj': page_obj, 
+        'favoritas_ids': favoritas_ids, # Pasamos los IDs de las recetas favoritas
     }
     return render(request, 'recetas_app/recetas_populares.html', context)
 
@@ -119,15 +139,26 @@ def detalle_receta(request, pk):
     ).order_by('fecha_creacion')
 
     if request.method == 'POST':
+        # Manejar el envío del formulario de comentario
         if not request.user.is_authenticated:
             messages.warning(request, 'Debes iniciar sesión para dejar un comentario.')
-            return redirect('usuarios:login')
+            # Redirige a la página de login, con 'next' para volver aquí después del login
+            return redirect(f"{reverse_lazy('usuarios:login')}?next={request.path}")
 
         form = ComentarioForm(request.POST)
         if form.is_valid():
             nuevo_comentario = form.save(commit=False)
             nuevo_comentario.receta = receta
             nuevo_comentario.autor = request.user
+            
+            respuesta_a_id = request.POST.get('respuesta_a')
+            if respuesta_a_id:
+                try:
+                    nuevo_comentario.respuesta_a = Comentario.objects.get(pk=respuesta_a_id)
+                except Comentario.DoesNotExist:
+                    messages.error(request, 'El comentario al que intentas responder no existe.')
+                    return redirect('recetas_app:detalle_receta', pk=receta.pk)
+            
             nuevo_comentario.save()
             messages.success(request, '¡Comentario publicado exitosamente!')
             return redirect('recetas_app:detalle_receta', pk=receta.pk)
@@ -144,7 +175,7 @@ def detalle_receta(request, pk):
         'receta': receta,
         'comentarios_principales': comentarios_principales,
         'form': form,
-        'es_favorita': es_favorita,
+        'es_favorita': es_favorita, # Pasamos esta variable al contexto
     }
     return render(request, 'recetas_app/detalle_receta.html', context)
 
@@ -188,6 +219,11 @@ def simple_search_view(request):
             results = results.order_by('titulo')
         else: 
             results = results.order_by('-titulo')
+    
+    # Obtener los IDs de las recetas favoritas del usuario actual para los iconos
+    favoritas_ids = set()
+    if request.user.is_authenticated:
+        favoritas_ids = set(request.user.recetas_favoritas.values_list('receta__pk', flat=True))
 
     context = {
         'query': query,
@@ -196,6 +232,7 @@ def simple_search_view(request):
         'current_order_by': order_by,
         'current_direction': direction,
         'base_query_string': base_query_string, 
+        'favoritas_ids': favoritas_ids, # Pasamos los IDs de las recetas favoritas
     }
     return render(request, 'recetas_app/search_results.html', context)
 
@@ -265,6 +302,11 @@ def advanced_search_results_view(request):
         else: 
             results = results.order_by('-titulo')
 
+    # Obtener los IDs de las recetas favoritas del usuario actual para los iconos
+    favoritas_ids = set()
+    if request.user.is_authenticated:
+        favoritas_ids = set(request.user.recetas_favoritas.values_list('receta__pk', flat=True))
+
     context = {
         'exact_phrase': exact_phrase,
         'similar_words': similar_words,
@@ -277,6 +319,7 @@ def advanced_search_results_view(request):
         'current_order_by': order_by,
         'current_direction': direction,
         'base_query_string': base_query_string, 
+        'favoritas_ids': favoritas_ids, # Pasamos los IDs de las recetas favoritas
     }
     return render(request, 'recetas_app/search_results.html', context)
 
@@ -327,7 +370,8 @@ def crear_receta(request):
 @user_passes_test(is_admin, login_url='/admin/login/')
 def editar_receta(request, pk):
     receta = get_object_or_404(Receta, pk=pk)
-    if receta.autor != request.user:
+    # Solo el autor o un superusuario puede editar la receta
+    if not (request.user == receta.autor or request.user.is_superuser):
         messages.error(request, 'No tienes permiso para editar esta receta.')
         return redirect('recetas_app:detalle_receta', pk=receta.pk)
 
@@ -370,7 +414,8 @@ def editar_receta(request, pk):
 @user_passes_test(is_admin, login_url='/admin/login/')
 def eliminar_receta(request, pk):
     receta = get_object_or_404(Receta, pk=pk)
-    if receta.autor != request.user:
+    # Solo el autor o un superusuario puede eliminar la receta
+    if not (request.user == receta.autor or request.user.is_superuser):
         messages.error(request, 'No tienes permiso para eliminar esta receta.')
         return redirect('recetas_app:detalle_receta', pk=receta.pk)
 
@@ -384,7 +429,7 @@ def eliminar_receta(request, pk):
     return render(request, 'recetas_app/receta_confirm_delete.html', context)
 
 
-#  Editar Comentario
+#   Editar Comentario
 @login_required
 def editar_comentario(request, pk):
     comentario = get_object_or_404(Comentario, pk=pk)
@@ -412,11 +457,12 @@ def editar_comentario(request, pk):
     return render(request, 'recetas_app/editar_comentario.html', context)
 
 
-#  Eliminar Comentario
+#   Eliminar Comentario
 @login_required
 def eliminar_comentario(request, pk):
     comentario = get_object_or_404(Comentario, pk=pk)
-    if not (request.user == comentario.autor or request.user.is_staff):
+    # Solo el autor o un superusuario puede eliminar el comentario
+    if not (request.user == comentario.autor or request.user.is_superuser):
         messages.error(request, 'No tienes permiso para eliminar este comentario.')
         return redirect('recetas_app:detalle_receta', pk=comentario.receta.pk)
 
@@ -438,12 +484,23 @@ def recetas_por_categoria(request, categoria_slug):
     categoria = get_object_or_404(Categoria, slug=categoria_slug)
     recetas = Receta.objects.filter(categoria=categoria).order_by('-fecha_publicacion')
     categorias = Categoria.objects.all()
+
+    # Obtener los IDs de las recetas favoritas del usuario actual para los iconos
+    favoritas_ids = set()
+    if request.user.is_authenticated:
+        favoritas_ids = set(request.user.recetas_favoritas.values_list('receta__pk', flat=True))
+
     context = {
         'categoria_actual': categoria,
         'recetas': recetas,
         'categorias': categorias,
+        'categoria_slug': categoria_slug, # Asegúrate de pasar el slug para mantener el filtro activo
+        'filtro_categoria_aplicado': True,
+        'categoria_nombre': categoria.nombre,
+        'categoria_encontrada': True,
+        'favoritas_ids': favoritas_ids, # Pasamos los IDs de las recetas favoritas
     }
-    return render(request, 'recetas_app/recetas_por_categoria.html', context)
+    return render(request, 'recetas_app/home.html', context) # Reutilizamos home.html
 
 # Vista para listar, crear, editar y eliminar categorías (solo para administradores)
 @login_required
@@ -611,12 +668,18 @@ def contacto(request):
 
 # VISTAS PARA MENSAJES PRIVADOS 
 
+# No se necesita MensajeForm aquí, ya que se importa en apps.usuarios.views
+# from apps.usuarios.forms import MensajeForm 
+
 @login_required
 def inbox(request):
     """
     Muestra la bandeja de entrada del usuario. Lista a todos los usuarios con los que
     el usuario actual ha tenido una conversación.
     """
+    # Importar Mensaje aquí para evitar circular imports si MensajeForm lo necesita
+    from apps.usuarios.models import Mensaje 
+
     # Obtener IDs de usuarios con los que el usuario actual ha intercambiado mensajes
     user_ids = Mensaje.objects.filter(
         Q(remitente=request.user) | Q(destinatario=request.user)
@@ -655,6 +718,10 @@ def private_message(request, username):
     """
     Muestra la conversación completa con un usuario específico y permite enviar nuevos mensajes.
     """
+    # Importar Mensaje aquí para evitar circular imports si MensajeForm lo necesita
+    from apps.usuarios.models import Mensaje 
+    from apps.usuarios.forms import MensajeForm # Se necesita el formulario aquí
+
     other_user = get_object_or_404(User, username=username)
 
     if request.method == 'POST':

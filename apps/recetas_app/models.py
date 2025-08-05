@@ -84,18 +84,18 @@ class Comentario(models.Model):
     def __str__(self):
         return f'Comentario de {self.autor.username} en {self.receta.titulo}'
 
-# Modelo para Recetas Favoritas de Usuarios
+# Modelo de Receta Favorita
 class RecetaFavorita(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recetas_favoritas')
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recetas_favoritas') 
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE)
-    fecha_agregado = models.DateTimeField(default=timezone.now)
+    fecha_agregado = models.DateTimeField(auto_now_add=True)
+    categoria = models.ForeignKey('usuarios.CategoriaFavorita', on_delete=models.SET_NULL, null=True, blank=True, related_name='recetas_favoritas_en_categoria')
 
     class Meta:
-        unique_together = ('usuario', 'receta') # Un usuario solo puede tener una receta como favorita una vez
-        verbose_name_plural = "Recetas Favoritas"
+        unique_together = ('usuario', 'receta') # Un usuario solo puede tener una receta favorita una vez
 
     def __str__(self):
-        return f'{self.usuario.username} - {self.receta.titulo}'
+        return f"{self.usuario.username} - {self.receta.titulo}"
 
 # Modelo para Mensajes Privados
 class Mensaje(models.Model):

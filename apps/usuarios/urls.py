@@ -23,6 +23,6 @@ urlpatterns = [
     path('mensajes/<str:username>/', views.private_message, name='private_message'),
 
     # URLs para favoritos 
-    path('toggle-favorito/<int:receta_pk>/', views.toggle_favorito, name='toggle_favorito'),
+    path('toggle_favorito/<int:receta_pk>/', views.toggle_favorito, name='toggle_favorito'),
     path('add-to-category/<int:receta_pk>/', views.add_to_category, name='add_to_category'),
 ]

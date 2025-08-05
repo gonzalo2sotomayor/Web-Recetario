@@ -5,6 +5,7 @@
 {% block title %}Inicio - El Recetario{% endblock %}
 
 {% block content %}
+
     <!-- Columna Izquierda: Categorías -->
     <aside class="sidebar">
         <h2 class="sidebar-title">Categorías</h2>
@@ -42,19 +43,19 @@
             {# Controles de Ordenamiento #}
             <div class="sort-options-container">
                 <span class="sort-label">Ordenar por:</span>
-                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=fecha_publicacion&direction=desc"
+                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria.slug }}&{% else %}?{% endif %}order_by=fecha_publicacion&direction=desc"
                    class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'desc' %}active{% endif %}">
                     Más Recientes
                 </a>
-                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=fecha_publicacion&direction=asc"
+                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria.slug }}&{% else %}?{% endif %}order_by=fecha_publicacion&direction=asc"
                    class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'asc' %}active{% endif %}">
                     Más Antiguas
                 </a>
-                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=titulo&direction=asc"
+                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria.slug }}&{% else %}?{% endif %}order_by=titulo&direction=asc"
                    class="sort-button {% if current_order_by == 'titulo' and current_direction == 'asc' %}active{% endif %}">
                     Título (A-Z)
                 </a>
-                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=titulo&direction=desc"
+                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria.slug }}&{% else %}?{% endif %}order_by=titulo&direction=desc"
                    class="sort-button {% if current_order_by == 'titulo' and current_direction == 'desc' %}active{% endif %}">
                     Título (Z-A)
                 </a>
@@ -77,9 +78,17 @@
                             <h3 class="recipe-card-title">{{ receta.titulo }}</h3>
                             <p class="recipe-card-description">{{ receta.descripcion|truncatechars:100 }}</p>
                             <div class="recipe-actions">
-                                <a href="{% url 'usuarios:toggle_favorito' receta.pk %}" class="favorite-button">
-                                    <i class="{% if request.user.is_authenticated and receta in request.user.recetas_favoritas.all %}fas{% else %}far{% endif %} fa-heart"></i>
-                                </a>
+                                {# Formulario para el botón de favoritos #}
+                                {% if request.user.is_authenticated %}
+                                    <form action="{% url 'usuarios:toggle_favorito' receta_pk=receta.pk %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="next" value="{{ request.path }}"> {# Para redirigir de vuelta #}
+                                        <button type="submit" 
+                                                class="favorite-toggle-button {% if receta.pk in favoritas_ids %}favorited{% endif %}">
+                                            <i class="{% if receta.pk in favoritas_ids %}fas{% else %}far{% endif %} fa-heart"></i>
+                                        </button>
+                                    </form>
+                                {% endif %}
                             </div>
                         </div>
                     {% endfor %}
@@ -103,7 +112,7 @@
                     <p class="tip-card-description">Descubre las herramientas básicas que todo cocinero necesita.</p>
                 </div>
                 <div class="tip-card clickable-card" data-url="/consejos/conservar-alimentos/">
-                    <img src="{% static 'img/tip_storage.jpg' %}" alt="Consejos para conservar alimentos" class="tip-card-image">
+                    <img src="{% static 'img/tip_storage.jpg'}" alt="Consejos para conservar alimentos" class="tip-card-image">
                     <h3 class="tip-card-title">Consejos para conservar alimentos</h3>
                     <p class="tip-card-description">Prolonga la vida útil de tus ingredientes con estos trucos.</p>
                 </div>
@@ -121,36 +130,4 @@
             </div>
         {% endif %}
     </div> {# Cierre de main-content-area #}
-
-{# Script para manejar la navegación de las tarjetas clickables #}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Seleccionar todas las tarjetas con la clase 'clickable-card'
-        const clickableCards = document.querySelectorAll('.clickable-card');
-
-        clickableCards.forEach(card => {
-            // Añadir un event listener para el clic
-            card.addEventListener('click', function() {
-                // Obtener la URL del atributo data-url
-                const url = this.dataset.url;
-                if (url) {
-                    // Navegar a la URL
-                    window.location.href = url;
-                }
-            });
-        });
-
-        // Manejar el botón "Ver Receta Completa" de la receta destacada
-        const featuredRecipeButton = document.querySelector('.featured-recipe-button');
-        if (featuredRecipeButton) {
-            featuredRecipeButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevenir el comportamiento por defecto del enlace
-                const url = this.dataset.url;
-                if (url) {
-                    window.location.href = url;
-                }
-            });
-        }
-    });
-</script>
 {% endblock %}

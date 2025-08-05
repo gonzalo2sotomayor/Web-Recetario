@@ -1,3 +1,4 @@
+{# apps/recetas_app/templates/recetas_app/detalle_receta.html #}
 {% extends 'base.html' %}
 {% load static %}
 
@@ -25,22 +26,22 @@
         {% if receta.imagen %}
             <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-detail-image">
         {% else %}
-            <img src="{% static 'img/default_recipe.png' %}" alt="Imagen por defecto" class="recipe-detail-image">
+            <img src="{% static 'img/default_recipe.png' %}" alt="Imagen por defecto" class="recipe-card-image">
         {% endif %}
 
+        {# Formulario para el botón de favoritos #}
         {% if user.is_authenticated %}
-            <form action="{% url 'usuarios:toggle_favorito' receta_pk=receta.pk %}" method="post" class="favorite-form">
-                {% csrf_token %}
-                {% if es_favorita %}
-                    <button type="submit" class="button-secondary favorite-button favorited">
-                        &#9733; Quitar de Favoritos
+            <div class="favorite-button-wrapper"> {# Puedes añadir un wrapper si necesitas un estilo específico para este botón grande #}
+                <form action="{% url 'usuarios:toggle_favorito' receta_pk=receta.pk %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}"> {# Para redirigir de vuelta #}
+                    <button type="submit" 
+                            class="favorite-toggle-button text-button {% if es_favorita %}favorited{% endif %}">
+                        <i class="{% if es_favorita %}fas{% else %}far{% endif %} fa-heart"></i>
+                        <span class="button-text">{% if es_favorita %}Quitar de Favoritos{% else %}Añadir a Favoritos{% endif %}</span> {# Texto dentro de un span #}
                     </button>
-                {% else %}
-                    <button type="submit" class="button-primary favorite-button">
-                        &#9734; Añadir a Favoritos
-                    </button>
-                {% endif %}
-            </form>
+                </form>
+            </div>
             {% if user.is_authenticated and user.is_staff %}
                 <div class="admin-recipe-actions">
                     <a href="{% url 'recetas_app:editar_receta' pk=receta.pk %}" class="button-primary edit-recipe-button">
@@ -177,9 +178,10 @@
     </div>
 </div>
 
-{# JavaScript para la funcionalidad de responder #}
+{# Script específico para la página de detalle de receta - solo para comentarios #}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Lógica JavaScript para la funcionalidad de responder comentarios (existente)
         const replyButtons = document.querySelectorAll('.reply-button');
 
         replyButtons.forEach(button => {

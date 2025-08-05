@@ -8,6 +8,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth import update_session_auth_hash
 from django.db.models import Q 
 from django.contrib.auth.models import User 
+from django.http import JsonResponse, HttpResponseRedirect # ¡IMPORTANTE: Añadir HttpResponseRedirect!
+from django.views.decorators.http import require_POST 
 
 from .forms import UserUpdateForm, PerfilUpdateForm, SeguridadPerfilForm, CategoriaFavoritaForm, MensajeForm, ComposeMessageForm
 from .models import Perfil, CategoriaFavorita, Mensaje
@@ -246,56 +248,29 @@ def compose_new_message(request):
     
     return render(request, 'usuarios/compose.html', {'form': form})
 
-
-@login_required
+@require_POST # Asegura que solo se acepten peticiones POST
+@login_required # Asegura que solo usuarios autenticados puedan usar esta vista
 def toggle_favorito(request, receta_pk):
     """
-    Añade o quita una receta de favoritos.
+    Añade o quita una receta de favoritos y redirige de vuelta a la página anterior.
     """
     receta = get_object_or_404(Receta, pk=receta_pk)
-    favorito_existente = RecetaFavorita.objects.filter(usuario=request.user, receta=receta)
+    
+    # Usamos request.user.recetas_favoritas.filter() para verificar si ya es favorita
+    # gracias al related_name que añadimos en models.py
+    favorito_existente = request.user.recetas_favoritas.filter(receta=receta)
 
     if favorito_existente.exists():
         favorito_existente.delete()
-        es_favorito = False
     else:
-        RecetaFavorita.objects.create(usuario=request.user, receta=receta)
-        es_favorito = True
+        # Creamos el objeto RecetaFavorita usando el related_manager
+        request.user.recetas_favoritas.create(receta=receta)
     
-    return redirect('recetas_app:detalle_receta', pk=receta_pk)
+    # Redirige de vuelta a la URL 'next' si está presente, de lo contrario a la página anterior
+    # o a la home como fallback final.
+    next_url = request.POST.get('next', request.META.get('HTTP_REFERER', reverse_lazy('recetas_app:home')))
+    return HttpResponseRedirect(next_url)
 
-@login_required
-def add_to_category(request, receta_pk):
-    """
-    Añade una receta favorita a una categoría específica.
-    """
-    receta = get_object_or_404(Receta, pk=receta_pk)
-    if request.method == 'POST':
-        categoria_id = request.POST.get('categoria_id')
-        if categoria_id:
-            categoria = get_object_or_404(CategoriaFavorita, pk=categoria_id, usuario=request.user)
-            receta_favorita, created = RecetaFavorita.objects.get_or_create(usuario=request.user, receta=receta)
-            receta_favorita.categoria = categoria
-            receta_favorita.save()
-    return redirect('recetas_app:detalle_receta', pk=receta_pk)
-
-
-@login_required
-def toggle_favorito(request, receta_pk):
-    """
-    Añade o quita una receta de favoritos.
-    """
-    receta = get_object_or_404(Receta, pk=receta_pk)
-    favorito_existente = RecetaFavorita.objects.filter(usuario=request.user, receta=receta)
-
-    if favorito_existente.exists():
-        favorito_existente.delete()
-        es_favorito = False
-    else:
-        RecetaFavorita.objects.create(usuario=request.user, receta=receta)
-        es_favorito = True
-    
-    return redirect('recetas_app:detalle_receta', pk=receta_pk)
 
 @login_required
 def add_to_category(request, receta_pk):

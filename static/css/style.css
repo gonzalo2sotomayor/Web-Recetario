@@ -407,7 +407,7 @@ body.light-theme {
     }
 
     .sidebar {
-        width: 200px; /* Ancho fijo para la barra lateral en desktop */
+        width: 180px; /* Ancho fijo para la barra lateral en desktop */
         flex-shrink: 0; /* Evita que se encoja */
         margin-right: 30px; /* Espacio a la derecha de la sidebar */
         position: sticky; /* Hace que la sidebar sea pegajosa */
@@ -618,6 +618,7 @@ body.light-theme {
     flex-direction: column;
     height: 100%;
     cursor: pointer; /* Indica que la tarjeta es clickeable */
+    position: relative; /* Para posicionar el badge de favorito */
 }
 
 .recipe-card:hover {
@@ -668,11 +669,6 @@ body.light-theme {
 .recipe-card-link:hover {
     background-color: var(--button-hover-color);
 }
-
-
-/* Eliminado: Estilos para la cuadrícula de categorías con imágenes */
-/* Se eliminó la sección completa de estilos de .category-grid y .category-card */
-
 
 /* Estilos para la cuadrícula de consejos */
 .tip-grid {
@@ -1077,44 +1073,6 @@ body.light-theme {
 
 .reply-text strong {
     color: var(--text-color);
-}
-
-/* Estilos para el botón de favoritos en detalle_receta.html */
-.favorite-form {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.favorite-button {
-    padding: 12px 25px;
-    border-radius: 8px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    border: 2px solid var(--accent-color);
-    background-color: var(--accent-color);
-    color: var(--white-text);
-}
-
-.favorite-button:hover {
-    background-color: var(--button-hover-color);
-    border-color: var(--button-hover-color);
-}
-
-/* Estilo cuando la receta ya es favorita */
-.favorite-button.favorited {
-    background-color: transparent;
-    color: var(--accent-color);
-    border-color: var(--accent-color);
-}
-
-.favorite-button.favorited:hover {
-    background-color: var(--accent-color);
-    color: var(--white-text);
 }
 
 /* Estilos para el tag de categoría en la lista de favoritos */
@@ -1613,7 +1571,7 @@ body.light-theme {
     font-size: 14px;
     font-weight: 500;
     text-decoration: none;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     white-space: nowrap;
 }
 
@@ -1774,6 +1732,7 @@ body.light-theme {
     box-shadow: 0px 4px 10px var(--shadow-color);
     padding: 30px;
     box-sizing: border-box;
+    position: relative; /* ¡CRUCIAL para posicionar el botón de favoritos dentro! */
 }
 
 .recipe-detail-title {
@@ -2683,7 +2642,7 @@ body.light-theme {
     padding: 0.75rem 1rem;
     border: 1px solid #d1d5db;
     border-radius: 8px;
-    transition: all 200ms ease-in-out;
+    transition: all 200ms ease;
 }
 .form-group input:focus, .form-group textarea:focus {
     outline: none;
@@ -2701,7 +2660,7 @@ body.light-theme {
     padding: 0.75rem 2rem;
     border-radius: 9999px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transition: all 300ms ease-in-out;
+    transition: all 300ms ease;
     border: none;
     cursor: pointer;
 }
@@ -2737,4 +2696,79 @@ body.light-theme {
     .form-row {
         flex-direction: row; /* En desktop */
     }
+}
+
+/* Estilos base del botón de favoritos (ahora unificado) */
+.favorite-toggle-button { /* ¡NUEVO NOMBRE DE CLASE UNIFICADO! */
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo semi-transparente blanco */
+    border: 1px solid var(--input-border); /* Borde sutil */
+    border-radius: 50%; /* Por defecto circular para home */
+    width: 38px; /* Tamaño del círculo para home */
+    height: 38px; /* Tamaño del círculo para home */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: absolute; /* Posicionamiento absoluto para home */
+    top: 10px; /* Distancia desde arriba para home */
+    right: 10px; /* Distancia desde la derecha para home */
+    z-index: 10; /* Para asegurar que esté por encima de la imagen y otros elementos */
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra sutil */
+    padding: 0; /* Eliminar padding por defecto del botón */
+    -webkit-appearance: none; /* Resetear estilos por defecto del navegador */
+    -moz-appearance: none;
+    appearance: none;
+    outline: none; /* Quitar el contorno al hacer clic */
+    font-size: 1.1rem; /* Tamaño de fuente base */
+    color: var(--light-text); /* Color de texto base */
+    text-decoration: none; /* Asegurar que no haya subrayado si es un enlace */
+}
+
+.favorite-toggle-button:hover {
+    background-color: var(--hover-color); /* Fondo al pasar el ratón */
+    transform: scale(1.05); /* Pequeño efecto de zoom */
+}
+
+.favorite-toggle-button i {
+    color: inherit; /* Hereda el color del botón padre */
+    font-size: 1.2rem; /* Tamaño del icono */
+    transition: color 0.2s ease;
+    margin-right: 0; /* Por defecto, sin margen para iconos */
+}
+
+/* Estilo cuando la receta ya es favorita (corazón lleno y fondo de color) */
+.favorite-toggle-button.favorited {
+    background-color: var(--accent-color); /* Fondo de color cuando está en favoritos */
+    border-color: var(--accent-color); /* Borde del mismo color */
+    color: var(--white-text); /* Texto blanco para el botón completo */
+}
+
+.favorite-toggle-button.favorited i {
+    color: var(--white-text); /* Color del corazón lleno (blanco) */
+}
+
+/* Estilos específicos para el botón de favoritos en la página de detalle de receta */
+/* Para que se vea como un botón más grande con texto */
+.recipe-detail-container .favorite-toggle-button.text-button { /* Usamos .text-button para especificar */
+    position: static; /* No absoluto, para que fluya con el contenido */
+    margin: 20px auto; /* Centrar y dar margen */
+    width: auto; /* Ancho automático para el texto */
+    height: auto; /* Alto automático para el texto */
+    border-radius: 8px; /* Bordes menos redondeados */
+    padding: 12px 24px; /* Padding para el texto */
+    font-size: 1rem; /* Tamaño de fuente normal */
+    display: inline-flex; /* Para que el icono y el texto estén en línea */
+    gap: 8px; /* Espacio entre icono y texto */
+}
+
+.recipe-detail-container .favorite-toggle-button.text-button i {
+    margin-right: 5px; /* Margen para separar el icono del texto */
+}
+
+
+/* Estilos para deshabilitar el botón mientras se procesa la petición */
+.favorite-toggle-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
 }
