@@ -32,9 +32,8 @@
         {# Formulario para el botón de favoritos #}
         {% if user.is_authenticated %}
             <div class="favorite-button-wrapper"> {# Puedes añadir un wrapper si necesitas un estilo específico para este botón grande #}
-                <form action="{% url 'usuarios:toggle_favorito' receta_pk=receta.pk %}" method="post">
+                <form class="favorite-form" action="{% url 'usuarios:toggle_favorito' receta_pk=receta.pk %}" method="post" data-recipe-id="{{ receta.pk }}">
                     {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ request.path }}"> {# Para redirigir de vuelta #}
                     <button type="submit" 
                             class="favorite-toggle-button text-button {% if es_favorita %}favorited{% endif %}">
                         <i class="{% if es_favorita %}fas{% else %}far{% endif %} fa-heart"></i>
@@ -178,7 +177,9 @@
     </div>
 </div>
 
-{# Script específico para la página de detalle de receta - solo para comentarios #}
+{% endblock %}
+
+{% block extra_body_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Lógica JavaScript para la funcionalidad de responder comentarios (existente)
@@ -212,6 +213,63 @@
                     replyFormContainer.style.display = 'none';
                     replyFormContainer.querySelector('textarea').value = '';
                 }
+            });
+        });
+
+        // Manejar el envío de formularios de favoritos con AJAX
+        document.querySelectorAll('.favorite-form').forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevenir el envío normal del formulario (y la recarga)
+                
+                const form = this;
+                const button = form.querySelector('.favorite-toggle-button');
+                const icon = button.querySelector('i');
+                const textSpan = button.querySelector('.button-text'); // Para el texto del botón en detalle_receta
+                const recipeId = form.dataset.recipeId;
+
+                // Deshabilitar el botón y cambiar el cursor para indicar que está procesando
+                button.disabled = true;
+                button.style.cursor = 'wait';
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form), // Envía los datos del formulario (incluido el CSRF token)
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest' // Indica que es una petición AJAX
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.is_favorited) {
+                        button.classList.add('favorited');
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        if (textSpan) { // Actualizar texto solo si existe (en detalle_receta)
+                            textSpan.textContent = 'Quitar de Favoritos';
+                        }
+                    } else {
+                        button.classList.remove('favorited');
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        if (textSpan) { // Actualizar texto solo si existe (en detalle_receta)
+                            textSpan.textContent = 'Añadir a Favoritos';
+                        }
+                    }
+                    // Re-habilitar el botón
+                    button.disabled = false;
+                    button.style.cursor = 'pointer';
+                })
+                .catch(error => {
+                    console.error('Error toggling favorite:', error);
+                    button.disabled = false;
+                    button.style.cursor = 'pointer';
+                    alert('Hubo un error al actualizar el favorito. Por favor, inténtalo de nuevo.');
+                });
             });
         });
     });

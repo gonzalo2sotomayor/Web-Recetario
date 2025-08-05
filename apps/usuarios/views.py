@@ -1,4 +1,4 @@
-# usuarios/views.py
+# apps/usuarios/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
@@ -8,12 +8,12 @@ from django.urls import reverse_lazy
 from django.contrib.auth import update_session_auth_hash
 from django.db.models import Q 
 from django.contrib.auth.models import User 
-from django.http import JsonResponse, HttpResponseRedirect # ¡IMPORTANTE: Añadir HttpResponseRedirect!
+from django.http import JsonResponse, HttpResponseRedirect 
 from django.views.decorators.http import require_POST 
 
 from .forms import UserUpdateForm, PerfilUpdateForm, SeguridadPerfilForm, CategoriaFavoritaForm, MensajeForm, ComposeMessageForm
 from .models import Perfil, CategoriaFavorita, Mensaje
-from apps.recetas_app.models import Receta, Comentario, RecetaFavorita
+from apps.recetas_app.models import Receta, Comentario, RecetaFavorita 
 
 def registro(request):
     """
@@ -252,24 +252,21 @@ def compose_new_message(request):
 @login_required # Asegura que solo usuarios autenticados puedan usar esta vista
 def toggle_favorito(request, receta_pk):
     """
-    Añade o quita una receta de favoritos y redirige de vuelta a la página anterior.
+    Añade o quita una receta de favoritos y devuelve una respuesta JSON.
     """
     receta = get_object_or_404(Receta, pk=receta_pk)
     
-    # Usamos request.user.recetas_favoritas.filter() para verificar si ya es favorita
-    # gracias al related_name que añadimos en models.py
-    favorito_existente = request.user.recetas_favoritas.filter(receta=receta)
+    favorito_existente = RecetaFavorita.objects.filter(usuario=request.user, receta=receta)
+    is_favorited = False
 
     if favorito_existente.exists():
         favorito_existente.delete()
+        is_favorited = False
     else:
-        # Creamos el objeto RecetaFavorita usando el related_manager
-        request.user.recetas_favoritas.create(receta=receta)
+        RecetaFavorita.objects.create(usuario=request.user, receta=receta)
+        is_favorited = True
     
-    # Redirige de vuelta a la URL 'next' si está presente, de lo contrario a la página anterior
-    # o a la home como fallback final.
-    next_url = request.POST.get('next', request.META.get('HTTP_REFERER', reverse_lazy('recetas_app:home')))
-    return HttpResponseRedirect(next_url)
+    return JsonResponse({'is_favorited': is_favorited}) 
 
 
 @login_required

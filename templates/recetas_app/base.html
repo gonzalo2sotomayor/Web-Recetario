@@ -195,12 +195,10 @@
                 });
             });
 
-            // Lógica de navegación de los elementos clickeables (AJUSTADA Y REFORZADA)
+            // Lógica de navegación de los elementos clickeables 
             const clickableElements = document.querySelectorAll('.clickable-slide, .clickable-card');
             clickableElements.forEach(element => {
                 element.addEventListener('click', function(event) {
-                    // Si el clic se originó en un elemento dentro de un formulario (como el botón de favoritos),
-                    // o en un enlace (<a> tag), NO navegues el elemento padre.
                     if (event.target.closest('form') || event.target.tagName === 'A' || event.target.closest('a')) {
                         return;
                     }
@@ -215,7 +213,7 @@
             const featuredRecipeButton = document.querySelector('.featured-recipe-button');
             if (featuredRecipeButton) {
                 featuredRecipeButton.addEventListener('click', function(event) {
-                    event.preventDefault(); // Prevenir el comportamiento por defecto del enlace
+                    event.preventDefault(); 
                     const url = this.dataset.url;
                     if (url) {
                         window.location.href = url;
@@ -224,6 +222,9 @@
             }
         });
     </script>
+
+
+    {% block extra_body_scripts %}{% endblock %} 
 
 </body>
 </html>
