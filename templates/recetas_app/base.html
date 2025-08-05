@@ -28,7 +28,7 @@
                 <li><a href="{% url 'recetas_app:recetas_aleatorias' %}" class="nav-link-new"><span class="nav-icon">&#128269;</span> Descubre</a></li>
                 <li><a href="{% url 'recetas_app:advanced_search' %}" class="nav-link-new"><span class="nav-icon">&#128269;</span> Búsqueda Avanzada</a></li>
                 <li><a href="/comunidades/" class="nav-link-new"><span class="nav-icon">&#128101;</span> Comunidades</a></li>
-                {# NEW! Enlace consolidado para opciones de administración #}
+                {# Enlace consolidado para opciones de administración #}
                 {% if user.is_authenticated and user.is_staff %}
                     <li><a href="{% url 'recetas_app:admin_options' %}" class="nav-link-new"><span class="nav-icon">&#128736;</span> Opciones Admin</a></li>
                 {% endif %}

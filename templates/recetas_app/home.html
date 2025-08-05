@@ -1,121 +1,126 @@
-{% extends 'base.html' %}
+{# apps/recetas_app/templates/recetas_app/home.html #}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Inicio - El Recetario{% endblock %}
 
 {% block content %}
-{# Sección de Últimas Recetas Añadidas (DINÁMICA) #}
-<div class="section-wrapper section-bg-primary">
-    <h2 class="section-title">
-        {% if filtro_categoria_aplicado and categoria_encontrada %}
-            Recetas en la categoría "{{ categoria_nombre }}"
-        {% elif filtro_categoria_aplicado and not categoria_encontrada %}
-            Categoría inexistente
-        {% else %}
-            ¡Recetas Deliciosas!
-        {% endif %}
-    </h2>
-
-    {# Controles de Ordenamiento #}
-    <div class="sort-options-container">
-        <span class="sort-label">Ordenar por:</span>
-        <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=fecha_publicacion&direction=desc"
-           class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'desc' %}active{% endif %}">
-            Más Recientes
-        </a>
-        <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=fecha_publicacion&direction=asc"
-           class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'asc' %}active{% endif %}">
-            Más Antiguas
-        </a>
-        <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=titulo&direction=asc"
-           class="sort-button {% if current_order_by == 'titulo' and current_direction == 'asc' %}active{% endif %}">
-            Título (A-Z)
-        </a>
-        <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=titulo&direction=desc"
-           class="sort-button {% if current_order_by == 'titulo' and current_direction == 'desc' %}active{% endif %}">
-            Título (Z-A)
-        </a>
-    </div>
-
-    <div class="latest-recipes-grid">
-        {% if filtro_categoria_aplicado and not categoria_encontrada %}
-            <p class="text-center text-red-500 font-bold">Lo sentimos, la categoría que buscas no existe.</p>
-        {% elif not recetas %} {# Esto cubre el caso de que no haya recetas en general o después de un filtro válido #}
-            <p class="text-center">No hay recetas añadidas aún. ¡Sé el primero en crear una!</p>
-        {% else %}
-            {% for receta in recetas %}
-                {# Usamos data-url para la navegación en las tarjetas de receta #}
-                <div class="recipe-card clickable-card" data-url="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
-                    {% if receta.imagen %}
-                        <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-card-image">
-                    {% else %}
-                        <img src="{% static 'img/default_recipe.png' %}" alt="Imagen por defecto" class="recipe-card-image">
-                    {% endif %}
-                    <h3 class="recipe-card-title">{{ receta.titulo }}</h3>
-                    <p class="recipe-card-description">{{ receta.descripcion|truncatechars:100 }}</p>
-                    {% if receta.categoria %}
-                        <p class="recipe-card-category">Categoría: {{ receta.categoria.nombre }}</p>
-                    {% endif %}
-                </div>
+    <!-- Columna Izquierda: Categorías -->
+    <aside class="sidebar">
+        <h2 class="sidebar-title">Categorías</h2>
+        <ul class="category-list">
+            {% for categoria in categorias %}
+                <li class="category-item">
+                    <a href="{% url 'recetas_app:home' %}?categoria={{ categoria.slug }}" class="category-link {% if categoria_slug == categoria.slug %}active{% endif %}">
+                        <i class="fas fa-utensils category-icon"></i> 
+                        {{ categoria.nombre }}
+                    </a>
+                </li>
             {% endfor %}
-        {% endif %}
-    </div>
-</div>
+            <li class="category-item">
+                <a href="{% url 'recetas_app:home' %}" class="category-link {% if not filtro_categoria_aplicado %}active{% endif %}">
+                    <i class="fas fa-grip-horizontal category-icon"></i> Todas las Categorías
+                </a>
+            </li>
+        </ul>
+    </aside>
 
-{# Sección de Explora por Categorías Populares (DINÁMICA) #}
-<div class="section-wrapper section-bg-secondary">
-    <h2 class="section-title">Nuestras Categorías</h2>
-    <div class="category-grid">
-        {% for categoria in categorias %}
-            {# Usamos data-url para la navegación en las tarjetas de categoría #}
-            <div class="category-card clickable-card" data-url="{% url 'recetas_app:home' %}?categoria={{ categoria.slug }}">
-                {# Puedes añadir imágenes específicas para categorías si las tienes #}
-                {% if categoria.imagen %}
-                    <img src="{{ categoria.imagen.url }}" alt="{{ categoria.nombre }}" class="category-card-image">
+    <!-- Columna Derecha: Contenido Principal (Recetas y Consejos) -->
+    <div class="main-content-area"> 
+        {# Sección de Últimas Recetas Añadidas (DINÁMICA) #}
+        <div class="section-wrapper section-bg-primary">
+            <h2 class="section-title">
+                {% if filtro_categoria_aplicado and categoria_encontrada %}
+                    Recetas en la categoría: <span class="highlight-text">{{ categoria_nombre }}</span>
+                {% elif filtro_categoria_aplicado and not categoria_encontrada %}
+                    Categoría inexistente
                 {% else %}
-                    <img src="{% static 'img/default_category.jpg' %}" alt="{{ categoria.nombre }}" class="category-card-image"> {# Placeholder para imágenes de categoría #}
+                    ¡Recetas Deliciosas!
                 {% endif %}
-                <h3 class="category-card-title">{{ categoria.nombre }}</h3>
+            </h2>
+
+            {# Controles de Ordenamiento #}
+            <div class="sort-options-container">
+                <span class="sort-label">Ordenar por:</span>
+                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=fecha_publicacion&direction=desc"
+                   class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'desc' %}active{% endif %}">
+                    Más Recientes
+                </a>
+                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=fecha_publicacion&direction=asc"
+                   class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'asc' %}active{% endif %}">
+                    Más Antiguas
+                </a>
+                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=titulo&direction=asc"
+                   class="sort-button {% if current_order_by == 'titulo' and current_direction == 'asc' %}active{% endif %}">
+                    Título (A-Z)
+                </a>
+                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=titulo&direction=desc"
+                   class="sort-button {% if current_order_by == 'titulo' and current_direction == 'desc' %}active{% endif %}">
+                    Título (Z-A)
+                </a>
             </div>
-        {% empty %}
-            <p class="text-center">No hay categorías disponibles aún.</p>
-        {% endfor %}
-    </div>
-</div>
 
-{# Sección de Consejos de Cocina (NO DINÁMICO) #}
-<div class="section-wrapper section-bg-primary">
-    <h2 class="section-title">Consejos de Cocina</h2>
-    <div class="tip-grid">
-        {# También usamos data-url para los consejos #}
-        <div class="tip-card clickable-card" data-url="/consejos/corte-cebolla/">
-            <img src="{% static 'img/tip_onion.jpg' %}" alt="Cómo cortar cebolla sin llorar" class="tip-card-image">
-            <h3 class="tip-card-title">Cómo cortar cebolla sin llorar</h3>
-            <p class="tip-card-description">Un truco infalible para evitar las lágrimas al picar cebolla.</p>
+            <div class="latest-recipes-grid">
+                {% if filtro_categoria_aplicado and not categoria_encontrada %}
+                    <p class="no-recipes-message">Lo sentimos, la categoría que buscas no existe.</p>
+                {% elif not recetas %} {# Esto cubre el caso de que no haya recetas en general o después de un filtro válido #}
+                    <p class="no-recipes-message">No hay recetas añadidas aún. ¡Sé el primero en crear una!</p>
+                {% else %}
+                    {% for receta in recetas %}
+                        {# Usamos data-url para la navegación en las tarjetas de receta #}
+                        <div class="recipe-card clickable-card" data-url="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
+                            {% if receta.imagen %}
+                                <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-card-image">
+                            {% else %}
+                                <img src="{% static 'img/default_recipe.png' %}" alt="Imagen por defecto" class="recipe-card-image">
+                            {% endif %}
+                            <h3 class="recipe-card-title">{{ receta.titulo }}</h3>
+                            <p class="recipe-card-description">{{ receta.descripcion|truncatechars:100 }}</p>
+                            <div class="recipe-actions">
+                                <a href="{% url 'usuarios:toggle_favorito' receta.pk %}" class="favorite-button">
+                                    <i class="{% if request.user.is_authenticated and receta in request.user.recetas_favoritas.all %}fas{% else %}far{% endif %} fa-heart"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
         </div>
-        <div class="tip-card clickable-card" data-url="/consejos/utensilios-esenciales/">
-            <img src="{% static 'img/tip_utensils.jpg' %}" alt="Utensilios esenciales de cocina" class="tip-card-image">
-            <h3 class="tip_card-title">Utensilios esenciales de cocina</h3>
-            <p class="tip-card-description">Descubre las herramientas básicas que todo cocinero necesita.</p>
-        </div>
-        <div class="tip-card clickable-card" data-url="/consejos/conservar-alimentos/">
-            <img src="{% static 'img/tip_storage.jpg' %}" alt="Consejos para conservar alimentos" class="tip-card-image">
-            <h3 class="tip-card-title">Consejos para conservar alimentos</h3>
-            <p class="tip-card-description">Prolonga la vida útil de tus ingredientes con estos trucos.</p>
-        </div>
-    </div>
-</div>
 
-{# Este bloque solo se mostrará si no estoy autenticada #}
-{% if not user.is_authenticated %}
-    <div class="section-wrapper section-bg-secondary"> {# Cambiado a secondary para alternar colores #}
-        <div class="call-to-action-card">
-            <h2 class="call-to-action-title">¡Únete a Nuestra Comunidad!</h2>
-            <p class="call-to-action-text">Regístrate para guardar tus recetas favoritas, compartir las tuyas y conectar con otros amantes de la cocina.</p>
-            <a href="{% url 'usuarios:registro' %}" class="register-button-large">Registrarse Ahora</a>
+        {# Sección de Consejos de Cocina (NO DINÁMICO) #}
+        <div class="section-wrapper section-bg-primary">
+            <h2 class="section-title">Consejos de Cocina</h2>
+            <div class="tip-grid">
+                {# También usamos data-url para los consejos #}
+                <div class="tip-card clickable-card" data-url="/consejos/corte-cebolla/">
+                    <img src="{% static 'img/tip_onion.jpg' %}" alt="Cómo cortar cebolla sin llorar" class="tip-card-image">
+                    <h3 class="tip-card-title">Cómo cortar cebolla sin llorar</h3>
+                    <p class="tip-card-description">Un truco infalible para evitar las lágrimas al picar cebolla.</p>
+                </div>
+                <div class="tip-card clickable-card" data-url="/consejos/utensilios-esenciales/">
+                    <img src="{% static 'img/tip_utensils.jpg' %}" alt="Utensilios esenciales de cocina" class="tip-card-image">
+                    <h3 class="tip-card-title">Utensilios esenciales de cocina</h3>
+                    <p class="tip-card-description">Descubre las herramientas básicas que todo cocinero necesita.</p>
+                </div>
+                <div class="tip-card clickable-card" data-url="/consejos/conservar-alimentos/">
+                    <img src="{% static 'img/tip_storage.jpg' %}" alt="Consejos para conservar alimentos" class="tip-card-image">
+                    <h3 class="tip-card-title">Consejos para conservar alimentos</h3>
+                    <p class="tip-card-description">Prolonga la vida útil de tus ingredientes con estos trucos.</p>
+                </div>
+            </div>
         </div>
-    </div>
-{% endif %}
+
+        {# Este bloque solo se mostrará si no estoy autenticada #}
+        {% if not user.is_authenticated %}
+            <div class="section-wrapper section-bg-secondary"> 
+                <div class="call-to-action-card">
+                    <h2 class="call-to-action-title">¡Únete a Nuestra Comunidad!</h2>
+                    <p class="call-to-action-text">Regístrate para guardar tus recetas favoritas, compartir las tuyas y conectar con otros amantes de la cocina.</p>
+                    <a href="{% url 'usuarios:registro' %}" class="register-button-large">Registrarse Ahora</a>
+                </div>
+            </div>
+        {% endif %}
+    </div> {# Cierre de main-content-area #}
 
 {# Script para manejar la navegación de las tarjetas clickables #}
 <script>
