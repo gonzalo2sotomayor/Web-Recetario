@@ -1,3 +1,4 @@
+{# apps/recetas_app/templates/recetas_app/categoria_form.html #}
 {% extends 'base.html' %}
 {% load static %}
 
@@ -16,35 +17,27 @@
             </ul>
         {% endif %}
 
-        {# Asegúrate de que el formulario tenga enctype="multipart/form-data" para subir archivos #}
-        <form method="post" enctype="multipart/form-data" class="recipe-form">
+        {# Eliminamos enctype="multipart/form-data" ya que no hay subida de archivos #}
+        <form method="post" class="recipe-form">
             {% csrf_token %}
 
             <div class="form-section">
                 <div class="form-field">
-                    {# Usamos form.nombre aquí, pero la etiqueta se ha cambiado en forms.py a "Título de la Categoría" #}
+                    {# Campo para el nombre de la categoría #}
                     {{ form.nombre.label_tag }}
                     {{ form.nombre }}
                     {% if form.nombre.errors %}<div class="error-message">{{ form.nombre.errors }}</div>{% endif %}
                 </div>
+                
+                {# Nuevo campo para el icono de Font Awesome #}
                 <div class="form-field">
-                    {{ form.descripcion.label_tag }}
-                    {{ form.descripcion }}
-                    {% if form.descripcion.errors %}<div class="error-message">{{ form.descripcion.errors }}</div>{% endif %}
+                    <label for="{{ form.fa_icon.id_for_label }}">Clase de Ícono (Font Awesome):</label>
+                    {{ form.fa_icon }}
+                    {% if form.fa_icon.errors %}<div class="error-message">{{ form.fa_icon.errors }}</div>{% endif %}
+                    <small class="form-text-info">Ejemplo: `fas fa-utensils`. Puedes encontrar la clase en el <a href="https://fontawesome.com/v5/search?m=free" target="_blank">sitio de Font Awesome</a>.</small>
                 </div>
-                <div class="form-field">
-                    {{ form.imagen.label_tag }} {# Nuevo campo de imagen #}
-                    {{ form.imagen }}
-                    {% if form.imagen.errors %}<div class="error-message">{{ form.imagen.errors }}</div>{% endif %}
-                    {% if form.instance.imagen and accion == 'Editar' %}
-                        <div class="current-image-preview mt-2">
-                            <p>Imagen actual:</p>
-                            <img src="{{ form.instance.imagen.url }}" alt="{{ form.instance.nombre }}" class="w-32 h-32 object-cover rounded-lg shadow">
-                        </div>
-                    {% endif %}
-                </div>
-                {# El slug se genera automáticamente, no necesitamos un campo para editarlo directamente #}
-                {# Si quisieras mostrarlo solo como información, podrías añadir: #}
+
+                {# El slug se mantiene como un campo de solo lectura si estamos editando #}
                 {% if accion == 'Editar' %}
                     <div class="form-field">
                         <label>Slug (automático):</label>

@@ -1,0 +1,39 @@
+{# apps/recetas_app/templates/recetas_app/partials/latest_recipes_grid.html #}
+{% load static %}
+
+{% if filtro_categoria_aplicado and not categoria_encontrada %}
+    <p class="no-recipes-message">Lo sentimos, esa categoría no existe.</p>
+{% elif not recetas %}
+    <p class="no-recipes-message">No hay recetas aún ¡Sé el primero en crear una!</p>
+{% else %}
+    {% for receta in recetas %}
+        <div class="recipe-card clickable-card" data-url="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
+            {% if receta.imagen %}
+                <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-card-image">
+            {% else %}
+                <img src="{% static 'img/default_recipe.png' %}" alt="Default Image" class="recipe-card-image">
+            {% endif %}
+            <div class="recipe-card-content">
+                <h3 class="recipe-card-title">{{ receta.titulo }}</h3>
+                <p class="recipe-card-description">{{ receta.descripcion|truncatechars:70 }}</p>
+            </div>
+            <div class="recipe-card-footer">
+                <div class="favorite-action-group">
+                    {% if request.user.is_authenticated %}
+                        <form class="favorite-form" action="{% url 'usuarios:toggle_favorito' receta_pk=receta.pk %}" method="post" data-recipe-id="{{ receta.pk }}">
+                            {% csrf_token %}
+                            <button type="submit" 
+                                    class="favorite-toggle-button {% if receta.pk in favoritas_ids %}favorited{% endif %}">
+                                <i class="{% if receta.pk in favoritas_ids %}fas{% else %}far{% endif %} fa-heart"></i>
+                            </button>
+                        </form>
+                        <span class="favorite-text">Add to favorites</span>
+                    {% endif %}
+                </div>
+                <a href="{% url 'recetas_app:detalle_receta' pk=receta.pk %}#comments-section" class="comments-icon-link">
+                    <i class="fas fa-comment"></i>
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}

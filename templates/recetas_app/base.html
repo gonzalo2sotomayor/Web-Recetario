@@ -8,30 +8,37 @@
     <title>{% block title %}El Recetario{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
-    {# Font Awesome para iconos como el corazón de favoritos (versión 6.x) #}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {# Font Awesome para iconos #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    {# Google Fonts para "Playfair Display" (para títulos del banner) y "Inter" (para texto general) #}
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     {% block extra_head %}{% endblock %}
 </head>
-<body class="light-theme">
+<body>
 
     <header class="main-header-new">
         <nav class="main-nav-new">
+            <!-- Menú de hamburguesa para móviles -->
+            <div class="menu-toggle" id="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+
             <!-- Sección Izquierda: Logo/Título -->
             <div class="nav-left">
                 <a href="{% url 'recetas_app:home' %}" class="site-logo-new">
-                    El Recetario
+                    <img src="{% static 'img/logo.png' %}" alt="El Recetario Logo" class="site-logo-image">
                 </a>
             </div>
 
             <!-- Sección Central: Enlaces de Navegación Principal -->
-            <ul class="nav-links-new">
-                <li><a href="{% url 'recetas_app:home' %}" class="nav-link-new"><span class="nav-icon">&#127963;</span> Home</a></li>
-                <li><a href="{% url 'recetas_app:recetas_aleatorias' %}" class="nav-link-new"><span class="nav-icon">&#128269;</span> Descubre</a></li>
-                <li><a href="{% url 'recetas_app:advanced_search' %}" class="nav-link-new"><span class="nav-icon">&#128269;</span> Búsqueda Avanzada</a></li>
-                <li><a href="/comunidades/" class="nav-link-new"><span class="nav-icon">&#128101;</span> Comunidades</a></li>
+            <ul class="nav-links-new" id="nav-links-mobile">
+                <li><a href="{% url 'recetas_app:home' %}" class="nav-link-new">Home</a></li>
+                <li><a href="{% url 'recetas_app:recetas_aleatorias' %}" class="nav-link-new">Descubre</a></li>
+                <li><a href="{% url 'recetas_app:advanced_search' %}" class="nav-link-new">Búsqueda Avanzada</a></li>
+                <li><a href="{% url 'recetas_app:recetas_populares_page' %}" class="nav-link-new">Populares</a></li>
                 {# Enlace consolidado para opciones de administración #}
                 {% if user.is_authenticated and user.is_staff %}
-                    <li><a href="{% url 'recetas_app:admin_options' %}" class="nav-link-new"><span class="nav-icon">&#128736;</span> Opciones Admin</a></li>
+                    <li><a href="{% url 'recetas_app:admin_options' %}" class="nav-link-new">Opciones Admin</a></li>
                 {% endif %}
             </ul>
 
@@ -39,16 +46,16 @@
             <div class="nav-right">
                 {% if user.is_authenticated %}
                     {# Mensajes Privados #}
-                    <a href="{% url 'usuarios:inbox' %}" class="nav-icon-link nav-messages-link {% if unread_messages_count > 0 %}unread-messages{% endif %}">
-                        <span class="nav-icon">&#128231;</span>
-                        {% if notifications_count > 0 %}
-                            <span class="badge">{{ notifications_count }}</span>
+                    <a href="{% url 'usuarios:inbox' %}" class="nav-icon-link nav-messages-link">
+                        <i class="fas fa-envelope"></i>
+                        {% if unread_messages_count > 0 %}
+                            <span class="badge">{{ unread_messages_count }}</span>
                         {% endif %}
                     </a>
 
                     {# Campanita de Notificaciones #}
                     <a href="#" class="nav-icon-link nav-notifications-link">
-                        <span class="nav-icon">&#128276;</span>
+                        <i class="fas fa-bell"></i>
                         {% if notifications_count > 0 %}
                             <span class="badge">{{ notifications_count }}</span>
                         {% endif %}
@@ -82,7 +89,7 @@
         <div class="hero-overlay">
             
             <div class="hero-content-slider">
-                <div id="slide-search" class="hero-slide active-slide" data-background-image="{% static 'img/paella_banner.jpg' %}" data-url="{% url 'recetas_app:simple_search' %}">
+                <div id="slide-search" class="hero-slide active-slide" data-background-image="{% static 'img/paella_banner.jpg' %}" data-url="{% url 'recetas_app:simple_search' %}"> {# <-- CAMBIO AQUÍ #}
                     <h1 class="hero-title">El Recetario</h1>
                     <div class="hero-search-container">
                         <form action="{% url 'recetas_app:simple_search' %}" method="GET" class="hero-search-form">
@@ -94,7 +101,7 @@
                     </div>
                 </div>
                 
-                {# CAMBIO CLAVE AQUÍ: Receta de la Semana en el banner principal #}
+                {# Receta de la Semana en el banner principal #}
                 <div id="slide-daily-recipe" class="hero-slide clickable-slide" 
                      data-background-image="{% if receta_de_la_semana and receta_de_la_semana.imagen %}{{ receta_de_la_semana.imagen.url }}{% else %}{% static 'img/default_daily_recipe_banner.jpg' %}{% endif %}" 
                      data-url="{% if receta_de_la_semana %}{% url 'recetas_app:detalle_receta' pk=receta_de_la_semana.pk %}{% else %}{% url 'recetas_app:home' %}{% endif %}">
@@ -127,7 +134,7 @@
     </main>
 
     <footer class="main-footer-new">
-        <p>&copy; 2025 El Recetario</p>
+        <p>&copy; 2025 El Recetario. All rights reserved.</p>
         <div class="footer-links">
             <a href="{% url 'recetas_app:acerca_de' %}" class="footer-link">Acerca de</a>
             <span class="footer-link-separator">|</span>
@@ -151,6 +158,16 @@
                     if (profileDropdownMenu.classList.contains('show-dropdown') && !profileDropdownBtn.contains(event.target) && !profileDropdownMenu.contains(event.target)) {
                         profileDropdownMenu.classList.remove('show-dropdown');
                     }
+                });
+            }
+
+            // Lógica del menú de hamburguesa para móviles
+            const mobileMenuToggle = document.getElementById('mobile-menu');
+            const navLinksMobile = document.getElementById('nav-links-mobile');
+
+            if (mobileMenuToggle && navLinksMobile) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    navLinksMobile.classList.toggle('show-mobile-menu');
                 });
             }
 
@@ -195,10 +212,11 @@
                 });
             });
 
-            // Lógica de navegación de los elementos clickeables 
-            const clickableElements = document.querySelectorAll('.clickable-slide, .clickable-card');
-            clickableElements.forEach(element => {
-                element.addEventListener('click', function(event) {
+            // Lógica de navegación de los elementos clickeables (tarjetas de receta)
+            const clickableCards = document.querySelectorAll('.clickable-card');
+            clickableCards.forEach(card => {
+                card.addEventListener('click', function(event) {
+                    // Prevenir la navegación si el clic fue en un formulario (ej. botón de favorito)
                     if (event.target.closest('form') || event.target.tagName === 'A' || event.target.closest('a')) {
                         return;
                     }
@@ -213,7 +231,7 @@
             const featuredRecipeButton = document.querySelector('.featured-recipe-button');
             if (featuredRecipeButton) {
                 featuredRecipeButton.addEventListener('click', function(event) {
-                    event.preventDefault(); 
+                    event.preventDefault(); // Prevenir el comportamiento por defecto del enlace
                     const url = this.dataset.url;
                     if (url) {
                         window.location.href = url;
@@ -222,7 +240,6 @@
             }
         });
     </script>
-
 
     {% block extra_body_scripts %}{% endblock %} 
 

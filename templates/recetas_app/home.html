@@ -6,115 +6,72 @@
 
 {% block content %}
 
-    <!-- Columna Izquierda: Categorías -->
+    <!-- Columna Izquierda: Categorías (Sidebar) -->
     <aside class="sidebar">
         <h2 class="sidebar-title">Categorías</h2>
         <ul class="category-list">
+            {# Este bucle ahora usa el campo fa_icon para mostrar el ícono de cada categoría #}
             {% for categoria in categorias %}
-                <li class="category-item">
-                    <a href="{% url 'recetas_app:home' %}?categoria={{ categoria.slug }}" class="category-link {% if categoria_slug == categoria.slug %}active{% endif %}">
-                        <i class="fas fa-utensils category-icon"></i> 
-                        {{ categoria.nombre }}
-                    </a>
-                </li>
-            {% endfor %}
             <li class="category-item">
-                <a href="{% url 'recetas_app:home' %}" class="category-link {% if not filtro_categoria_aplicado %}active{% endif %}">
-                    <i class="fas fa-grip-horizontal category-icon"></i> Todas las Categorías
+                <a href="{% url 'recetas_app:home' %}?categoria={{ categoria.slug }}"
+                   class="category-link {% if categoria_slug == categoria.slug %}active{% endif %}">
+                    {# Aquí usamos la variable que se guarda en la base de datos #}
+                    <i class="{{ categoria.fa_icon }} category-icon"></i> {{ categoria.nombre }}
+                </a>
+            </li>
+            {% endfor %}
+
+            {# Enlace para ver todas las categorías - CORREGIDO con la clase de Font Awesome 6 #}
+            <li class="category-item">
+                <a href="{% url 'recetas_app:home' %}" class="category-link {% if not categoria_slug %}active{% endif %}">
+                    <i class="fa-solid fa-grip-horizontal category-icon"></i> Todas las Categorías
                 </a>
             </li>
         </ul>
     </aside>
 
-    <!-- Columna Derecha: Contenido Principal (Recetas y Consejos) -->
+    <!-- Columna Derecha: Contenido Principal (Recetas) -->
     <div class="main-content-area"> 
-        {# Sección de Últimas Recetas Añadidas (DINÁMICA) #}
-        <div class="section-wrapper section-bg-primary">
+        <div class="section-wrapper">
             <h2 class="section-title">
-                {% if filtro_categoria_aplicado and categoria_encontrada %}
-                    Recetas en la categoría: <span class="highlight-text">{{ categoria_nombre }}</span>
-                {% elif filtro_categoria_aplicado and not categoria_encontrada %}
-                    Categoría inexistente
+                {# Cambios aquí para hacer el título dinámico #}
+                {% if categoria_nombre %}
+                    Recetas de <span class="highlight-text">{{ categoria_nombre }}</span>
                 {% else %}
-                    ¡Recetas Deliciosas!
+                    Recetas
                 {% endif %}
             </h2>
 
             {# Controles de Ordenamiento #}
             <div class="sort-options-container">
-                <span class="sort-label">Ordenar por:</span>
-                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria.slug }}&{% else %}?{% endif %}order_by=fecha_publicacion&direction=desc"
-                   class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'desc' %}active{% endif %}">
-                    Más Recientes
+                <span class="sort-label">Filtrar por:</span>
+                {# Ordenar por Fecha #}
+                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=fecha_publicacion&direction=asc"
+                   class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'asc' %}active{% endif %}"
+                   data-order-by="fecha_publicacion" data-direction="asc">
+                    Fecha (Antigua)
                 </a>
-                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria.slug }}&{% else %}?{% endif %}order_by=fecha_publicacion&direction=asc"
-                   class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'asc' %}active{% endif %}">
-                    Más Antiguas
+                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=fecha_publicacion&direction=desc"
+                   class="sort-button {% if current_order_by == 'fecha_publicacion' and current_direction == 'desc' %}active{% endif %}"
+                   data-order-by="fecha_publicacion" data-direction="desc">
+                    Fecha (Reciente)
                 </a>
-                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria.slug }}&{% else %}?{% endif %}order_by=titulo&direction=asc"
-                   class="sort-button {% if current_order_by == 'titulo' and current_direction == 'asc' %}active{% endif %}">
+                {# Ordenar por Título #}
+                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=titulo&direction=asc"
+                   class="sort-button {% if current_order_by == 'titulo' and current_direction == 'asc' %}active{% endif %}"
+                   data-order-by="titulo" data-direction="asc">
                     Título (A-Z)
                 </a>
-                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria.slug }}&{% else %}?{% endif %}order_by=titulo&direction=desc"
-                   class="sort-button {% if current_order_by == 'titulo' and current_direction == 'desc' %}active{% endif %}">
+                <a href="{% url 'recetas_app:home' %}{% if categoria_slug %}?categoria={{ categoria_slug }}&{% else %}?{% endif %}order_by=titulo&direction=desc"
+                   class="sort-button {% if current_order_by == 'titulo' and current_direction == 'desc' %}active{% endif %}"
+                   data-order-by="titulo" data-direction="desc">
                     Título (Z-A)
                 </a>
             </div>
 
-            <div class="latest-recipes-grid">
-                {% if filtro_categoria_aplicado and not categoria_encontrada %}
-                    <p class="no-recipes-message">Lo sentimos, la categoría que buscas no existe.</p>
-                {% elif not recetas %} {# Esto cubre el caso de que no haya recetas en general o después de un filtro válido #}
-                    <p class="no-recipes-message">No hay recetas añadidas aún. ¡Sé el primero en crear una!</p>
-                {% else %}
-                    {% for receta in recetas %}
-                        {# Usamos data-url para la navegación en las tarjetas de receta #}
-                        <div class="recipe-card clickable-card" data-url="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
-                            {% if receta.imagen %}
-                                <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-card-image">
-                            {% else %}
-                                <img src="{% static 'img/default_recipe.png' %}" alt="Imagen por defecto" class="recipe-card-image">
-                            {% endif %}
-                            <h3 class="recipe-card-title">{{ receta.titulo }}</h3>
-                            <p class="recipe-card-description">{{ receta.descripcion|truncatechars:100 }}</p>
-                            <div class="recipe-actions">
-                                {# Formulario para el botón de favoritos #}
-                                {% if request.user.is_authenticated %}
-                                    <form class="favorite-form" action="{% url 'usuarios:toggle_favorito' receta_pk=receta.pk %}" method="post" data-recipe-id="{{ receta.pk }}">
-                                        {% csrf_token %}
-                                        <button type="submit" 
-                                                class="favorite-toggle-button {% if receta.pk in favoritas_ids %}favorited{% endif %}">
-                                            <i class="{% if receta.pk in favoritas_ids %}fas{% else %}far{% endif %} fa-heart"></i>
-                                        </button>
-                                    </form>
-                                {% endif %}
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
-        </div>
-
-        {# Sección de Consejos de Cocina (NO DINÁMICO) #}
-        <div class="section-wrapper section-bg-primary">
-            <h2 class="section-title">Consejos de Cocina</h2>
-            <div class="tip-grid">
-                {# También usamos data-url para los consejos #}
-                <div class="tip-card clickable-card" data-url="/consejos/corte-cebolla/">
-                    <img src="{% static 'img/tip_onion.jpg' %}" alt="Cómo cortar cebolla sin llorar" class="tip-card-image">
-                    <h3 class="tip-card-title">Cómo cortar cebolla sin llorar</h3>
-                    <p class="tip-card-description">Un truco infalible para evitar las lágrimas al picar cebolla.</p>
-                </div>
-                <div class="tip-card clickable-card" data-url="/consejos/utensilios-esenciales/">
-                    <img src="{% static 'img/tip_utensils.jpg' %}" alt="Utensilios esenciales de cocina" class="tip-card-image">
-                    <h3 class="tip-card-title">Utensilios esenciales de cocina</h3>
-                    <p class="tip-card-description">Descubre las herramientas básicas que todo cocinero necesita.</p>
-                </div>
-                <div class="tip-card clickable-card" data-url="/consejos/conservar-alimentos/">
-                    <img src="{% static 'img/tip_storage.jpg'}" alt="Consejos para conservar alimentos" class="tip-card-image">
-                    <h3 class="tip-card-title">Consejos para conservar alimentos</h3>
-                    <p class="tip-card-description">Prolonga la vida útil de tus ingredientes con estos trucos.</p>
-                </div>
+            {# Contenedor para la cuadrícula de recetas que se actualizará con AJAX #}
+            <div id="recipes-grid-container" class="latest-recipes-grid">
+                {% include 'recetas_app/partials/latest_recipes_grid.html' %}
             </div>
         </div>
 
@@ -122,9 +79,9 @@
         {% if not user.is_authenticated %}
             <div class="section-wrapper section-bg-secondary"> 
                 <div class="call-to-action-card">
-                    <h2 class="call-to-action-title">¡Únete a Nuestra Comunidad!</h2>
-                    <p class="call-to-action-text">Regístrate para guardar tus recetas favoritas, compartir las tuyas y conectar con otros amantes de la cocina.</p>
-                    <a href="{% url 'usuarios:registro' %}" class="register-button-large">Registrarse Ahora</a>
+                    <h2 class="call-to-action-title">¡Únete a nuestra comunidad!</h2>
+                    <p class="call-to-action-text">Regístrate para guardar tus recetas favoritas y conectarte con otros amantes de la cocina.</p>
+                    <a href="{% url 'usuarios:registro' %}" class="register-button-large">REGISTRATE AHORA</a>
                 </div>
             </div>
         {% endif %}
@@ -135,25 +92,24 @@
 {% block extra_body_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Manejar el envío de formularios de favoritos con AJAX
+        // Manejar el envío de formularios de favoritos con AJAX 
         document.querySelectorAll('.favorite-form').forEach(form => {
             form.addEventListener('submit', function(event) {
-                event.preventDefault(); // Prevenir el envío normal del formulario (y la recarga)
+                event.preventDefault(); 
                 
                 const form = this;
                 const button = form.querySelector('.favorite-toggle-button');
                 const icon = button.querySelector('i');
-                const recipeId = form.dataset.recipeId;
+                const favoriteText = form.nextElementSibling; 
 
-                // Deshabilitar el botón y cambiar el cursor para indicar que está procesando
                 button.disabled = true;
                 button.style.cursor = 'wait';
 
                 fetch(form.action, {
                     method: 'POST',
-                    body: new FormData(form), // Envía los datos del formulario (incluido el CSRF token)
+                    body: new FormData(form),
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest' // Indica que es una petición AJAX
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
                 .then(response => {
@@ -167,12 +123,17 @@
                         button.classList.add('favorited');
                         icon.classList.remove('far');
                         icon.classList.add('fas');
+                        if (favoriteText) {
+                            favoriteText.textContent = 'Favorited';
+                        }
                     } else {
                         button.classList.remove('favorited');
                         icon.classList.remove('fas');
                         icon.classList.add('far');
+                        if (favoriteText) {
+                            favoriteText.textContent = 'Add to favorites';
+                        }
                     }
-                    // Re-habilitar el botón
                     button.disabled = false;
                     button.style.cursor = 'pointer';
                 })
@@ -180,7 +141,126 @@
                     console.error('Error toggling favorite:', error);
                     button.disabled = false;
                     button.style.cursor = 'pointer';
-                    alert('Hubo un error al actualizar el favorito. Por favor, inténtalo de nuevo.');
+                    // Reemplazado alert() por un mensaje en la consola
+                    console.error('Hubo un error al actualizar el favorito. Por favor, inténtalo de nuevo.');
+                });
+            });
+        });
+
+        // Manejar clics en los botones de ordenamiento con AJAX
+        document.querySelectorAll('.sort-button').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevenir la recarga completa de la página
+
+                const currentUrl = new URL(window.location.href);
+                const orderBy = this.dataset.orderBy;
+                const direction = this.dataset.direction;
+
+                // Actualizar los parámetros de la URL
+                currentUrl.searchParams.set('order_by', orderBy);
+                currentUrl.searchParams.set('direction', direction);
+
+                // Obtener el slug de la categoría si existe en la URL actual
+                const categoriaSlug = currentUrl.searchParams.get('categoria');
+                if (categoriaSlug) {
+                    currentUrl.searchParams.set('categoria', categoriaSlug);
+                }
+
+                // Desactivar todos los botones de ordenamiento y activar el actual
+                document.querySelectorAll('.sort-button').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                // Realizar la petición AJAX
+                fetch(currentUrl.toString(), {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest' // Indica que es una petición AJAX
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json(); // Esperamos una respuesta JSON con el HTML
+                })
+                .then(data => {
+                    // Inyectar el HTML de las recetas actualizado en el contenedor
+                    const recipesGridContainer = document.getElementById('recipes-grid-container');
+                    if (recipesGridContainer) {
+                        recipesGridContainer.innerHTML = data.html;
+
+                        // Re-adjuntar listeners de favoritos a las nuevas tarjetas (si es necesario)
+                        // Esto es importante porque el contenido se ha reemplazado
+                        document.querySelectorAll('#recipes-grid-container .favorite-form').forEach(form => {
+                            form.addEventListener('submit', function(e) {
+                                e.preventDefault();
+                                // Lógica de AJAX para favoritos, la misma que arriba
+                                const form = this;
+                                const button = form.querySelector('.favorite-toggle-button');
+                                const icon = button.querySelector('i');
+                                const favoriteText = form.nextElementSibling; 
+
+                                button.disabled = true;
+                                button.style.cursor = 'wait';
+
+                                fetch(form.action, {
+                                    method: 'POST',
+                                    body: new FormData(form),
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    }
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    if (data.is_favorited) {
+                                        button.classList.add('favorited');
+                                        icon.classList.remove('far');
+                                        icon.classList.add('fas');
+                                        if (favoriteText) {
+                                            favoriteText.textContent = 'Favorited';
+                                        }
+                                    } else {
+                                        button.classList.remove('favorited');
+                                        icon.classList.remove('fas');
+                                        icon.classList.add('far');
+                                        if (favoriteText) {
+                                            favoriteText.textContent = 'Add to favorites';
+                                        }
+                                    }
+                                    button.disabled = false;
+                                    button.style.cursor = 'pointer';
+                                })
+                                .catch(error => {
+                                    console.error('Error toggling favorite on new content:', error);
+                                    button.disabled = false;
+                                    button.style.cursor = 'pointer';
+                                    console.error('Hubo un error al actualizar el favorito. Por favor, inténtalo de nuevo.');
+                                });
+                            });
+                        });
+
+                        // Re-adjuntar listeners para las tarjetas clickeables (si es necesario)
+                        document.querySelectorAll('#recipes-grid-container .clickable-card').forEach(card => {
+                            card.addEventListener('click', function(event) {
+                                if (event.target.closest('form') || event.target.tagName === 'A' || event.target.closest('a')) {
+                                    return;
+                                }
+                                const url = this.dataset.url;
+                                if (url) {
+                                    window.location.href = url;
+                                }
+                            });
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al ordenar recetas:', error);
+                    console.error('Hubo un error al ordenar las recetas. Por favor, inténtalo de nuevo.');
                 });
             });
         });

@@ -2,23 +2,22 @@
 
 /* Variables de color */
 :root {
-    --primary-bg: #F5F5DC; /* Fondo principal */
-    --secondary-bg: #E0D8C8; /* Fondo de tarjetas/secciones */
-    --text-color: #362D24; /* Color de texto principal */
-    --accent-color: #B87333; /* Color de acento: Cobre */
-    --hover-color: #D4C7B5; /* Fondo para estados hover */
-    --input-bg: #FFFFFF; /* Fondo de inputs */
-    --input-border: #A08D79; /* Borde de inputs y elementos */
-    --button-hover-color: #A3642D; /* Cobre más oscuro para hover de botones */
-    --shadow-color: rgba(0, 0, 0, 0.1); /* Color de sombra */
-    --light-text: #6F6152; /* Texto más claro para descripciones */
-    --white-text: #FFFFFF; /* Blanco puro (para texto sobre acentos de cobre) */
-    --dark-font: #1A1A1A; /* Color de fuente muy oscuro */
-    --gray-button-bg: #C0B8AE; /* Fondo de botón gris/marrón neutro */
-    --gray-button-hover: #A8A096; /* Fondo de botón gris/marrón neutro en hover */
-    --red-danger: #E74C3C; /* Rojo para acciones peligrosas */
-    --red-danger-hover: #C0392B; /* Rojo más oscuro para hover */
-    --dark-bg: #2d3748; /* Fondo oscuro para el footer */
+    --primary-bg: #F8F8F8; /* Fondo principal claro */
+    --secondary-bg: #FFFFFF; /* Fondo de tarjetas/secciones claras */
+    --text-color: #333333; /* Color de texto principal oscuro */
+    --accent-color: #0A2540; /* Azul oscuro principal (para header, sidebar, botones) */
+    --accent-light: #1A3A5A; /* Azul oscuro más claro para hover/fondo secundario */
+    --button-primary-bg: #0A2540; /* Azul oscuro para botones principales */
+    --button-primary-hover: #1A3A5A; /* Azul oscuro más claro para hover de botones */
+    --shadow-color: rgba(0, 0, 0, 0.1); /* Color de sombra suave */
+    --light-text: #666666; /* Texto más claro para descripciones */
+    --white-text: #FFFFFF; /* Blanco puro */
+    --border-color: #E0E0E0; /* Color de borde para elementos */
+    --icon-color: #999999; /* Color de iconos por defecto */
+    --favorite-filled: #CFA854; /* Dorado para corazón lleno */
+    --hero-text-color: #FFFFFF; /* Color de texto para el banner */
+    --hero-overlay-bg: rgba(0, 0, 0, 0.4); /* Overlay para el texto del banner */
+    --golden-border:#CFA854; /* Color dorado para bordes y acentos */
 }
 
 /* Estilos Base HTML y Body */
@@ -26,23 +25,20 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', sans-serif; /* Usando Inter como se recomienda */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     display: flex;
     flex-direction: column;
-}
-
-body.light-theme {
     background-color: var(--primary-bg);
     color: var(--text-color);
 }
 
-/* Estilos del Header */
+/* Header */
 .main-header-new {
-    background-color: var(--primary-bg);
+    background-color: var(--accent-color);
     box-shadow: 0px 2px 5px var(--shadow-color);
-    padding: 10px 0;
+    padding: 15px 0;
     position: relative;
     z-index: 100;
 }
@@ -57,13 +53,21 @@ body.light-theme {
     flex-wrap: wrap;
 }
 
+.menu-toggle {
+    display: none; /* Oculto por defecto en desktop */
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--white-text);
+}
+
 .nav-left {
     flex-shrink: 0;
+    margin-bottom: 10px;
 }
 
 .site-logo-new {
-    color: var(--text-color);
-    font-size: 28px;
+    color: var(--white-text);
+    font-size: 22px;
     font-weight: bold;
     text-decoration: none;
     padding: 5px 10px;
@@ -72,7 +76,7 @@ body.light-theme {
 }
 
 .site-logo-new:hover {
-    background-color: var(--hover-color);
+    background-color: var(--accent-light);
 }
 
 .nav-links-new {
@@ -80,17 +84,17 @@ body.light-theme {
     padding: 0;
     margin: 0;
     display: flex;
-    gap: 25px;
+    gap: 30px;
     flex-grow: 1;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 .nav-link-new {
-    color: var(--text-color);
+    color: var(--white-text);
     text-decoration: none;
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: normal;
     padding: 8px 12px;
     border-radius: 5px;
     transition: background-color 0.2s ease, color 0.2s ease;
@@ -98,8 +102,7 @@ body.light-theme {
 }
 
 .nav-link-new:hover {
-    background-color: var(--hover-color);
-    color: var(--accent-color);
+    background-color: var(--accent-light);
 }
 
 .nav-right {
@@ -111,30 +114,30 @@ body.light-theme {
 
 /* Estilos para iconos en la barra de navegación */
 .nav-icon {
-    margin-right: 5px; /* Espacio entre el icono y el texto */
-    font-size: 18px; /* Ajusta el tamaño si es necesario */
+    margin-right: 5px;
+    font-size: 18px;
 }
 
 /* Estilos para el badge de notificaciones/mensajes */
 .badge {
-    background-color: #E74C3C; /* Rojo para notificaciones */
+    background-color: var(--favorite-filled);
     color: var(--white-text);
     font-size: 10px;
     font-weight: bold;
     border-radius: 50%;
     padding: 3px 6px;
     position: absolute;
-    top: -5px; /* Ajusta la posición vertical */
-    right: -5px; /* Ajusta la posición horizontal */
-    min-width: 18px; /* Asegura que el círculo sea visible */
+    top: -5px;
+    right: -5px;
+    min-width: 18px;
     text-align: center;
-    line-height: 1; /* Centra el número verticalmente */
+    line-height: 1;
 }
 
 /* Ajuste para el enlace de icono para que el badge se posicione correctamente */
 .nav-icon-link {
-    position: relative; /* Necesario para posicionar el badge */
-    color: var(--text-color);
+    position: relative;
+    color: var(--white-text);
     text-decoration: none;
     font-size: 20px;
     padding: 5px;
@@ -149,32 +152,32 @@ body.light-theme {
 }
 
 .nav-icon-link:hover {
-    background-color: var(--hover-color);
+    background-color: var(--accent-light);
 }
 
 /* Estilo para mensajes sin leer */
 .nav-messages-link.unread-messages {
-    background-color: var(--accent-color); /* Fondo de acento para destacar */
-    border-radius: 5px; /* Un poco más cuadrado para destacar */
-    padding: 5px 10px; /* Más padding para que se note */
+    background-color: var(--favorite-filled);
+    border-radius: 5px;
+    padding: 5px 10px;
     transition: background-color 0.2s ease;
 }
 
 .nav-messages-link.unread-messages .nav-icon {
-    color: var(--white-text); /* Icono blanco */
+    color: var(--white-text);
 }
 
 .nav-messages-link.unread-messages:hover {
-    background-color: var(--button-hover-color); /* Color de hover más oscuro */
+    background-color: #CC5A5A; /* Un rojo más oscuro */
 }
 
 .icon {
-    font-family: 'Arial Unicode MS', sans-serif; /* Fallback si Font Awesome no carga */
+    font-family: 'Arial Unicode MS', sans-serif;
 }
 
 /* Botones de Autenticación (Login/Register) */
 .auth-button-new {
-    background-color: var(--accent-color);
+    background-color: var(--button-primary-bg);
     color: var(--white-text);
     padding: 8px 15px;
     border-radius: 5px;
@@ -185,7 +188,7 @@ body.light-theme {
 }
 
 .auth-button-new:hover {
-    background-color: var(--button-hover-color);
+    background-color: var(--button-primary-hover);
 }
 
 /* Dropdown de Perfil de Usuario */
@@ -196,7 +199,7 @@ body.light-theme {
 
 .dropdown-btn-new {
     background-color: transparent;
-    color: var(--text-color);
+    color: var(--white-text);
     border: none;
     cursor: pointer;
     padding: 0;
@@ -212,7 +215,7 @@ body.light-theme {
 }
 
 .dropdown-btn-new:hover {
-    background-color: var(--hover-color);
+    background-color: var(--accent-light);
 }
 
 .avatar-image {
@@ -220,13 +223,13 @@ body.light-theme {
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
-    border: 2px solid var(--accent-color);
+    border: 2px solid var(--golden-border); 
 }
 
 .dropdown-menu-new {
     display: none;
     position: absolute;
-    background-color: var(--secondary-bg);
+    background-color: var(--accent-color); /* Fondo oscuro para el menú */
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px var(--shadow-color);
     z-index: 1;
@@ -237,13 +240,12 @@ body.light-theme {
     margin-top: 10px;
 }
 
-/* Clase para mostrar el dropdown con JavaScript */
 .show-dropdown {
     display: block;
 }
 
 .dropdown-item-new {
-    color: var(--text-color);
+    color: var(--white-text);
     padding: 12px 16px;
     text-decoration: none;
     display: block;
@@ -252,14 +254,14 @@ body.light-theme {
 }
 
 .dropdown-item-new:hover {
-    background-color: var(--hover-color);
+    background-color: var(--accent-light);
 }
 
-/* Estilos de la Sección Hero (Banner) */
+/* Estilos de la Sección Hero (Banner) - ADAPTADOS PARA EL SLIDER EXISTENTE */
 .hero-section {
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 400px; /* Altura original del slider */
     min-height: 400px;
     background-size: cover;
     background-position: center;
@@ -277,7 +279,7 @@ body.light-theme {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4);
+    background: var(--hero-overlay-bg); /* Overlay para el texto del banner */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -286,9 +288,9 @@ body.light-theme {
 }
 
 .hero-title {
-    font-family: 'Georgia', serif;
+    font-family: 'Playfair Display', serif; /* Fuente elegante */
     font-size: 60px;
-    color: var(--white-text);
+    color: var(--hero-text-color);
     margin-bottom: 20px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
 }
@@ -336,21 +338,21 @@ body.light-theme {
 }
 
 .slide-title {
-    font-family: 'Georgia', serif;
+    font-family: 'Playfair Display', serif; /* Fuente elegante */
     font-size: 40px;
-    color: var(--white-text);
+    color: var(--hero-text-color);
     margin-bottom: 10px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
 }
 
 .slide-description {
     font-size: 18px;
-    color: var(--light-text);
+    color: rgba(255, 255, 255, 0.8);
     margin-bottom: 20px;
 }
 
 .slide-link {
-    background-color: var(--accent-color);
+    background-color: var(--button-primary-bg);
     color: var(--white-text);
     padding: 12px 25px;
     border-radius: 8px;
@@ -360,7 +362,7 @@ body.light-theme {
 }
 
 .slide-link:hover {
-    background-color: var(--button-hover-color);
+    background-color: var(--button-primary-hover);
 }
 
 .hero-pagination-dots {
@@ -389,53 +391,34 @@ body.light-theme {
 /* Área de Contenido Principal (Contenedor para Sidebar y Contenido) */
 .main-content-new {
     flex-grow: 1;
-    max-width: 1280px; /* Ancho máximo para el contenido principal */
-    margin: 30px auto;
+    max-width: 1280px;
+    margin: 40px auto;
     padding: 0 20px;
     width: 100%;
     box-sizing: border-box;
-    display: flex; /* Habilita flexbox para las columnas */
-    flex-direction: column; /* Por defecto en móviles: columna */
-    gap: 25px; /* Espacio entre sidebar y contenido */
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
 }
-
-/* Media query para desktop: Cambia a layout de dos columnas */
-@media (min-width: 992px) { /* Ajusta el breakpoint si es necesario */
-    .main-content-new {
-        flex-direction: row; /* En escritorio: fila para columnas */
-        align-items: flex-start; /* Alinea las columnas arriba */
-    }
-
-    .sidebar {
-        width: 180px; /* Ancho fijo para la barra lateral en desktop */
-        flex-shrink: 0; /* Evita que se encoja */
-        margin-right: 30px; /* Espacio a la derecha de la sidebar */
-        position: sticky; /* Hace que la sidebar sea pegajosa */
-        top: 30px; /* Distancia desde la parte superior al hacer scroll */
-    }
-
-    .main-content-area {
-        flex-grow: 1; /* El contenido principal ocupa el espacio restante */
-    }
-}
-
 
 /* Sidebar (Columna Izquierda de Categorías) */
 .sidebar {
-    background-color: var(--secondary-bg);
+    background-color: var(--accent-color); /* Fondo oscuro para sidebar */
     border-radius: 10px;
     box-shadow: 0px 4px 10px var(--shadow-color);
-    padding: 20px;
-    width: 200px; 
+    padding: 25px;
+    width: 180px; /* Ancho fijo para la barra lateral */
+    color: var(--white-text);
+    flex-shrink: 0; /* Evita que se encoja */
 }
 
 .sidebar-title {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: bold;
-    color: var(--text-color);
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid var(--input-border); /* Línea divisoria */
+    border-bottom: 2px solid #CFA854; /* Línea divisoria más clara */
     padding-bottom: 0.75rem;
+    color: var(--white-text);
 }
 
 .category-list {
@@ -445,41 +428,40 @@ body.light-theme {
 }
 
 .category-item {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
 }
 
 .category-link {
-    display: flex; /* Para alinear ícono y texto */
+    display: flex;
     align-items: center;
-    padding: 0.75rem 1rem;
-    border-radius: 6px;
-    color: var(--text-color); /* Gris medio */
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    color: var(--white-text);
     text-decoration: none;
-    font-size:15px;
+    font-size: 15px;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .category-link:hover, .category-link.active {
-    background-color: var(--hover-color); /* Gris muy claro al pasar el ratón o si está activo */
-    color: var(--accent-color);
-    font-weight: 600; /* Un poco más de peso cuando está activo */
+    background-color: var(--accent-light); /* Azul más claro al pasar el ratón o si está activo */
+    color: var(--white-text);
+    font-weight: 600;
 }
 
 .category-icon {
-    margin-right: 0.75rem;
-    color: var(--accent-color); /* Naranja */
-    font-size: 1.1rem;
+    margin-right: 1rem;
+    color: rgba(255, 255, 255, 0.8); /* Iconos ligeramente más claros */
+    font-size: 1.2rem;
 }
 
 /* Contenido Principal (Columna Derecha de Recetas y Consejos) */
 .main-content-area {
-    flex-grow: 1; /* Ocupa el espacio restante */
-    width: 100%; /* Ocupa todo el ancho en móvil */
+    flex-grow: 1;
+    width: 100%;
 }
 
-
 .section-title {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: bold;
     color: var(--text-color);
     margin-bottom: 30px;
@@ -487,7 +469,7 @@ body.light-theme {
     padding-left: 10px;
 }
 
-/* Estilos para la sección "Receta de la Semana" */
+/* Estilos para la sección "Receta de la Semana" (mantener si se usa, ajustar si no) */
 .featured-recipe-of-week-card {
     background-color: var(--secondary-bg);
     border-radius: 10px;
@@ -496,6 +478,7 @@ body.light-theme {
     margin: 0 auto 40px auto;
     max-width: 950px;
     text-align: center;
+    border: 1px solid var(--border-color);
 }
 
 .featured-recipe-content {
@@ -549,7 +532,7 @@ body.light-theme {
 }
 
 .featured-recipe-button {
-    background-color: var(--accent-color);
+    background-color: var(--button-primary-bg);
     color: var(--white-text);
     padding: 12px 28px;
     border-radius: 8px;
@@ -562,9 +545,8 @@ body.light-theme {
 }
 
 .featured-recipe-button:hover {
-    background-color: var(--button-hover-color);
+    background-color: var(--button-primary-hover);
 }
-
 
 /* Estilos para los contenedores de sección */
 .section-wrapper {
@@ -572,41 +554,50 @@ body.light-theme {
     padding: 40px 0;
     box-sizing: border-box;
     margin-bottom: 0;
-    background-color: var(--primary-bg); /* Default background */
+    background-color: var(--secondary-bg);
     border-radius: 10px;
     box-shadow: 0px 4px 10px var(--shadow-color);
     padding: 30px;
-    margin-bottom: 30px; /* Espacio entre secciones */
-}
-
-.section-bg-primary {
-    background-color: var(--primary-bg);
-}
-
-.section-bg-secondary {
-    background-color: var(--secondary-bg);
+    margin-bottom: 30px;
+    border: 1px solid var(--border-color); /* Borde para las secciones */
 }
 
 /* Ajuste para que los títulos de sección se centren dentro del wrapper y tengan el max-width */
 .section-wrapper .section-title {
-    max-width: 100%; /* Ajustado para el flujo normal del main-content-area */
+    max-width: 100%;
     margin: 0 auto 30px auto;
-    padding: 0 0px; /* Removido padding extra */
+    padding: 0 0px;
     text-align: left;
 }
 
 /* Estilos de Cuadrícula de Recetas */
-.recipe-grid, .latest-recipes-grid {
+.latest-recipes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 25px;
-    justify-content: center;
+    /* Por defecto, una columna en móviles */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    gap: 20px; /* Espacio entre las tarjetas */
+    justify-content: center; /* Centrar las tarjetas si no llenan la fila */
     align-items: start;
-    max-width: 100%; /* Ajustado para el contenido principal */
+    max-width: 100%;
     margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
 }
+
+/* Media query para 3 columnas en pantallas más grandes */
+@media (min-width: 992px) {
+    .latest-recipes-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 columnas en pantallas grandes */
+    }
+}
+
+/* Media query para 2 columnas en tablets */
+@media (min-width: 768px) and (max-width: 991px) {
+    .latest-recipes-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablets */
+    }
+}
+
 
 .recipe-card {
     background-color: var(--secondary-bg);
@@ -616,9 +607,10 @@ body.light-theme {
     transition: transform 0.2s ease;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    cursor: pointer; /* Indica que la tarjeta es clickeable */
-    position: relative; /* Para posicionar el badge de favorito */
+    /* Eliminamos height: 100% para un tamaño más compacto y controlado por el contenido */
+    cursor: pointer;
+    position: relative;
+    border: 1px solid var(--border-color); /* Borde sutil */
 }
 
 .recipe-card:hover {
@@ -627,24 +619,30 @@ body.light-theme {
 
 .recipe-card-image {
     width: 100%;
-    height: 180px;
+    height: 180px; /* Altura fija para las imágenes de las tarjetas */
     object-fit: cover;
-    border-bottom: 1px solid var(--input-border);
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 10px 10px 0 0; /* Bordes redondeados solo arriba */
+}
+
+.recipe-card-content {
+    padding: 10px 15px; /* Menos padding vertical */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .recipe-card-title {
-    font-size: 18px;
+    font-size: 18px; /* Ligeramente más pequeño */
     font-weight: 600;
     color: var(--text-color);
-    padding: 15px 15px 5px 15px;
-    margin: 0;
+    margin: 0 0 5px 0; /* Menos margen inferior */
 }
 
 .recipe-card-description {
-    font-size: 14px;
+    font-size: 13px; /* Más pequeño */
     color: var(--light-text);
-    padding: 0 15px 15px 15px;
-    margin: 0;
+    margin: 0 0 10px 0; /* Menos margen inferior */
     flex-grow: 1;
     display: -webkit-box;
     line-clamp: 2;
@@ -654,28 +652,93 @@ body.light-theme {
     text-overflow: ellipsis;
 }
 
-.recipe-card-link {
-    display: block;
-    text-align: center;
-    background-color: var(--accent-color);
-    color: var(--white-text);
-    padding: 10px 0;
-    text-decoration: none;
-    font-weight: 600;
-    transition: background-color 0.2s ease;
-    margin-top: auto;
+.recipe-card-footer {
+    display: flex;
+    justify-content: space-between; /* Espacio entre el grupo de favoritos y el icono de comentarios */
+    align-items: center;
+    padding: 0 15px 15px; /* Padding en la parte inferior de la tarjeta */
+    margin-top: auto; /* Empuja el footer hacia abajo */
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.recipe-card-link:hover {
-    background-color: var(--button-hover-color);
+.favorite-action-group { /* Nuevo grupo para corazón y texto */
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Espacio entre el icono y el texto */
 }
 
-/* Estilos para la cuadrícula de consejos */
+/* Botón de favorito en las tarjetas */
+.favorite-toggle-button {
+    background-color: transparent; /* Fondo transparente */
+    border: none; /* Sin borde */
+    border-radius: 50%;
+    width: 30px; /* Tamaño más pequeño */
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: color 0.2s ease, transform 0.2s ease;
+    padding: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+    font-size: 1rem; /* Tamaño del icono */
+    color: var(--icon-color); /* Color por defecto (gris) */
+}
+
+.favorite-toggle-button:hover {
+    color: var(--favorite-filled); /* Rojo al pasar el ratón */
+    transform: scale(1.1);
+}
+
+.favorite-toggle-button i {
+    color: inherit; /* Hereda el color del botón padre */
+    font-size: 1.1rem; /* Asegura el tamaño del icono */
+}
+
+.favorite-toggle-button.favorited {
+    color: var(--favorite-filled); /* Rojo cuando está en favoritos */
+}
+
+.favorite-toggle-button.favorited i {
+    color: var(--favorite-filled); /* Rojo para el corazón lleno */
+}
+
+.favorite-text { /* Estilo para el texto "Add to favorites" */
+    font-size: 13px;
+    color: var(--light-text);
+    white-space: nowrap; /* Evita que el texto se rompa */
+}
+
+/* Icono de comentarios en las tarjetas */
+.comments-icon-link { /* Cambiado de .comments-icon a .comments-icon-link para más control */
+    color: var(--icon-color);
+    font-size: 1rem; /* Tamaño del icono */
+    transition: color 0.2s ease;
+    padding: 5px; /* Para que sea más fácil de clickear */
+    border-radius: 50%;
+    display: flex; /* Para centrar el icono */
+    align-items: center;
+    justify-content: center;
+    width: 30px; /* Tamaño del área clickeable */
+    height: 30px;
+}
+
+.comments-icon-link:hover {
+    color: var(--accent-color); /* Azul oscuro al pasar el ratón */
+    background-color: rgba(0,0,0,0.05); /* Efecto de hover sutil */
+}
+
+/* Estilos para la cuadrícula de consejos (si se mantiene) */
 .tip-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 25px;
-    max-width: 100%; /* Ajustado para el contenido principal */
+    max-width: 100%;
     margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
@@ -692,6 +755,7 @@ body.light-theme {
     flex-direction: column;
     height: 100%;
     cursor: pointer;
+    border: 1px solid var(--border-color);
 }
 
 .tip-card:hover {
@@ -702,7 +766,7 @@ body.light-theme {
     width: 100%;
     height: 160px;
     object-fit: cover;
-    border-bottom: 1px solid var(--input-border);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .tip-card-title {
@@ -737,6 +801,7 @@ body.light-theme {
     text-align: center;
     max-width: 950px;
     margin: 0 auto;
+    border: 1px solid var(--border-color);
 }
 
 .call-to-action-title {
@@ -752,9 +817,8 @@ body.light-theme {
     margin-bottom: 25px;
 }
 
-/* Botón de registro grande en la tarjeta de llamada a la acción */
 .register-button-large {
-    background-color: var(--accent-color);
+    background-color: var(--button-primary-bg);
     color: var(--white-text);
     padding: 12px 24px;
     border-radius: 8px;
@@ -767,9 +831,8 @@ body.light-theme {
 }
 
 .register-button-large:hover {
-    background-color: var(--button-hover-color);
+    background-color: var(--button-primary-hover);
 }
-
 
 /* Mensaje de No Recetas */
 .no-recipes-message {
@@ -812,16 +875,17 @@ body.light-theme {
     padding: 0;
     margin: 0 auto 30px auto;
     max-width: 600px;
-    background-color: var(--secondary-bg); /* Reutiliza una variable de color */
+    background-color: var(--secondary-bg);
     border-radius: 8px;
     padding: 20px;
-    box-shadow: 0px 2px 5px var(--shadow-color); /* Reutiliza una variable de sombra */
-    text-align: left; /* Asegura que la lista se alinee a la izquierda */
+    box-shadow: 0px 2px 5px var(--shadow-color);
+    text-align: left;
+    border: 1px solid var(--border-color);
 }
 
 .advanced-search-criteria li {
     font-size: 16px;
-    color: var(--light-text); /* Reutiliza una variable de color */
+    color: var(--light-text);
     margin-bottom: 8px;
 }
 
@@ -831,7 +895,7 @@ body.light-theme {
 
 .advanced-search-criteria .criteria-label {
     font-weight: 600;
-    color: var(--text-color); /* Reutiliza una variable de color */
+    color: var(--text-color);
 }
 
 .search-navigation-buttons {
@@ -849,71 +913,70 @@ body.light-theme {
     text-decoration: none;
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     white-space: nowrap;
-    display: inline-block; /* Para que los enlaces se comporten como botones */
-    border: none; /* Por defecto sin borde */
+    display: inline-block;
+    border: none;
     cursor: pointer;
 }
 
 .button-primary {
-    background-color: var(--accent-color);
+    background-color: var(--button-primary-bg);
     color: var(--white-text);
 }
 
 .button-primary:hover {
-    background-color: var(--button-hover-color);
+    background-color: var(--button-primary-hover);
 }
 
 .button-secondary {
-    background-color: var(--gray-button-bg);
+    background-color: var(--light-text);
     color: var(--white-text);
 }
 
 .button-secondary:hover {
-    background-color: var(--gray-button-hover);
+    background-color: #555555;
 }
 
 .button-danger {
-    background-color: var(--red-danger);
+    background-color: var(--favorite-filled);
     color: var(--white-text);
 }
 
 .button-danger:hover {
-    background-color: var(--red-danger-hover);
+    background-color: #CC5A5A;
 }
-
 
 /* Estilos del Footer */
 .main-footer-new {
-    background-color: var(--dark-bg);
-    color: var(--light-text);
+    background-color: var(--accent-color); /* Fondo oscuro para el footer */
+    color: rgba(255, 255, 255, 0.7);
     padding: 20px 0;
     text-align: center;
     font-size: 0.9rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px; /* Espacio entre el copyright y los enlaces */
+    gap: 10px;
 }
 
 .footer-links {
     display: flex;
-    gap: 15px; /* Espacio entre los enlaces del footer */
+    gap: 15px;
     align-items: center;
 }
 
 .footer-link {
-    color: var(--light-text);
+    color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .footer-link:hover {
-    color: var(--accent-color); /* Color de acento al pasar el ratón */
+    color: var(--white-text);
     text-decoration: underline;
 }
 
 .footer-link-separator {
-    color: var(--light-text);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 /* Estilos para formularios y listas dentro de las páginas de perfil */
@@ -924,6 +987,7 @@ body.light-theme {
     padding: 30px;
     max-width: 700px;
     margin: 0 auto 40px auto;
+    border: 1px solid var(--border-color);
 }
 
 .form-description {
@@ -949,11 +1013,11 @@ body.light-theme {
     width: 100%;
     padding: 12px;
     margin-bottom: 20px;
-    border: 1px solid var(--input-border);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     box-sizing: border-box;
-    background-color: var(--input-bg);
-    color: var(--dark-font);
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
     font-size: 16px;
 }
 
@@ -964,7 +1028,7 @@ body.light-theme {
 .form-container form button[type="submit"] {
     width: auto;
     padding: 12px 30px;
-    background-color: var(--accent-color);
+    background-color: var(--button-primary-bg);
     color: var(--white-text);
     border: none;
     border-radius: 8px;
@@ -975,7 +1039,7 @@ body.light-theme {
 }
 
 .form-container form button[type="submit"]:hover {
-    background-color: var(--button-hover-color);
+    background-color: var(--button-primary-hover);
 }
 
 .form-container h3 {
@@ -983,7 +1047,7 @@ body.light-theme {
     color: var(--text-color);
     margin-top: 30px;
     margin-bottom: 15px;
-    border-bottom: 1px solid var(--input-border);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
 }
 
@@ -994,9 +1058,21 @@ body.light-theme {
     margin-top: 20px;
 }
 
-.favorites-list li, .category-list li, .user-comments-list li {
+.category-list li {
+    background-color: var(--accent-color);
+    border-bottom: 0.1px solid var(--golden-border);
+    padding: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    color: var(--white-text);
+}
+
+.favorites-list li, .user-comments-list li {
     background-color: var(--primary-bg);
-    border: 1px solid var(--input-border);
+    border: 1px solid var(--golden-border);
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 10px;
@@ -1018,7 +1094,7 @@ body.light-theme {
 }
 
 .favorites-list li button, .category-list li button {
-    background-color: var(--gray-button-bg);
+    background-color: var(--light-text);
     color: var(--white-text);
     padding: 8px 15px;
     border: none;
@@ -1030,7 +1106,7 @@ body.light-theme {
 }
 
 .favorites-list li button:hover, .category-list li button:hover {
-    background-color: var(--gray-button-hover);
+    background-color: #555555;
 }
 
 .user-comment-item {
@@ -1077,7 +1153,7 @@ body.light-theme {
 
 /* Estilos para el tag de categoría en la lista de favoritos */
 .favorite-category-tag {
-    background-color: var(--input-border);
+    background-color: var(--border-color);
     color: var(--text-color);
     padding: 4px 8px;
     border-radius: 5px;
@@ -1092,13 +1168,14 @@ body.light-theme {
     box-shadow: 0px 4px 10px var(--shadow-color);
     padding: 30px;
     margin-top: 40px;
+    border: 1px solid var(--border-color);
 }
 
 .comments-section h3 {
     color: var(--text-color);
     font-size: 24px;
     margin-bottom: 25px;
-    border-bottom: 1px solid var(--input-border);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
 }
 
@@ -1108,6 +1185,7 @@ body.light-theme {
     background-color: var(--primary-bg);
     border-radius: 8px;
     box-shadow: 0px 2px 5px var(--shadow-color);
+    border: 1px solid var(--border-color);
 }
 
 .comment-form-container h4 {
@@ -1120,11 +1198,11 @@ body.light-theme {
     width: 100%;
     padding: 12px;
     margin-bottom: 15px;
-    border: 1px solid var(--input-border);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     box-sizing: border-box;
-    background-color: var(--input-bg);
-    color: var(--dark-font);
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
     font-size: 16px;
     resize: vertical;
 }
@@ -1166,6 +1244,7 @@ body.light-theme {
     padding: 20px;
     margin-bottom: 15px;
     box-shadow: 0px 2px 5px var(--shadow-color);
+    border: 1px solid var(--border-color);
 }
 
 .comment-header {
@@ -1173,7 +1252,7 @@ body.light-theme {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
-    border-bottom: 1px solid var(--input-border);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 8px;
 }
 
@@ -1200,7 +1279,7 @@ body.light-theme {
     list-style: none;
     padding-left: 20px;
     margin-top: 15px;
-    border-left: 3px solid var(--input-border);
+    border-left: 3px solid var(--border-color);
 }
 
 .reply-item {
@@ -1209,6 +1288,7 @@ body.light-theme {
     padding: 15px;
     margin-bottom: 10px;
     box-shadow: 0px 1px 3px var(--shadow-color);
+    border: 1px solid var(--border-color);
 }
 
 .reply-item .comment-header {
@@ -1230,7 +1310,7 @@ body.light-theme {
 
 /* Estilos para el botón Responder */
 .reply-button {
-    background-color: var(--gray-button-bg);
+    background-color: var(--light-text);
     color: var(--white-text);
     padding: 8px 15px;
     border: none;
@@ -1242,7 +1322,7 @@ body.light-theme {
 }
 
 .reply-button:hover {
-    background-color: var(--gray-button-hover);
+    background-color: #555555;
 }
 
 /* Estilos para el contenedor del formulario de respuesta */
@@ -1252,6 +1332,7 @@ body.light-theme {
     padding: 15px;
     margin-top: 15px;
     box-shadow: 0px 1px 3px var(--shadow-color);
+    border: 1px solid var(--border-color);
 }
 
 .reply-form-container h4 {
@@ -1264,11 +1345,11 @@ body.light-theme {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
-    border: 1px solid var(--input-border);
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     box-sizing: border-box;
-    background-color: var(--input-bg);
-    color: var(--dark-font);
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
     font-size: 14px;
     resize: vertical;
 }
@@ -1283,18 +1364,18 @@ body.light-theme {
 }
 
 .reply-form-container .cancel-reply-button {
-    background-color: var(--gray-button-bg);
+    background-color: var(--light-text);
     color: var(--white-text);
     border: none;
 }
 
 .reply-form-container .cancel-reply-button:hover {
-    background-color: var(--gray-button-hover);
+    background-color: #555555;
 }
 
 /* Estilos para la página de visualización de perfil (ver_perfil.html) */
 .profile-page-container {
-    max-width: 950px; /* Ancho similar a las cuadrículas de recetas */
+    max-width: 950px;
     margin: 0 auto 40px auto;
     padding: 20px;
     box-sizing: border-box;
@@ -1306,15 +1387,16 @@ body.light-theme {
     box-shadow: 0px 4px 10px var(--shadow-color);
     padding: 30px;
     display: flex;
-    flex-direction: column; /* Por defecto apilado para móvil */
+    flex-direction: column;
     align-items: center;
     text-align: center;
     margin-bottom: 30px;
+    border: 1px solid var(--border-color);
 }
 
 @media (min-width: 768px) {
     .profile-header-card {
-        flex-direction: row; /* En fila para escritorio */
+        flex-direction: row;
         text-align: left;
         align-items: flex-start;
     }
@@ -1326,8 +1408,8 @@ body.light-theme {
     border-radius: 50%;
     overflow: hidden;
     margin-bottom: 20px;
-    border: 4px solid var(--accent-color); /* Borde de acento alrededor del avatar */
-    flex-shrink: 0; /* Evita que el avatar se encoja */
+    border: 4px solid var(--accent-color);
+    flex-shrink: 0;
 }
 
 @media (min-width: 768px) {
@@ -1375,14 +1457,14 @@ body.light-theme {
     display: flex;
     align-items: center;
     gap: 8px;
-    justify-content: center; /* Centrar en móvil */
+    justify-content: center;
 }
 
 @media (min-width: 768px) {
     .profile-location,
     .profile-birthday,
     .profile-age {
-        justify-content: flex-start; /* Alinear a la izquierda en escritorio */
+        justify-content: flex-start;
     }
 }
 
@@ -1396,8 +1478,8 @@ body.light-theme {
 .profile-about-me {
     margin-top: 25px;
     padding-top: 20px;
-    border-top: 1px solid var(--input-border);
-    text-align: left; /* Asegura que el texto se alinee a la izquierda */
+    border-top: 1px solid var(--border-color);
+    text-align: left;
 }
 
 .profile-about-me h4 {
@@ -1417,19 +1499,19 @@ body.light-theme {
     padding: 10px 20px;
     font-size: 16px;
     border-radius: 8px;
-    display: inline-block; /* Para que sea un botón centrado */
+    display: inline-block;
 }
 
 /* Cuadrícula de Contenido Inferior (Favoritos y Comentarios) */
 .profile-content-grid {
     display: grid;
-    grid-template-columns: 1fr; /* Una columna para móvil */
+    grid-template-columns: 1fr;
     gap: 30px;
 }
 
 @media (min-width: 768px) {
     .profile-content-grid {
-        grid-template-columns: repeat(2, 1fr); /* Dos columnas para escritorio */
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -1438,24 +1520,25 @@ body.light-theme {
     border-radius: 10px;
     box-shadow: 0px 4px 10px var(--shadow-color);
     padding: 25px;
+    border: 1px solid var(--border-color);
 }
 
 .profile-section-card h3 {
     font-size: 22px;
     color: var(--text-color);
     margin-bottom: 20px;
-    border-bottom: 1px solid var(--input-border);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
 }
 
 .favorite-category-group {
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 1px dashed var(--input-border); /* Separador sutil entre categorías */
+    border-bottom: 1px dashed var(--border-color);
 }
 
 .favorite-category-group:last-child {
-    border-bottom: none; /* Eliminar el borde del último grupo */
+    border-bottom: none;
     margin-bottom: 0;
     padding-bottom: 0;
 }
@@ -1511,7 +1594,7 @@ body.light-theme {
 
 /* Estilos específicos para la gestión de categorías */
 .container {
-    max-width: 950px; /* Ancho consistente con otras secciones de contenido */
+    max-width: 950px;
     margin: 30px auto;
     padding: 0 20px;
     box-sizing: border-box;
@@ -1519,9 +1602,9 @@ body.light-theme {
 
 .button-container {
     display: flex;
-    justify-content: flex-end; /* Alinea el botón a la derecha */
+    justify-content: flex-end;
     margin-bottom: 30px;
-    padding-right: 10px; /* Pequeño padding para que no se pegue al borde */
+    padding-right: 10px;
 }
 
 .list-container {
@@ -1529,6 +1612,7 @@ body.light-theme {
     border-radius: 10px;
     box-shadow: 0px 4px 10px var(--shadow-color);
     padding: 20px;
+    border: 1px solid var(--border-color);
 }
 
 .item-list {
@@ -1542,7 +1626,7 @@ body.light-theme {
     justify-content: space-between;
     align-items: center;
     background-color: var(--primary-bg);
-    border: 1px solid var(--input-border);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 15px 20px;
     margin-bottom: 10px;
@@ -1556,13 +1640,13 @@ body.light-theme {
 
 .item-name {
     font-weight: 600;
-    flex-grow: 1; /* Permite que el nombre ocupe el espacio disponible */
+    flex-grow: 1;
 }
 
 .item-actions {
     display: flex;
     gap: 10px;
-    margin-left: 20px; /* Espacio entre el nombre y las acciones */
+    margin-left: 20px;
 }
 
 .action-link {
@@ -1576,21 +1660,21 @@ body.light-theme {
 }
 
 .edit-link {
-    background-color: var(--gray-button-bg);
+    background-color: var(--light-text);
     color: var(--white-text);
 }
 
 .edit-link:hover {
-    background-color: var(--gray-button-hover);
+    background-color: #555555;
 }
 
 .delete-link {
-    background-color: var(--red-danger);
+    background-color: var(--favorite-filled);
     color: var(--white-text);
 }
 
 .delete-link:hover {
-    background-color: var(--red-danger-hover);
+    background-color: #CC5A5A;
 }
 
 .empty-message {
@@ -1602,7 +1686,7 @@ body.light-theme {
 
 /* Estilos para formularios de creación/edición de categoría */
 .form-page-container {
-    max-width: 700px; /* Un poco más estrecho para formularios */
+    max-width: 700px;
     margin: 30px auto;
     padding: 0 20px;
     box-sizing: border-box;
@@ -1613,12 +1697,13 @@ body.light-theme {
     border-radius: 10px;
     box-shadow: 0px 4px 10px var(--shadow-color);
     padding: 30px;
+    border: 1px solid var(--border-color);
 }
 
 .generic-form {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Espacio entre grupos de formulario */
+    gap: 15px;
 }
 
 .form-group {
@@ -1638,11 +1723,11 @@ body.light-theme {
 .generic-form select {
     width: 100%;
     padding: 12px;
-    border: 1px solid var(--input-border);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     box-sizing: border-box;
-    background-color: var(--input-bg);
-    color: var(--dark-font);
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
     font-size: 16px;
 }
 
@@ -1660,7 +1745,7 @@ body.light-theme {
 
 .error-message {
     font-size: 13px;
-    color: var(--red-danger);
+    color: var(--favorite-filled);
     margin-top: 5px;
     margin-bottom: 0;
     font-weight: 500;
@@ -1675,9 +1760,9 @@ body.light-theme {
 }
 
 .error-alert {
-    background-color: rgba(231, 76, 60, 0.1); /* Fondo rojo muy claro */
-    color: var(--red-danger);
-    border: 1px solid var(--red-danger);
+    background-color: rgba(255, 107, 107, 0.1);
+    color: var(--favorite-filled);
+    border: 1px solid var(--favorite-filled);
 }
 
 .form-actions {
@@ -1689,7 +1774,7 @@ body.light-theme {
 
 /* Estilos para la página de confirmación de eliminación */
 .confirm-page-container {
-    max-width: 600px; /* Más estrecho para confirmaciones */
+    max-width: 600px;
     margin: 50px auto;
     padding: 0 20px;
     box-sizing: border-box;
@@ -1701,6 +1786,7 @@ body.light-theme {
     border-radius: 10px;
     box-shadow: 0px 4px 10px var(--shadow-color);
     padding: 30px;
+    border: 1px solid var(--border-color);
 }
 
 .confirm-message {
@@ -1712,7 +1798,7 @@ body.light-theme {
 
 .warning-message {
     font-size: 16px;
-    color: var(--red-danger);
+    color: var(--favorite-filled);
     margin-bottom: 30px;
     font-weight: 500;
 }
@@ -1732,7 +1818,8 @@ body.light-theme {
     box-shadow: 0px 4px 10px var(--shadow-color);
     padding: 30px;
     box-sizing: border-box;
-    position: relative; /* ¡CRUCIAL para posicionar el botón de favoritos dentro! */
+    position: relative;
+    border: 1px solid var(--border-color);
 }
 
 .recipe-detail-title {
@@ -1746,7 +1833,7 @@ body.light-theme {
 .recipe-header-info {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center; /* Centrar en móvil */
+    justify-content: center;
     gap: 15px;
     font-size: 15px;
     color: var(--light-text);
@@ -1755,7 +1842,7 @@ body.light-theme {
 
 @media (min-width: 768px) {
     .recipe-header-info {
-        justify-content: flex-start; /* Alinear a la izquierda en escritorio */
+        justify-content: flex-start;
     }
 }
 
@@ -1765,13 +1852,13 @@ body.light-theme {
     background-color: var(--primary-bg);
     padding: 8px 15px;
     border-radius: 5px;
-    border: 1px solid var(--input-border);
-    white-space: nowrap; /* Evita que el texto se rompa */
+    border: 1px solid var(--border-color);
+    white-space: nowrap;
 }
 
 .recipe-detail-image {
     width: 100%;
-    max-height: 450px; /* Altura máxima para la imagen */
+    max-height: 450px;
     object-fit: cover;
     border-radius: 10px;
     box-shadow: 0px 4px 10px var(--shadow-color);
@@ -1780,24 +1867,24 @@ body.light-theme {
 
 .admin-recipe-actions {
     display: flex;
-    justify-content: center; /* Centrar los botones de admin */
+    justify-content: center;
     gap: 15px;
     margin-top: 20px;
-    margin-bottom: 30px; /* Espacio debajo de los botones */
+    margin-bottom: 30px;
 }
 
 .recipe-sections {
     display: grid;
-    grid-template-columns: 1fr; /* Una columna en móvil */
+    grid-template-columns: 1fr;
     gap: 30px;
 }
 
 @media (min-width: 768px) {
     .recipe-sections {
-        grid-template-columns: repeat(2, 1fr); /* Dos columnas en escritorio */
+        grid-template-columns: repeat(2, 1fr);
     }
-    .recipe-section:first-child { /* Descripción */
-        grid-column: 1 / -1; /* Ocupa todo el ancho */
+    .recipe-section:first-child {
+        grid-column: 1 / -1;
     }
 }
 
@@ -1806,13 +1893,14 @@ body.light-theme {
     border-radius: 8px;
     box-shadow: 0px 2px 5px var(--shadow-color);
     padding: 25px;
+    border: 1px solid var(--border-color);
 }
 
 .recipe-section h3 {
     font-size: 22px;
     color: var(--text-color);
     margin-bottom: 15px;
-    border-bottom: 1px solid var(--input-border);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
 }
 
@@ -1837,86 +1925,110 @@ body.light-theme {
 }
 
 /* Media Queries para Responsividad */
+@media (min-width: 992px) { /* Ajuste del breakpoint para flex-direction: row */
+    .main-content-new {
+        flex-direction: row; /* Columnas en desktop */
+        align-items: flex-start; /* Alinea las columnas arriba */
+    }
+    .sidebar {
+        position: sticky; /* Hace que la sidebar sea pegajosa */
+        top: 30px; /* Distancia desde la parte superior al hacer scroll */
+    }
+}
+
+@media (max-width: 991px) { /* Para pantallas más pequeñas que 992px */
+    .main-content-new {
+        flex-direction: column; /* Columnas apiladas en pantallas más pequeñas */
+        align-items: center;
+    }
+    .sidebar {
+        width: 100%; /* Ocupa todo el ancho en móvil */
+        margin-bottom: 20px; /* Espacio debajo de la sidebar */
+    }
+    .main-content-area {
+        width: 100%; /* Ocupa todo el ancho en móvil */
+    }
+}
+
 @media (max-width: 768px) {
-    .main-nav-new {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 10px 20px;
+    .menu-toggle {
+        display: block; /* Muestra el menú de hamburguesa */
     }
-
     .nav-links-new {
+        display: none; /* Oculta los enlaces por defecto */
         flex-direction: column;
-        align-items: flex-start;
         width: 100%;
-        margin-top: 15px;
-        gap: 10px;
+        background-color: var(--accent-color);
+        position: absolute;
+        top: 100%;
+        left: 0;
+        box-shadow: 0px 8px 16px 0px var(--shadow-color);
+        padding: 10px 0;
+        transition: all 0.3s ease-in-out;
     }
-
-    .nav-right {
-        margin-top: 15px;
+    .nav-links-new.show-mobile-menu {
+        display: flex; /* Muestra los enlaces cuando el menú está activo */
+    }
+    .nav-links-new li {
         width: 100%;
-        justify-content: center;
+        text-align: center;
+    }
+    .nav-link-new {
+        padding: 12px 0;
+        width: 100%;
+    }
+    .nav-right {
+        margin-top: 0; /* Ajuste para que no haya margen extra */
+        width: auto; /* Permite que los iconos se ajusten */
+        justify-content: flex-end; /* Alinear a la derecha */
     }
 
     .hero-title {
         font-size: 40px;
     }
-
     .slide-title {
         font-size: 30px;
     }
-
     .section-title {
         font-size: 24px;
         text-align: center;
         padding-left: 0;
     }
-
     .featured-recipe-content {
         flex-direction: column;
     }
-
     .featured-recipe-image {
         max-width: 100%;
     }
-
-    .recipe-grid, .latest-recipes-grid, .tip-grid { /* Eliminado .category-grid */
-        grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
+    .recipe-grid, .tip-grid { /* Eliminado .latest-recipes-grid de aquí, ya tiene su propia media query */
+        grid-template-columns: 1fr;
     }
-
     .search-navigation-buttons {
         flex-direction: column;
         gap: 10px;
     }
-
     .button-container {
-        justify-content: center; /* Centrar el botón en móvil */
+        justify-content: center;
         padding-right: 0;
     }
-
     .list-item {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
     }
-
     .item-actions {
         margin-left: 0;
         width: 100%;
         justify-content: center;
     }
-
     .form-actions {
         flex-direction: column;
         gap: 10px;
     }
-
     .form-actions .button {
         width: 100%;
         text-align: center;
     }
-
-    /* Ajustes específicos para detalle de receta en móvil */
     .recipe-detail-title {
         font-size: 28px;
     }
@@ -1929,19 +2041,6 @@ body.light-theme {
     }
     .recipe-section h3 {
         font-size: 20px;
-    }
-
-    /* Ajustes para la barra lateral en móvil */
-    .main-content-new {
-        flex-direction: column; /* Asegura que las columnas se apilen en móvil */
-        padding: 0 10px; /* Reduce padding en móvil */
-    }
-    .sidebar {
-        width: 100%; /* Ocupa todo el ancho en móvil */
-        margin-bottom: 20px; /* Espacio debajo de la sidebar */
-    }
-    .main-content-area {
-        width: 100%; /* Ocupa todo el ancho en móvil */
     }
 }
 
@@ -1968,55 +2067,54 @@ body.light-theme {
     background-color: var(--primary-bg);
     padding: 8px 15px;
     border-radius: 5px;
-    border: 1px solid var(--input-border);
-    white-space: nowrap; /* Evita que el texto se rompa */
-    display: inline-block; /* Para que se comporten como bloques y respeten el padding/margin */
-    margin-right: 10px; /* Espacio entre ellos */
-    margin-bottom: 10px; /* Para responsividad en pantallas pequeñas */
+    border: 1px solid var(--border-color);
+    white-space: nowrap;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 10px;
 }
 
 /* Estilos para las acciones de comentarios (Editar/Eliminar) */
 .comment-actions {
-    display: flex; /* Para que los botones se muestren en línea */
-    gap: 0.5rem; /* Espacio entre los botones (equivalente a space-x-2) */
-    margin-top: 0.5rem; /* Margen superior (equivalente a mt-2) */
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
 }
 
 .edit-comment-button,
 .delete-comment-button {
     display: inline-block;
-    font-size: 0.875rem; /* text-sm */
-    font-weight: 700; /* font-bold */
-    padding: 0.25rem 0.75rem; /* py-1 px-3 */
-    border-radius: 0.5rem; /* rounded-lg */
-    color: #ffffff; /* text-white */
-    text-decoration: none; /* Quitar subrayado de los enlaces */
-    transition: background-color 0.3s ease-in-out; /* transition duration-300 ease-in-out */
+    font-size: 0.875rem;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    color: #ffffff;
+    text-decoration: none;
+    transition: background-color 0.3s ease-in-out;
 }
 
 .edit-comment-button {
-    background-color: #f59e0b; /* bg-yellow-500 */
+    background-color: #f59e0b;
 }
 
 .edit-comment-button:hover {
-    background-color: #d97706; /* hover:bg-yellow-600 */
+    background-color: #d97706;
 }
 
-/* Estilo para el botón de eliminar de administrador */
 .admin-delete-comment-button {
     display: inline-block;
-    font-size: 0.875rem; /* text-sm */
-    font-weight: 700; /* font-bold */
-    padding: 0.25rem 0.75rem; /* py-1 px-3 */
-    border-radius: 0.5rem; /* rounded-lg */
-    color: #ffffff; /* text-white */
-    text-decoration: none; /* Quitar subrayado de los enlaces */
-    background-color: #e74c3c; /* Un rojo distintivo para admin */
+    font-size: 0.875rem;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    color: #ffffff;
+    text-decoration: none;
+    background-color: var(--favorite-filled);
     transition: background-color 0.3s ease-in-out;
 }
 
 .admin-delete-comment-button:hover {
-    background-color: #c0392b; /* Rojo más oscuro al pasar el ratón */
+    background-color: #CC5A5A;
 }
 
 /* --- NUEVOS ESTILOS PARA ACERCA DE Y CONTACTO --- */
@@ -2030,6 +2128,7 @@ body.light-theme {
     border-radius: 10px;
     box-shadow: 0px 4px 10px var(--shadow-color);
     padding: 30px;
+    border: 1px solid var(--border-color);
 }
 
 .page-title {
@@ -2051,11 +2150,11 @@ body.light-theme {
 .about-section, .contact-info-section, .contact-form-section, .social-media-section {
     margin-bottom: 40px;
     padding-top: 20px;
-    border-top: 1px solid var(--input-border);
+    border-top: 1px solid var(--border-color);
 }
 
 .about-section:first-child, .contact-info-section:first-child {
-    border-top: none; /* No border for the very first section */
+    border-top: none;
     padding-top: 0;
 }
 
@@ -2085,6 +2184,7 @@ body.light-theme {
     display: flex;
     flex-direction: column;
     align-items: center;
+    border: 1px solid var(--border-color);
 }
 
 .team-member-image {
@@ -2117,7 +2217,7 @@ body.light-theme {
 }
 
 .call-to-action-button {
-    background-color: var(--accent-color);
+    background-color: var(--button-primary-bg);
     color: var(--white-text);
     padding: 12px 25px;
     border-radius: 8px;
@@ -2131,7 +2231,7 @@ body.light-theme {
 }
 
 .call-to-action-button:hover {
-    background-color: var(--button-hover-color);
+    background-color: var(--button-primary-hover);
 }
 
 /* Contacto - Información de Contacto */
@@ -2150,6 +2250,7 @@ body.light-theme {
     display: flex;
     flex-direction: column;
     align-items: center;
+    border: 1px solid var(--border-color);
 }
 
 .contact-icon {
@@ -2188,7 +2289,8 @@ body.light-theme {
     box-shadow: 0px 4px 10px var(--shadow-color);
     padding: 30px;
     max-width: 700px;
-    margin: 0 auto 40px auto; /* Centrar el formulario */
+    margin: 0 auto 40px auto;
+    border: 1px solid var(--border-color);
 }
 
 .contact-form-intro {
@@ -2214,11 +2316,11 @@ body.light-theme {
 .contact-form .form-textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid var(--input-border);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     box-sizing: border-box;
-    background-color: var(--input-bg);
-    color: var(--dark-font);
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
     font-size: 16px;
 }
 
@@ -2227,14 +2329,14 @@ body.light-theme {
 }
 
 .submit-button {
-    background-color: var(--accent-color);
+    background-color: var(--button-primary-bg);
     color: var(--white-text);
     padding: 12px 25px;
     border-radius: 8px;
     font-weight: 600;
     text-decoration: none;
     transition: background-color 0.2s ease;
-    display: block; /* Ocupa todo el ancho */
+    display: block;
     width: 100%;
     border: none;
     cursor: pointer;
@@ -2243,7 +2345,7 @@ body.light-theme {
 }
 
 .submit-button:hover {
-    background-color: var(--button-hover-color);
+    background-color: var(--button-primary-hover);
 }
 
 /* Contacto - Redes Sociales */
@@ -2266,7 +2368,7 @@ body.light-theme {
 }
 
 .social-icon-link:hover {
-    color: var(--button-hover-color);
+    color: var(--button-primary-hover);
 }
 
 /* Media Queries para responsividad de Acerca de y Contacto */
@@ -2278,7 +2380,7 @@ body.light-theme {
         font-size: 24px;
     }
     .team-members, .contact-info-section {
-        grid-template-columns: 1fr; /* Una columna en móvil */
+        grid-template-columns: 1fr;
     }
     .team-member-card, .contact-item {
         padding: 20px;
@@ -2316,27 +2418,27 @@ body.light-theme {
 /* Estilos para los controles de ordenamiento */
 .sort-options-container {
     display: flex;
-    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
-    justify-content: center; /* Centrar los botones */
-    gap: 10px; /* Espacio entre los botones */
-    margin-bottom: 30px; /* Espacio debajo del contenedor */
-    max-width: 100%; /* Ajustado para el contenido principal */
-    margin-left: auto;
+    flex-wrap: wrap;
+    justify-content: flex-start; /* Alinear a la izquierda como en la imagen */
+    gap: 10px;
+    margin-bottom: 30px;
+    max-width: 100%;
+    margin-left: 0; /* Alinear a la izquierda */
     margin-right: auto;
-    padding: 0 20px; /* Padding para evitar que se pegue a los bordes en móvil */
+    padding: 0 10px; /* Padding para evitar que se pegue a los bordes */
 }
 
 .sort-label {
     font-size: 16px;
     font-weight: 600;
     color: var(--text-color);
-    align-self: center; /* Alinear verticalmente con los botones */
-    margin-right: 10px; /* Espacio entre el label y los botones */
-    white-space: nowrap; /* Evita que el texto se rompa */
+    align-self: center;
+    margin-right: 10px;
+    white-space: nowrap;
 }
 
 .sort-button {
-    background-color: var(--gray-button-bg);
+    background-color: var(--light-text);
     color: var(--white-text);
     padding: 8px 15px;
     border-radius: 5px;
@@ -2350,30 +2452,30 @@ body.light-theme {
 }
 
 .sort-button:hover {
-    background-color: var(--gray-button-hover);
-    transform: translateY(-2px); /* Pequeño efecto hover */
+    background-color: #555555;
+    transform: translateY(-2px);
 }
 
 .sort-button.active {
-    background-color: var(--accent-color); /* Color de acento para el botón activo */
+    background-color: var(--accent-color);
     color: var(--white-text);
     font-weight: 700;
-    box-shadow: 0px 2px 5px var(--shadow-color); /* Sombra para destacar */
+    box-shadow: 0px 2px 5px var(--shadow-color);
 }
 
 .sort-button.active:hover {
-    background-color: var(--button-hover-color); /* Color de hover para el botón activo */
+    background-color: var(--accent-light);
 }
 
 /* Media query para ajustar el label en pantallas pequeñas */
 @media (max-width: 600px) {
     .sort-options-container {
-        flex-direction: column; /* Apilar elementos en pantallas muy pequeñas */
-        align-items: center;
+        flex-direction: column;
+        align-items: flex-start; /* Alinear a la izquierda en pantallas pequeñas */
     }
     .sort-label {
         margin-right: 0;
-        margin-bottom: 10px; /* Espacio debajo del label */
+        margin-bottom: 10px;
     }
 }
 
@@ -2383,16 +2485,17 @@ body.light-theme {
     padding: 0;
     margin: 0 auto 30px auto;
     max-width: 600px;
-    background-color: var(--secondary-bg); /* Reutiliza una variable de color */
+    background-color: var(--secondary-bg);
     border-radius: 8px;
     padding: 20px;
-    box-shadow: 0px 2px 5px var(--shadow-color); /* Reutiliza una variable de sombra */
-    text-align: left; /* Asegura que la lista se alinee a la izquierda */
+    box-shadow: 0px 2px 5px var(--shadow-color);
+    text-align: left;
+    border: 1px solid var(--border-color);
 }
 
 .advanced-search-criteria li {
     font-size: 16px;
-    color: var(--light-text); /* Reutiliza una variable de color */
+    color: var(--light-text);
     margin-bottom: 8px;
 }
 
@@ -2402,7 +2505,7 @@ body.light-theme {
 
 .advanced-search-criteria .criteria-label {
     font-weight: 600;
-    color: var(--text-color); /* Reutiliza una variable de color */
+    color: var(--text-color);
 }
 
 /* Estilos para el banner de Recetas Populares */
@@ -2411,10 +2514,10 @@ body.light-theme {
     overflow: hidden;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    cursor: pointer; /* Indica que es clickeable */
+    cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    padding: 0; /* Eliminar padding del section-wrapper para que la imagen ocupe todo */
-    margin-bottom: 3rem; /* Espacio debajo del banner */
+    padding: 0;
+    margin-bottom: 3rem;
 }
 
 .popular-recipes-banner:hover {
@@ -2425,7 +2528,7 @@ body.light-theme {
 .popular-banner-content {
     position: relative;
     width: 100%;
-    height: 300px; /* Altura fija para el banner, ajusta si es necesario */
+    height: 300px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2434,8 +2537,8 @@ body.light-theme {
 .popular-banner-image {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Asegura que la imagen cubra el área sin distorsionarse */
-    filter: brightness(0.6); /* Oscurece la imagen para que el texto resalte */
+    object-fit: cover;
+    filter: brightness(0.6);
 }
 
 .popular-banner-overlay {
@@ -2444,7 +2547,7 @@ body.light-theme {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4); /* Capa semi-transparente para el texto */
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -2471,7 +2574,7 @@ body.light-theme {
 /* Ajustes responsivos para el banner */
 @media (max-width: 768px) {
     .popular-banner-content {
-        height: 250px; /* Ajusta la altura en móviles */
+        height: 250px;
     }
     .popular-banner-title {
         font-size: 2rem;
@@ -2493,44 +2596,10 @@ body.light-theme {
     }
 }
 
-/* Estilos para el pie de página */
-.main-footer-new {
-    background-color: var(--dark-bg);
-    color: var(--light-text);
-    padding: 20px 0;
-    text-align: center;
-    font-size: 0.9rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px; /* Espacio entre el copyright y los enlaces */
-}
-
-.footer-links {
-    display: flex;
-    gap: 15px; /* Espacio entre los enlaces del footer */
-    align-items: center;
-}
-
-.footer-link {
-    color: var(--light-text);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.footer-link:hover {
-    color: var(--accent-color); /* Color de acento al pasar el ratón */
-    text-decoration: underline;
-}
-
-.footer-link-separator {
-    color: var(--light-text);
-}
-
 /* Estilos generales para la página de contacto */
 .contact-page-wrapper {
-    background-color: #f3f4f6;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    background-color: var(--primary-bg);
+    font-family: 'Inter', sans-serif;
     line-height: 1.5;
     padding: 3rem 1rem;
     max-width: 1280px;
@@ -2540,16 +2609,17 @@ body.light-theme {
 .contact-card {
     display: flex;
     flex-direction: column;
-    background-color: #fff;
+    background-color: var(--secondary-bg);
     border-radius: 12px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     overflow: hidden;
+    border: 1px solid var(--border-color);
 }
 
 /* Sección de Información de Contacto (Izquierda) */
 .contact-info {
-    background-color: #1a202c;
-    color: #fff;
+    background-color: var(--accent-color);
+    color: var(--white-text);
     padding: 2rem;
     display: flex;
     flex-direction: column;
@@ -2559,12 +2629,12 @@ body.light-theme {
     font-size: 2.25rem;
     font-weight: 800;
     margin-bottom: 1rem;
-    border-bottom: 2px solid #f97316;
+    border-bottom: 2px solid var(--button-primary-hover);
     padding-bottom: 0.5rem;
 }
 .contact-info p {
     font-size: 1.125rem;
-    color: #d1d5db;
+    color: rgba(255, 255, 255, 0.8);
     margin-bottom: 2rem;
 }
 .contact-details-list {
@@ -2577,7 +2647,7 @@ body.light-theme {
 }
 .contact-icon {
     font-size: 2rem;
-    color: #f97316;
+    color: var(--button-primary-hover);
     margin-right: 1rem;
     flex-shrink: 0;
 }
@@ -2587,7 +2657,7 @@ body.light-theme {
 }
 .contact-details-item p {
     font-size: 1rem;
-    color: #9ca3af;
+    color: rgba(255, 255, 255, 0.7);
     margin-top: 0.25rem;
     margin-bottom: 0;
 }
@@ -2596,7 +2666,7 @@ body.light-theme {
 .social-links {
     margin-top: 2rem;
     padding-top: 1.5rem;
-    border-top: 1px solid #4b5563;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 .social-links h3 {
     font-size: 1.125rem;
@@ -2608,12 +2678,12 @@ body.light-theme {
     gap: 1rem;
 }
 .social-icon {
-    color: #9ca3af;
+    color: rgba(255, 255, 255, 0.7);
     font-size: 1.5rem;
     transition: color 200ms ease;
 }
 .social-icon:hover {
-    color: #fff;
+    color: var(--white-text);
 }
 
 /* Formulario de Contacto (Derecha) */
@@ -2624,7 +2694,7 @@ body.light-theme {
 .contact-form-header {
     font-size: 2.25rem;
     font-weight: 800;
-    color: #1a202c;
+    color: var(--text-color);
     margin-bottom: 1.5rem;
 }
 .form-group {
@@ -2634,19 +2704,21 @@ body.light-theme {
     display: block;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #374151;
+    color: var(--text-color);
     margin-bottom: 0.5rem;
 }
 .form-group input, .form-group textarea {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     transition: all 200ms ease;
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
 }
 .form-group input:focus, .form-group textarea:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #f97316;
+    box-shadow: 0 0 0 2px var(--accent-color);
     border-color: transparent;
 }
 .form-actions {
@@ -2654,8 +2726,8 @@ body.light-theme {
     justify-content: flex-end;
 }
 .submit-button {
-    background-color: #f97316;
-    color: #fff;
+    background-color: var(--button-primary-bg);
+    color: var(--white-text);
     font-weight: 700;
     padding: 0.75rem 2rem;
     border-radius: 9999px;
@@ -2665,7 +2737,7 @@ body.light-theme {
     cursor: pointer;
 }
 .submit-button:hover {
-    background-color: #ea580c;
+    background-color: var(--button-primary-hover);
     transform: scale(1.05);
 }
 
@@ -2673,7 +2745,7 @@ body.light-theme {
     display: flex;
     gap: 1.5rem;
     margin-bottom: 1.5rem;
-    flex-direction: column; /* Por defecto en móviles */
+    flex-direction: column;
 }
 
 .form-group-item {
@@ -2694,81 +2766,6 @@ body.light-theme {
         padding: 3rem;
     }
     .form-row {
-        flex-direction: row; /* En desktop */
+        flex-direction: row;
     }
-}
-
-/* Estilos base del botón de favoritos (ahora unificado) */
-.favorite-toggle-button { /* ¡NUEVO NOMBRE DE CLASE UNIFICADO! */
-    background-color: rgba(255, 255, 255, 0.8); /* Fondo semi-transparente blanco */
-    border: 1px solid var(--input-border); /* Borde sutil */
-    border-radius: 50%; /* Por defecto circular para home */
-    width: 38px; /* Tamaño del círculo para home */
-    height: 38px; /* Tamaño del círculo para home */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    position: absolute; /* Posicionamiento absoluto para home */
-    top: 10px; /* Distancia desde arriba para home */
-    right: 10px; /* Distancia desde la derecha para home */
-    z-index: 10; /* Para asegurar que esté por encima de la imagen y otros elementos */
-    transition: background-color 0.2s ease, transform 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra sutil */
-    padding: 0; /* Eliminar padding por defecto del botón */
-    -webkit-appearance: none; /* Resetear estilos por defecto del navegador */
-    -moz-appearance: none;
-    appearance: none;
-    outline: none; /* Quitar el contorno al hacer clic */
-    font-size: 1.1rem; /* Tamaño de fuente base */
-    color: var(--light-text); /* Color de texto base */
-    text-decoration: none; /* Asegurar que no haya subrayado si es un enlace */
-}
-
-.favorite-toggle-button:hover {
-    background-color: var(--hover-color); /* Fondo al pasar el ratón */
-    transform: scale(1.05); /* Pequeño efecto de zoom */
-}
-
-.favorite-toggle-button i {
-    color: inherit; /* Hereda el color del botón padre */
-    font-size: 1.2rem; /* Tamaño del icono */
-    transition: color 0.2s ease;
-    margin-right: 0; /* Por defecto, sin margen para iconos */
-}
-
-/* Estilo cuando la receta ya es favorita (corazón lleno y fondo de color) */
-.favorite-toggle-button.favorited {
-    background-color: var(--accent-color); /* Fondo de color cuando está en favoritos */
-    border-color: var(--accent-color); /* Borde del mismo color */
-    color: var(--white-text); /* Texto blanco para el botón completo */
-}
-
-.favorite-toggle-button.favorited i {
-    color: var(--white-text); /* Color del corazón lleno (blanco) */
-}
-
-/* Estilos específicos para el botón de favoritos en la página de detalle de receta */
-/* Para que se vea como un botón más grande con texto */
-.recipe-detail-container .favorite-toggle-button.text-button { /* Usamos .text-button para especificar */
-    position: static; /* No absoluto, para que fluya con el contenido */
-    margin: 20px auto; /* Centrar y dar margen */
-    width: auto; /* Ancho automático para el texto */
-    height: auto; /* Alto automático para el texto */
-    border-radius: 8px; /* Bordes menos redondeados */
-    padding: 12px 24px; /* Padding para el texto */
-    font-size: 1rem; /* Tamaño de fuente normal */
-    display: inline-flex; /* Para que el icono y el texto estén en línea */
-    gap: 8px; /* Espacio entre icono y texto */
-}
-
-.recipe-detail-container .favorite-toggle-button.text-button i {
-    margin-right: 5px; /* Margen para separar el icono del texto */
-}
-
-
-/* Estilos para deshabilitar el botón mientras se procesa la petición */
-.favorite-toggle-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
 }

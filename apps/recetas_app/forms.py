@@ -78,13 +78,14 @@ class ComentarioEditForm(forms.ModelForm):
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria
-        fields = ['nombre', 'imagen']
+        fields = ['nombre', 'fa_icon']
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Nombre de la Categoría'}),
+            'fa_icon': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej: fas fa-utensils'}),
         }
         labels = {
             'nombre': 'Nombre de la Categoría',
-            'imagen': 'Imagen de la Categoría (Opcional)',
+            'fa_icon': 'Clase de Ícono (Font Awesome)',
         }
 
 # Formulario para enviar mensajes privados

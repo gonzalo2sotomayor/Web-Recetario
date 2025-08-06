@@ -5,13 +5,14 @@ from django.utils.text import slugify
 
 # Modelo para Categorías de Recetas
 class Categoria(models.Model):
-    nombre = models.CharField(max_length=100, unique=True, verbose_name="Título de la Categoría") # Renombrado para la UI
-    descripcion = models.TextField(blank=True)
+    nombre = models.CharField(max_length=100, unique=True, verbose_name="Título de la Categoría")
+    # Campo para la clase del icono de Font Awesome
+    fa_icon = models.CharField(max_length=50, blank=True, null=True, verbose_name="Clase de Ícono de Font Awesome")
     slug = models.SlugField(unique=True, max_length=100, blank=True, help_text="Se generará automáticamente a partir del título.")
-    imagen = models.ImageField(upload_to='categorias_imagenes/', blank=True, null=True, verbose_name="Imagen de la Categoría") # Nuevo campo
+    # Eliminados los campos 'descripcion' e 'imagen'
 
     class Meta:
-        verbose_name_plural = "Categorías" # Nombre para el admin
+        verbose_name_plural = "Categorías"
         ordering = ['nombre']
 
     def save(self, *args, **kwargs):
@@ -35,7 +36,7 @@ class Receta(models.Model):
     is_featured = models.BooleanField(default=False, verbose_name="¿Receta de la Semana?")
 
     class Meta:
-        ordering = ['-fecha_publicacion'] # Ordenar por fecha de publicación descendente
+        ordering = ['-fecha_publicacion']
         verbose_name_plural = "Recetas"
 
     def __str__(self):
@@ -45,8 +46,8 @@ class Receta(models.Model):
 class Ingrediente(models.Model):
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE, related_name='ingredientes')
     nombre = models.CharField(max_length=100)
-    cantidad = models.CharField(max_length=50) # Cambiado a CharField para permitir "2 tazas", "un puñado", etc.
-    unidad = models.CharField(max_length=50, blank=True, null=True) # Ej: gramos, ml, tazas, unidades
+    cantidad = models.CharField(max_length=50)
+    unidad = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
         ordering = ['nombre']
@@ -62,7 +63,7 @@ class Paso(models.Model):
     descripcion = models.TextField()
 
     class Meta:
-        ordering = ['id'] # Mantiene el orden de creación si no hay un campo de orden explícito
+        ordering = ['id']
         verbose_name_plural = "Pasos"
 
     def __str__(self):
@@ -74,7 +75,6 @@ class Comentario(models.Model):
     autor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comentarios_hechos')
     contenido = models.TextField()
     fecha_creacion = models.DateTimeField(default=timezone.now)
-    # Para respuestas a comentarios
     respuesta_a = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='respuestas')
 
     class Meta:
@@ -86,13 +86,13 @@ class Comentario(models.Model):
 
 # Modelo de Receta Favorita
 class RecetaFavorita(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recetas_favoritas') 
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recetas_favoritas')
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE)
     fecha_agregado = models.DateTimeField(auto_now_add=True)
     categoria = models.ForeignKey('usuarios.CategoriaFavorita', on_delete=models.SET_NULL, null=True, blank=True, related_name='recetas_favoritas_en_categoria')
 
     class Meta:
-        unique_together = ('usuario', 'receta') # Un usuario solo puede tener una receta favorita una vez
+        unique_together = ('usuario', 'receta')
 
     def __str__(self):
         return f"{self.usuario.username} - {self.receta.titulo}"

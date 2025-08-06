@@ -15,6 +15,7 @@ from django.utils import timezone
 from urllib.parse import urlencode 
 from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponseRedirect
+from django.template.loader import render_to_string 
 
 # Importaciones consolidadas de modelos y formularios
 from .models import Receta, Ingrediente, Paso, Comentario, Categoria, RecetaFavorita 
@@ -28,6 +29,10 @@ def is_admin(user):
 
 # Vista para la página de inicio (Home)
 def home(request):
+    """
+    Vista de la página de inicio que muestra las últimas recetas.
+    Permite filtrar por categoría y ordenar.
+    """
     # Obtener todas las categorías para la sidebar
     categorias = Categoria.objects.all().order_by('nombre')
 
@@ -64,9 +69,6 @@ def home(request):
             recetas_list = recetas_list.order_by('-titulo')
 
     # --- Obtener la Receta de la Semana ---
-    # Asegúrate de que el campo 'is_featured' exista en tu modelo Receta si lo usas.
-    # Si no, puedes usar una lógica aleatoria como antes:
-    # receta_de_la_semana = Receta.objects.order_by('?').first() 
     receta_de_la_semana = Receta.objects.order_by('?').first() # Receta aleatoria
 
     # --- Obtener Recetas Más Populares (para la sección de la página de inicio) ---
@@ -92,6 +94,13 @@ def home(request):
         'recetas_populares': recetas_populares_home, 
         'favoritas_ids': favoritas_ids, # ¡Pasamos los IDs de las recetas favoritas!
     }
+
+    # Detectar si la petición es AJAX
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # Si es AJAX, renderizar solo la cuadrícula de recetas
+        html = render_to_string('recetas_app/partials/latest_recipes_grid.html', context, request=request)
+        return JsonResponse({'html': html}) # Devolver JSON con el HTML parcial
+
     return render(request, 'recetas_app/home.html', context)
 
 
@@ -327,6 +336,10 @@ def advanced_search_results_view(request):
 @login_required
 @user_passes_test(is_admin, login_url='/admin/login/')
 def crear_receta(request):
+    receta_form = RecetaForm()
+    ingrediente_formset = IngredienteFormSet(prefix='ingredientes')
+    paso_formset = PasoFormSet(prefix='pasos')
+
     if request.method == 'POST':
         receta_form = RecetaForm(request.POST, request.FILES)
         ingrediente_formset = IngredienteFormSet(request.POST, prefix='ingredientes')
@@ -352,10 +365,6 @@ def crear_receta(request):
                 messages.error(request, f"Error al crear receta: {e}")
         else:
             messages.error(request, 'Por favor, corrige los errores en el formulario.')
-    else:
-        receta_form = RecetaForm()
-        ingrediente_formset = IngredienteFormSet(prefix='ingredientes')
-        paso_formset = PasoFormSet(prefix='pasos')
 
     context = {
         'form': receta_form,
@@ -664,7 +673,19 @@ def contacto(request):
     Vista para la página de contacto.
     """
     # Añadir lógica para un formulario de contacto aquí si lo necesitamos
-    return render(request, 'recetas_app/contacto.html')
+    from apps.usuarios.forms import ContactoForm # Importar aquí para evitar circular imports si es un problema
+    if request.method == 'POST':
+        form = ContactoForm(request.POST)
+        if form.is_valid():
+            # Aquí puedes procesar el formulario, enviar un email, etc.
+            # Por ahora, solo lo redirigimos a una página de éxito o al home
+            messages.success(request, '¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.')
+            return redirect(reverse_lazy('recetas_app:home')) # O una página de éxito
+        else:
+            messages.error(request, 'Hubo un error al enviar tu mensaje. Por favor, revisa los campos.')
+    else:
+        form = ContactoForm()
+    return render(request, 'recetas_app/contacto.html', {'form': form})
 
 # VISTAS PARA MENSAJES PRIVADOS 
 
@@ -754,11 +775,3 @@ def private_message(request, username):
         'form': form,
     }
     return render(request, 'recetas_app/mensajes/private_message.html', context)
-
-# CONTACTO
-
-def contacto(request):
-    """
-    Vista para la página de contacto.
-    """
-    return render(request, 'recetas_app/contacto.html')
