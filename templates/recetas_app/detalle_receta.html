@@ -5,86 +5,77 @@
 {% block title %}{{ receta.titulo }} - El Recetario{% endblock %}
 
 {% block content %}
-<div class="main-content-new">
-    <div class="recipe-detail-container">
-        <h1 class="recipe-detail-title">{{ receta.titulo }}</h1>
+<div class="dark-background-container">
+    <div class="recipe-container">
         
-        <div class="recipe-header-info">
-            <span class="recipe-author">Por: {{ receta.autor.username }}</span>
-            <span class="recipe-date">Publicado el: {{ receta.fecha_publicacion|date:"d M Y" }}</span>
-            {% if receta.categoria %}
-                <span class="recipe-category">Categoría: <a href="{% url 'recetas_app:recetas_por_categoria' receta.categoria.slug %}" class="category-link">{{ receta.categoria.nombre }}</a></span>
-            {% endif %}
-            {% if receta.tiempo_preparacion %}
-                <span class="recipe-info-item">Preparación: {{ receta.tiempo_preparacion }} min</span>
-            {% endif %}
-            {% if receta.porciones %}
-                <span class="recipe-info-item">Porciones: {{ receta.porciones }}</span>
-            {% endif %}
-        </div>
-
-        {% if receta.imagen %}
-            <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-detail-image">
-        {% else %}
-            <img src="{% static 'img/default_recipe.png' %}" alt="Imagen por defecto" class="recipe-card-image">
-        {% endif %}
-
-        {# Formulario para el botón de favoritos #}
-        {% if user.is_authenticated %}
-            <div class="favorite-button-wrapper"> {# Puedes añadir un wrapper si necesitas un estilo específico para este botón grande #}
+        <!-- Tarjeta de cabecera con la imagen y el título -->
+        <div class="recipe-header-card">
+            <div class="header-text-content">
+                <span class="golden-line-horizontal"></span>
+                <h1 class="header-title">{{ receta.titulo }}</h1>
+                <p class="header-meta">Porciones: {{ receta.porciones }}</p>
+                <p class="header-meta">Tiempo de preparación: {{ receta.tiempo_preparacion }} mins</p>
+                
+                {# Botón de favoritos rediseñado #}
+                {% if user.is_authenticated %}
                 <form class="favorite-form" action="{% url 'usuarios:toggle_favorito' receta_pk=receta.pk %}" method="post" data-recipe-id="{{ receta.pk }}">
                     {% csrf_token %}
-                    <button type="submit" 
-                            class="favorite-toggle-button text-button {% if es_favorita %}favorited{% endif %}">
+                    <button type="submit" class="favorite-toggle-button-new {% if es_favorita %}favorited{% endif %}">
                         <i class="{% if es_favorita %}fas{% else %}far{% endif %} fa-heart"></i>
-                        <span class="button-text">{% if es_favorita %}Quitar de Favoritos{% else %}Añadir a Favoritos{% endif %}</span> {# Texto dentro de un span #}
+                        <span>{% if es_favorita %}Quitar de Favoritos{% else %}Añadir a Favoritos{% endif %}</span>
                     </button>
                 </form>
+                {% endif %}
             </div>
-            {% if user.is_authenticated and user.is_staff %}
-                <div class="admin-recipe-actions">
-                    <a href="{% url 'recetas_app:editar_receta' pk=receta.pk %}" class="button-primary edit-recipe-button">
-                        Editar Receta
-                    </a>
-                    <a href="{% url 'recetas_app:eliminar_receta' pk=receta.pk %}" class="button-danger delete-recipe-button">
-                        Eliminar Receta
-                    </a>
-                </div>
-            {% endif %}
-        {% endif %}
-
-        <div class="recipe-sections">
-            <div class="recipe-section">
-                <h3>Descripción</h3>
-                <p>{{ receta.descripcion|linebreaksbr }}</p>
-            </div>
-
-            <div class="recipe-section">
-                <h3>Ingredientes</h3>
-                <ul>
-                    {% for ingrediente in receta.ingredientes.all %}
-                        <li>{{ ingrediente.cantidad }} {% if ingrediente.unidad %}{{ ingrediente.unidad }}{% endif %} de {{ ingrediente.nombre }}</li>
-                    {% empty %}
-                        <li>No se han añadido ingredientes.</li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div class="recipe-section">
-                <h3>Instrucciones</h3>
-                <ol>
-                    {% for paso in receta.pasos.all %}
-                        {# Eliminamos {{ forloop.counter }}. para evitar la doble numeración #}
-                        <li>{{ paso.titulo }}: {{ paso.descripcion }}</li>
-                    {% empty %}
-                        <li>No se han añadido instrucciones.</li>
-                    {% endfor %}
-                </ol>
+            <div class="header-image-content">
+                <img src="{% if receta.imagen %}{{ receta.imagen.url }}{% else %}{% static 'img/default_recipe.png' %}{% endif %}" alt="{{ receta.titulo }}" class="header-image">
             </div>
         </div>
+        
+        <!-- Tarjeta de ingredientes e instrucciones -->
+        <div class="recipe-details-card">
+            <div class="recipe-details-grid">
+                <div class="details-section ingredients-section">
+                    <h3>Ingredientes</h3>
+                    <ul class="ingredient-list">
+                        {% for ingrediente in receta.ingredientes.all %}
+                            <li>{{ ingrediente.cantidad }} {% if ingrediente.unidad %}{{ ingrediente.unidad }} de{% endif %} {{ ingrediente.nombre }}</li>
+                        {% empty %}
+                            <li>No se han añadido ingredientes.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
 
+                <div class="details-section instructions-section">
+                    <h3>Instrucciones de preparación</h3>
+                    <ol class="instructions-list">
+                        {% for paso in receta.pasos.all %}
+                            <li>
+                                <span class="step-title">{{ paso.titulo }}:</span>
+                                <span class="step-description">{{ paso.descripcion }}</span>
+                            </li>
+                        {% empty %}
+                            <li>No se han añadido instrucciones.</li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            </div>
+        </div>
+        
+        {# Acciones de administración #}
+        {% if user.is_authenticated and user.is_staff %}
+        <div class="admin-recipe-actions">
+            <a href="{% url 'recetas_app:editar_receta' pk=receta.pk %}" class="admin-button edit-recipe-button">
+                Editar Receta
+            </a>
+            <a href="{% url 'recetas_app:eliminar_receta' pk=receta.pk %}" class="admin-button delete-recipe-button">
+                Eliminar Receta
+            </a>
+        </div>
+        {% endif %}
+        
         {# Sección de Comentarios #}
-        <div class="comments-section">
+        <div class="comments-card">
             <h3>Comentarios ({{ comentarios_principales.count }})</h3>
 
             {% if user.is_authenticated %}
@@ -92,10 +83,9 @@
                     <h4>Deja tu comentario:</h4>
                     <form method="post" action="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
                         {% csrf_token %}
-                        {# Usar 'contenido' en lugar de 'texto' para que coincida con el modelo Comentario #}
                         {{ form.contenido }} 
-                        {{ form.respuesta_a }}
-                        <button type="submit" class="button-primary comment-submit-button">Publicar Comentario</button>
+                        <input type="hidden" name="respuesta_a" value="{{ form.respuesta_a.value }}">
+                        <button type="submit" class="comment-submit-button">Publicar Comentario</button>
                     </form>
                 </div>
             {% else %}
@@ -112,16 +102,15 @@
                                 <span class="comment-author">{{ comentario.autor.username }}</span>
                                 <span class="comment-date">{{ comentario.fecha_creacion|date:"d M Y H:i" }}</span>
                             </div>
-                            {# Usar 'contenido' en lugar de 'texto' #}
                             <p class="comment-text-content">{{ comentario.contenido }}</p>
                             
                             {% if user.is_authenticated %}
                                 <div class="comment-actions">
-                                    <button class="button-secondary reply-button" data-comment-id="{{ comentario.pk }}">Responder</button>
+                                    <button class="reply-button" data-comment-id="{{ comentario.pk }}">Responder</button>
                                     {% if user == comentario.autor %}
                                         <a href="{% url 'recetas_app:editar_comentario' pk=comentario.pk %}" class="edit-comment-button">Editar</a>
                                         <a href="{% url 'recetas_app:eliminar_comentario' pk=comentario.pk %}" class="delete-comment-button">Eliminar</a>
-                                    {% elif user.is_staff %} {# Admin puede eliminar cualquier comentario #}
+                                    {% elif user.is_staff %}
                                         <a href="{% url 'recetas_app:eliminar_comentario' pk=comentario.pk %}" class="admin-delete-comment-button">Eliminar (Admin)</a>
                                     {% endif %}
                                 </div>
@@ -130,15 +119,12 @@
                             {% if user.is_authenticated %}
                                 <div class="reply-form-container" id="reply-form-{{ comentario.pk }}" style="display: none;">
                                     <h4>Responder a {{ comentario.autor.username }}:</h4>
-                                    {# La acción del formulario de respuesta apunta a la vista 'responder_comentario' #}
-                                    <form method="post" action="{% url 'recetas_app:detalle_receta' pk=receta.pk %}"> {# Apunta a detalle_receta para manejar la respuesta #}
+                                    <form method="post" action="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
                                         {% csrf_token %}
-                                        {# Usar 'contenido' en lugar de 'texto' #}
-                                        {{ form.contenido.label_tag }}
                                         {{ form.contenido }}
                                         <input type="hidden" name="respuesta_a" value="{{ comentario.pk }}">
-                                        <button type="submit" class="button-primary comment-submit-button">Publicar Respuesta</button>
-                                        <button type="button" class="button-secondary cancel-reply-button">Cancelar</button>
+                                        <button type="submit" class="comment-submit-button">Publicar Respuesta</button>
+                                        <button type="button" class="cancel-reply-button">Cancelar</button>
                                     </form>
                                 </div>
                             {% endif %}
@@ -146,19 +132,18 @@
                             {% if comentario.respuestas.all %}
                                 <ul class="replies-list">
                                     {% for respuesta in comentario.respuestas.all %}
-                                        <li class="reply-item">
+                                        <li class="comment-item">
                                             <div class="comment-header">
                                                 <span class="comment-author">{{ respuesta.autor.username }}</span>
                                                 <span class="comment-date">{{ respuesta.fecha_creacion|date:"d M Y H:i" }}</span>
                                             </div>
-                                            {# Usar 'contenido' en lugar de 'texto' #}
                                             <p class="comment-text-content">{{ respuesta.contenido }}</p>
                                             {% if user.is_authenticated %}
                                                 <div class="comment-actions">
                                                     {% if user == respuesta.autor %}
                                                         <a href="{% url 'recetas_app:editar_comentario' pk=respuesta.pk %}" class="edit-comment-button">Editar</a>
                                                         <a href="{% url 'recetas_app:eliminar_comentario' pk=respuesta.pk %}" class="delete-comment-button">Eliminar</a>
-                                                    {% elif user.is_staff %} {# Admin puede eliminar cualquier respuesta #}
+                                                    {% elif user.is_staff %}
                                                         <a href="{% url 'recetas_app:eliminar_comentario' pk=respuesta.pk %}" class="admin-delete-comment-button">Eliminar (Admin)</a>
                                                     {% endif %}
                                                 </div>
@@ -171,7 +156,7 @@
                     {% endfor %}
                 </ul>
             {% else %}
-                <p>Aún no hay comentarios. ¡Sé el primero en comentar!</p>
+                <p class="no-comments">Aún no hay comentarios. ¡Sé el primero en comentar!</p>
             {% endif %}
         </div>
     </div>
@@ -182,9 +167,7 @@
 {% block extra_body_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Lógica JavaScript para la funcionalidad de responder comentarios (existente)
         const replyButtons = document.querySelectorAll('.reply-button');
-
         replyButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const commentId = this.dataset.commentId;
@@ -216,26 +199,23 @@
             });
         });
 
-        // Manejar el envío de formularios de favoritos con AJAX
         document.querySelectorAll('.favorite-form').forEach(form => {
             form.addEventListener('submit', function(event) {
-                event.preventDefault(); // Prevenir el envío normal del formulario (y la recarga)
+                event.preventDefault();
                 
                 const form = this;
-                const button = form.querySelector('.favorite-toggle-button');
+                const button = form.querySelector('.favorite-toggle-button-new');
                 const icon = button.querySelector('i');
-                const textSpan = button.querySelector('.button-text'); // Para el texto del botón en detalle_receta
-                const recipeId = form.dataset.recipeId;
+                const textSpan = button.querySelector('span');
 
-                // Deshabilitar el botón y cambiar el cursor para indicar que está procesando
                 button.disabled = true;
                 button.style.cursor = 'wait';
 
                 fetch(form.action, {
                     method: 'POST',
-                    body: new FormData(form), // Envía los datos del formulario (incluido el CSRF token)
+                    body: new FormData(form),
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest' // Indica que es una petición AJAX
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
                 .then(response => {
@@ -249,18 +229,13 @@
                         button.classList.add('favorited');
                         icon.classList.remove('far');
                         icon.classList.add('fas');
-                        if (textSpan) { // Actualizar texto solo si existe (en detalle_receta)
-                            textSpan.textContent = 'Quitar de Favoritos';
-                        }
+                        textSpan.textContent = 'Quitar de Favoritos';
                     } else {
                         button.classList.remove('favorited');
                         icon.classList.remove('fas');
                         icon.classList.add('far');
-                        if (textSpan) { // Actualizar texto solo si existe (en detalle_receta)
-                            textSpan.textContent = 'Añadir a Favoritos';
-                        }
+                        textSpan.textContent = 'Añadir a Favoritos';
                     }
-                    // Re-habilitar el botón
                     button.disabled = false;
                     button.style.cursor = 'pointer';
                 })
@@ -268,7 +243,17 @@
                     console.error('Error toggling favorite:', error);
                     button.disabled = false;
                     button.style.cursor = 'pointer';
-                    alert('Hubo un error al actualizar el favorito. Por favor, inténtalo de nuevo.');
+                    // Usar un modal en lugar de alert
+                    const errorMessage = "Hubo un error al actualizar el favorito. Por favor, inténtalo de nuevo.";
+                    const modal = document.createElement('div');
+                    modal.className = 'modal-overlay';
+                    modal.innerHTML = `
+                        <div class="modal-content">
+                            <p class="modal-text">${errorMessage}</p>
+                            <button onclick="this.closest('.modal-overlay').remove()" class="modal-button">Cerrar</button>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
                 });
             });
         });
