@@ -12,7 +12,7 @@ class RecetaForm(forms.ModelForm):
             'descripcion': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 4, 'placeholder': 'Una breve descripción de tu receta...'}),
             'categoria': forms.Select(attrs={'class': 'form-select'}),
             'tiempo_preparacion': forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Minutos'}),
-            'porciones': forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Ej: 4'}),
+            'porciones': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej: 4'}),
         }
         labels = {
             'titulo': 'Título',
@@ -32,7 +32,7 @@ IngredienteFormSet = inlineformset_factory(
     can_delete=True, # Permite eliminar ingredientes existentes
     widgets={
         'nombre': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej: Harina'}),
-        'cantidad': forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Ej: 250'}),
+        'cantidad': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej: 250'}),
         'unidad': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej: gramos'}),
     }
 )
