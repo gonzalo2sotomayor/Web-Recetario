@@ -4,156 +4,310 @@
 {% block title %}Búsqueda Avanzada - El Recetario{% endblock %}
 
 {% block content %}
-<div class="main-content-new">
-    <h2 class="section-title">Búsqueda Avanzada de Recetas</h2>
-    <p class="section-description">Afina tu búsqueda utilizando múltiples criterios.</p>
-
-    <div class="search-form-container">
-        <form action="{% url 'recetas_app:advanced_search_results' %}" method="GET" class="advanced-search-form">
-            <div class="form-group">
-                <label for="exact_phrase" class="form-label">Frase Exacta:</label>
-                <input type="text" id="exact_phrase" name="exact_phrase" 
-                       placeholder="Ej: 'pollo al horno con papas'" class="form-input"
-                       value="{{ request.GET.exact_phrase|default:'' }}">
-                <p class="form-help-text">Busca recetas que contengan esta frase exacta en el título o descripción.</p>
-            </div>
-
-            <div class="form-group">
-                <label for="similar_words" class="form-label">Palabras Clave (similares):</label>
-                <input type="text" id="similar_words" name="similar_words" 
-                       placeholder="Ej: 'vegetariano saludable rápido'" class="form-input"
-                       value="{{ request.GET.similar_words|default:'' }}">
-                <p class="form-help-text">Busca recetas que contengan alguna de estas palabras en el título, descripción o ingredientes.</p>
-            </div>
-
-            <div class="form-group">
-                <label for="ingredient" class="form-label">Ingrediente Específico:</label>
-                <input type="text" id="ingredient" name="ingredient" 
-                       placeholder="Ej: 'tomate' o 'queso'" class="form-input"
-                       value="{{ request.GET.ingredient|default:'' }}">
-                <p class="form-help-text">Encuentra recetas que utilicen este ingrediente.</p>
-            </div>
-
-            <div class="form-group">
-                <label for="category" class="form-label">Categoría:</label>
-                <select id="category" name="category" class="form-select">
-                    <option value="">Todas las categorías</option>
-                    {% for category in categories %}
-                        <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>
-                            {{ category.nombre }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <p class="form-help-text">Filtra recetas por una categoría específica.</p>
-            </div>
-
-            <button type="submit" class="btn-primary-large">Buscar Recetas</button>
-            <a href="{% url 'recetas_app:advanced_search' %}" class="btn-secondary-large">Limpiar Búsqueda</a>
-        </form>
-    </div>
-</div>
-
 <style>
-    /* Estilos específicos para la búsqueda avanzada */
-    .search-form-container {
-        background-color: #ffffff;
-        padding: 2.5rem;
-        border-radius: 12px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-        max-width: 800px;
-        margin: 2rem auto;
+    /* Estilos globales */
+    body {
+        background-color: #0A2540; /* Fondo azul oscuro para toda la página */
+        color: #e3e8f4;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
-    .advanced-search-form .form-group {
-        margin-bottom: 1.5rem;
+    /* Contenedor principal de la página */
+    .ra-page-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 20px;
     }
 
-    .advanced-search-form .form-label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: #333;
-        font-size: 1.1rem;
-    }
-
-    .advanced-search-form .form-input,
-    .advanced-search-form .form-select {
+    /* Sección superior: Título y buscador */
+    .ra-header-section {
         width: 100%;
-        padding: 0.8rem 1rem;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 1rem;
-        color: #555;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .advanced-search-form .form-input:focus,
-    .advanced-search-form .form-select:focus {
-        border-color: #4CAF50;
-        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
-        outline: none;
-    }
-
-    .advanced-search-form .form-help-text {
-        font-size: 0.85rem;
-        color: #777;
-        margin-top: 0.4rem;
-    }
-
-    .btn-primary-large,
-    .btn-secondary-large {
-        display: inline-block;
-        padding: 1rem 2rem;
-        border-radius: 8px;
-        font-size: 1.1rem;
-        font-weight: 700;
+        max-width: 900px; /* Para que el buscador no ocupe todo el ancho en pantallas grandes */
         text-align: center;
-        text-decoration: none;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        margin-bottom: 40px;
+    }
+
+    .ra-advanced-search-header {
+        color: #FFFFFF;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        margin-top: 5px;
+    }
+
+    .ra-top-search-bar {
+        display: flex;
+        align-items: center;
+        background-color: #F8F8F8;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        border: #CFA854 solid 2px;
+        padding: 10px 20px;
+    }
+
+    .ra-top-search-bar-input {
+        flex-grow: 1;
+        background: transparent;
         border: none;
-        margin-right: 1rem;
+        outline: none;
+        color: #333333;
+        font-size: 1.2rem;
+        padding: 5px 10px;
     }
 
-    .btn-primary-large {
-        background-color: #4CAF50;
-        color: white;
-        box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+    .ra-top-search-bar-input::placeholder {
+        color: #666666;
     }
 
-    .btn-primary-large:hover {
-        background-color: #45a049;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+    .ra-top-search-bar-icon {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        fill: #CFA854;
+    }
+    
+    /* Contenedor principal de la página de dos columnas */
+    .ra-main-content-container {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 30px;
+        max-width: 1400px;
+        width: 100%;
+        background-color: #FFFFFF; /* Fondo blanco para el contenedor del medio */
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
     }
 
-    .btn-secondary-large {
-        background-color: #f0f0f0;
-        color: #555;
-        border: 1px solid #ccc;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Estilos para la barra lateral de filtros (sidebar) */
+    .ra-advanced-sidebar {
+        padding: 30px 50px 70px 20px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        background-color: #0A2540; /* Mantener este fondo para el sidebar */
+        color: #333333;
+        align-self: start;
+    }
+    
+    .ra-advanced-sidebar .ra-form-label {
+        font-weight: 600;
+        color: #FFFFFF;
+        margin-bottom: 0.5rem;
+        margin-top: 0.5rem;
+        font-size: 1rem;
+        display: block;
+    }
+    
+    .ra-advanced-sidebar .ra-form-input,
+    .ra-advanced-sidebar .ra-form-select {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        border: 1px solid #CFA854;
+        border-radius: 10px;
+        background-color: #FFFFFF;
+        color: #333333;
+        font-size: 1rem;
+    }
+    
+    .ra-advanced-sidebar .ra-form-input::placeholder {
+        color: #666666;
     }
 
-    .btn-secondary-large:hover {
-        background-color: #e0e0e0;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    .ra-advanced-sidebar-title {
+        color: #FFFFFF;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #CFA854;
+        padding-bottom: 10px;
     }
 
+    .ra-btn-primary-large {
+        width: 100%;
+        padding: 12px 20px;
+        margin-top: 30px;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-align: center;
+        background-color: #CFA854;
+        color: #0A2540;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .ra-btn-primary-large:hover {
+        background-color: #1A3A5A;
+    }
+
+    /* Área principal para los resultados */
+    .ra-advanced-results-container {
+        padding: 30px;
+        border-radius: 15px;
+    }
+
+    .ra-advanced-results-title {
+        color: #0A2540;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+    
+    .ra-advanced-results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+    }
+
+    /* Estilos de la tarjeta de receta */
+    .ra-receta-card {
+        background-color: #FFFFFF;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        color: #333333;
+    }
+
+    .ra-receta-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .ra-receta-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .ra-receta-info {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .ra-receta-info h3 {
+        margin: 0 0 5px;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #0A2540;
+    }
+
+    .ra-receta-info p {
+        margin: 0;
+        color: #666666;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        flex-grow: 1;
+    }
+
+    /* Mensaje de no resultados */
+    .ra-advanced-no-results {
+        text-align: center;
+        margin-top: 40px;
+        font-size: 1.2rem;
+        color: #666666;
+    }
+    
     /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .search-form-container {
-            padding: 1.5rem;
-            margin: 1rem auto;
+    @media (max-width: 992px) {
+        .ra-main-content-container {
+            grid-template-columns: 1fr;
+            padding: 20px;
         }
 
-        .btn-primary-large,
-        .btn-secondary-large {
-            display: block;
-            width: 100%;
-            margin-right: 0;
-            margin-bottom: 1rem;
+        .ra-advanced-sidebar {
+            margin-bottom: 30px;
         }
     }
 </style>
+
+<!-- Contenedor principal de toda la página -->
+<div class="ra-page-container">
+
+    <!-- Sección superior: Título y buscador -->
+    <div class="ra-header-section">
+        <h1 class="ra-advanced-search-header">Búsqueda Avanzada</h1>
+        <div class="ra-top-search-bar">
+            <form action="{% url 'recetas_app:advanced_search' %}" method="GET" style="width: 100%; display: flex;">
+                <input type="text" name="similar_words" placeholder="Buscar recetas..." class="ra-top-search-bar-input"
+                       value="{{ request.GET.similar_words|default:'' }}">
+                <button type="submit" style="background: none; border: none; padding: 0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ra-top-search-bar-icon" viewBox="0 0 512 512">
+                        <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.1-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Contenedor principal de dos columnas: filtros y resultados -->
+    <div class="ra-main-content-container">
+        <!-- Barra lateral de filtros -->
+        <aside class="ra-advanced-sidebar">
+            <h3 class="ra-advanced-sidebar-title">Opciones de Búsqueda</h3>
+            
+            <form action="{% url 'recetas_app:advanced_search' %}" method="GET">
+                <div class="ra-form-group">
+                    <label for="exact_phrase" class="ra-form-label">Palabra o frase</label>
+                    <input type="text" id="exact_phrase" name="exact_phrase" 
+                           placeholder="Ej: 'pollo al horno'" class="ra-form-input"
+                           value="{{ request.GET.exact_phrase|default:'' }}">
+                </div>
+
+                <div class="ra-form-group">
+                    <label for="ingredient" class="ra-form-label">Ingrediente</label>
+                    <input type="text" id="ingredient" name="ingredient" 
+                           placeholder="Ej: 'tomate' o 'queso'" class="ra-form-input"
+                           value="{{ request.GET.ingredient|default:'' }}">
+                </div>
+                
+                <div class="ra-form-group">
+                    <label for="category" class="ra-form-label">Categoría</label>
+                    <select id="category" name="category" class="ra-form-select">
+                        <option value="">Todas las categorías</option>
+                        {% for category in categories %}
+                            <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>
+                                {{ category.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="ra-btn-primary-large">Aplicar Filtros</button>
+            </form>
+        </aside>
+
+        <!-- Área principal para los resultados -->
+        <main class="ra-advanced-results-container">
+            <h2 class="ra-advanced-results-title">Resultados de la Búsqueda</h2>
+            
+            <div id="results-target">
+                {% if recetas %}
+                <div class="ra-advanced-results-grid">
+                    {% for receta in recetas %}
+                        <a href="{% url 'recetas_app:detalle_receta' receta.pk %}" class="ra-receta-card">
+                            <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="ra-receta-image">
+                            <div class="ra-receta-info">
+                                <h3>{{ receta.titulo }}</h3>
+                                <p>{{ receta.descripcion|truncatechars:100 }}</p>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+                {% elif request.GET %}
+                <div class="ra-advanced-no-results">
+                    <p>No se encontraron recetas con los criterios de búsqueda.</p>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</div>
 {% endblock %}

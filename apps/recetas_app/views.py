@@ -1,6 +1,6 @@
 # apps/recetas_app/views.py
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.forms import inlineformset_factory
 from django.db import transaction
@@ -14,7 +14,6 @@ from django.views.generic import ListView, DetailView
 from django.utils import timezone
 from urllib.parse import urlencode 
 from django.contrib.auth.models import User
-from django.http import JsonResponse, HttpResponseRedirect
 from django.template.loader import render_to_string 
 
 # Importaciones consolidadas de modelos y formularios
@@ -245,92 +244,82 @@ def simple_search_view(request):
     }
     return render(request, 'recetas_app/search_results.html', context)
 
-# Vista para el formulario de búsqueda avanzada
-def advanced_search_view(request):
-    categorias = Categoria.objects.all() 
-    context = {
-        'categories': categorias, 
-    }
-    return render(request, 'recetas_app/advanced_search.html', context)
 
-# Vista para procesar los resultados de la búsqueda avanzada
-def advanced_search_results_view(request):
+# VISTA CORREGIDA Y CONSOLIDADA para la Búsqueda Avanzada
+def advanced_search_view(request):
+    """
+    Vista unificada para mostrar el formulario de búsqueda avanzada y
+    procesar los resultados en la misma página.
+    """
+    categorias = Categoria.objects.all()
+    queryset = Receta.objects.all()
+    
+    # Obtener parámetros de la URL. Son los nombres de los campos del formulario.
     exact_phrase = request.GET.get('exact_phrase', '').strip()
     similar_words = request.GET.get('similar_words', '').strip()
     ingredient = request.GET.get('ingredient', '').strip()
-    recipe_type = request.GET.get('recipe_type', '').strip()
     category_slug = request.GET.get('category', '').strip()
+    
+    # Iniciar Q-objects para combinar filtros de forma dinámica
+    # con el operador OR (|).
+    main_q_filter = Q()
 
-    queryset = Receta.objects.all()
-
-    # --- Construir base_query_params en la vista ---
-    base_query_params = {}
-    if exact_phrase:
-        queryset = queryset.filter(Q(titulo__icontains=exact_phrase) | Q(descripcion__icontains=exact_phrase))
-        base_query_params['exact_phrase'] = exact_phrase
-
+    # 1. Búsqueda por palabras similares (en título, descripción o ingredientes)
     if similar_words:
         words = similar_words.split()
-        q_objects = Q()
         for word in words:
-            q_objects |= Q(titulo__icontains=word)
-            q_objects |= Q(descripcion__icontains=word)
-            q_objects |= Q(ingredientes__nombre__icontains=word)
-        queryset = queryset.filter(q_objects)
-        base_query_params['similar_words'] = similar_words
-
+            main_q_filter |= Q(titulo__icontains=word)
+            main_q_filter |= Q(descripcion__icontains=word)
+            # 'ingredientes' es la relación ManyToMany, el filtro funciona correctamente
+            main_q_filter |= Q(ingredientes__nombre__icontains=word)
+            
+    # 2. Búsqueda por frase exacta
+    if exact_phrase:
+        # Se combina con el filtro anterior usando AND (&)
+        exact_q_filter = Q(titulo__icontains=exact_phrase) | Q(descripcion__icontains=exact_phrase)
+        if main_q_filter:
+            queryset = queryset.filter(main_q_filter & exact_q_filter)
+        else:
+            queryset = queryset.filter(exact_q_filter)
+    elif main_q_filter:
+        queryset = queryset.filter(main_q_filter)
+    
+    # 3. Filtrado por ingrediente. Esto actúa como un filtro AND adicional.
     if ingredient:
         queryset = queryset.filter(ingredientes__nombre__icontains=ingredient)
-        base_query_params['ingredient'] = ingredient
-
+        
+    # 4. Filtrado por categoría. También es un filtro AND.
+    selected_category_obj = None
     if category_slug:
         try:
-            category_obj = Categoria.objects.get(slug=category_slug)
-            queryset = queryset.filter(categoria=category_obj)
-            base_query_params['category'] = category_slug
+            selected_category_obj = Categoria.objects.get(slug=category_slug)
+            queryset = queryset.filter(categoria=selected_category_obj)
         except Categoria.DoesNotExist:
-            pass
+            pass # Si la categoría no existe, no se filtra
 
-    results = queryset.distinct()
-    
-    # Convertir el diccionario a una cadena de consulta URL-encoded
-    base_query_string = urlencode(base_query_params)
+    # Eliminar duplicados si una receta coincide con varios criterios
+    # y ordenar los resultados
+    recetas = queryset.distinct().order_by('-fecha_publicacion')
 
-    # --- Lógica de Ordenamiento ---
-    order_by = request.GET.get('order_by', 'fecha_publicacion')
-    direction = request.GET.get('direction', 'desc')
-
-    if order_by == 'fecha_publicacion':
-        if direction == 'asc':
-            results = results.order_by('fecha_publicacion')
-        else: 
-            results = results.order_by('-fecha_publicacion')
-    elif order_by == 'titulo':
-        if direction == 'asc':
-            results = results.order_by('titulo')
-        else: 
-            results = results.order_by('-titulo')
-
-    # Obtener los IDs de las recetas favoritas del usuario actual para los iconos
+    # Obtener los IDs de las recetas favoritas del usuario actual
     favoritas_ids = set()
     if request.user.is_authenticated:
         favoritas_ids = set(request.user.recetas_favoritas.values_list('receta__pk', flat=True))
 
     context = {
+        'recetas': recetas,
+        'categories': categorias,
+        'selected_category': category_slug,
+        'favoritas_ids': favoritas_ids,
+        # Mantener los valores de los campos de búsqueda para que no se pierdan
         'exact_phrase': exact_phrase,
         'similar_words': similar_words,
         'ingredient': ingredient,
-        'recipe_type': recipe_type,
-        'results': results,
-        'search_type': 'advanced',
-        'categories': Categoria.objects.all(),
-        'selected_category': category_slug,
-        'current_order_by': order_by,
-        'current_direction': direction,
-        'base_query_string': base_query_string, 
-        'favoritas_ids': favoritas_ids, # Pasamos los IDs de las recetas favoritas
     }
-    return render(request, 'recetas_app/search_results.html', context)
+    
+    return render(request, 'recetas_app/advanced_search.html', context)
+
+# Se elimina la vista 'advanced_search_results_view' ya que está consolidada en 'advanced_search_view'
 
 # Vista: Crear Receta (solo para administradores/staff)
 @login_required
@@ -689,9 +678,6 @@ def contacto(request):
 
 # VISTAS PARA MENSAJES PRIVADOS 
 
-# No se necesita MensajeForm aquí, ya que se importa en apps.usuarios.views
-# from apps.usuarios.forms import MensajeForm 
-
 @login_required
 def inbox(request):
     """
@@ -741,7 +727,7 @@ def private_message(request, username):
     """
     # Importar Mensaje aquí para evitar circular imports si MensajeForm lo necesita
     from apps.usuarios.models import Mensaje 
-    from apps.usuarios.forms import MensajeForm # Se necesita el formulario aquí
+    from apps.usuarios.forms import MensajeForm 
 
     other_user = get_object_or_404(User, username=username)
 

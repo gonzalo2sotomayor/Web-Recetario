@@ -22,7 +22,7 @@ urlpatterns = [
     # Rutas de Búsqueda
     path('buscar/', views.simple_search_view, name='simple_search'),
     path('buscar/avanzada/', views.advanced_search_view, name='advanced_search'),
-    path('buscar/avanzada/resultados/', views.advanced_search_results_view, name='advanced_search_results'),
+    path('buscar/avanzada/resultados/', views.advanced_search_view, name='advanced_search_results'),
 
     # Rutas para la gestión de Categorías
     path('categorias/', views.lista_categorias, name='lista_categorias'),

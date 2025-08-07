@@ -845,7 +845,7 @@ html, body {
     grid-column: 1 / -1;
 }
 
-/* Estilos de Páginas de Resultados de Búsqueda */
+/* Estilos de Páginas de Resultados de Búsqueda
 .search-results-container {
     max-width: 1280px;
     margin: 30px auto;
@@ -905,7 +905,7 @@ html, body {
     justify-content: center;
     gap: 20px;
     margin-top: 40px;
-}
+}*/
 
 /* Estilos para botones generales */
 .button {
@@ -2813,7 +2813,7 @@ Estilos para el modal (sustituto de alert)
     }
 }
 
-/* Estilos adicionales para los criterios de búsqueda avanzada */
+/* Estilos adicionales para los criterios de búsqueda avanzada 
 .advanced-search-criteria {
     list-style: none;
     padding: 0;
@@ -2840,7 +2840,7 @@ Estilos para el modal (sustituto de alert)
 .advanced-search-criteria .criteria-label {
     font-weight: 600;
     color: var(--text-color);
-}
+}*/
 
 /* Estilos para el banner de Recetas Populares */
 .popular-recipes-banner {
