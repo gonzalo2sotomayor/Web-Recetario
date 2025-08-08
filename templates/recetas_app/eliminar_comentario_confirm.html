@@ -18,10 +18,10 @@
         <form method="post" class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
             {% csrf_token %}
             <button type="submit" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105">
-                Sí, Eliminar
+             Sí, Eliminar
             </button>
             <a href="{% url 'recetas_app:detalle_receta' pk=receta.pk %}" class="w-full sm:w-auto text-center bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105">
-                Cancelar
+             Cancelar
             </a>
         </form>
     </div>
