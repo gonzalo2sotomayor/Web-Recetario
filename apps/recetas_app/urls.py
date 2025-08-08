@@ -35,7 +35,17 @@ urlpatterns = [
     path('inbox/<str:username>/', views.private_message, name='private_message'),
 
     # Ruta para las opciones de administración
-    path('admin-options/', views.admin_options_view, name='admin_options'),
+    path('admin/', views.admin_options_view, name='admin_options'),
+    path('admin/recetas/', views.admin_recetas_ajax, name='admin_recetas'),
+    path('admin/categorias/', views.admin_categorias_ajax, name='admin_categorias'),
+    path('admin/usuarios/', views.admin_usuarios_ajax, name='admin_usuarios'),
+    path('admin/comentarios/', views.admin_comentarios_ajax, name='admin_comentarios'),
+
+    # Ruta para cargar el contenido vía AJAX
+    path('admin/recetas/', views.admin_recetas_ajax, name='admin_recetas_ajax'),
+    path('admin/categorias/', views.admin_categorias_ajax, name='admin_categorias_ajax'),
+    path('admin/usuarios/', views.admin_usuarios_ajax, name='admin_usuarios_ajax'),
+    path('admin/comentarios/', views.admin_comentarios_ajax, name='admin_comentarios_ajax'),
 
     #RUTAS: Acerca de y Contacto
     path('acerca-de/', views.acerca_de, name='acerca_de'),

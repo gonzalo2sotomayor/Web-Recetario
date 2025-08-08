@@ -5,22 +5,21 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.forms import inlineformset_factory
 from django.db import transaction
 from django.urls import reverse_lazy
-from django.db.models import Q, Count # Asegúrate de que Count está importado
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger 
+from django.db.models import Q, Count
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import random
 from django.utils.text import slugify
 from django.contrib import messages
 from django.views.generic import ListView, DetailView
 from django.utils import timezone
-from urllib.parse import urlencode 
+from urllib.parse import urlencode
 from django.contrib.auth.models import User
-from django.template.loader import render_to_string # Asegúrate de que render_to_string está importado
+from django.template.loader import render_to_string
 
 # Importaciones consolidadas de modelos y formularios
-from .models import Receta, Ingrediente, Paso, Comentario, Categoria, RecetaFavorita 
-# Importamos los Formsets y formularios 
+from .models import Receta, Ingrediente, Paso, Comentario, Categoria, RecetaFavorita
+# Importamos los Formsets y formularios
 from .forms import ComentarioForm, ComentarioEditForm, RecetaForm, IngredienteFormSet, PasoFormSet, CategoriaForm
-
 
 # Función para verificar si el usuario es administrador (is_staff)
 def is_admin(user):
@@ -59,12 +58,12 @@ def home(request):
     if order_by == 'fecha_publicacion':
         if direction == 'asc':
             recetas_list = recetas_list.order_by('fecha_publicacion')
-        else: 
+        else:
             recetas_list = recetas_list.order_by('-fecha_publicacion')
     elif order_by == 'titulo':
         if direction == 'asc':
             recetas_list = recetas_list.order_by('titulo')
-        else: 
+        else:
             recetas_list = recetas_list.order_by('-titulo')
 
     # --- Obtener la Receta de la Semana ---
@@ -90,7 +89,7 @@ def home(request):
         'current_order_by': order_by,
         'current_direction': direction,
         'receta_de_la_semana': receta_de_la_semana,
-        'recetas_populares': recetas_populares_home, 
+        'recetas_populares': recetas_populares_home,
         'favoritas_ids': favoritas_ids, # ¡Pasamos los IDs de las recetas favoritas!
     }
 
@@ -122,10 +121,10 @@ def recetas_populares(request):
             recetas_query = recetas_query.order_by('-num_favoritos')
     # Puedes añadir más opciones de ordenamiento aquí si las necesitas para esta página
     # elif order_by == 'titulo':
-    #     if direction == 'asc':
-    #         recetas_query = recetas_query.order_by('titulo')
-    #     else:
-    #         recetas_query = recetas_query.order_by('-titulo')
+    #       if direction == 'asc':
+    #           recetas_query = recetas_query.order_by('titulo')
+    #       else:
+    #           recetas_query = recetas_query.order_by('-titulo')
 
 
     # Paginación
@@ -148,7 +147,7 @@ def recetas_populares(request):
 
     context = {
         'recetas_populares': page_obj.object_list, # Pasa las recetas de la página actual
-        'page_obj': page_obj, 
+        'page_obj': page_obj,
         'favoritas_ids': favoritas_ids, # Pasamos los IDs de las recetas favoritas
         'current_order_by': order_by, # Pasar al contexto para marcar el botón activo
         'current_direction': direction, # Pasar al contexto para marcar el botón activo
@@ -158,8 +157,8 @@ def recetas_populares(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         # Si es AJAX, renderiza solo los parciales y devuelve JSON
         html_recetas = render_to_string(
-            'recetas_app/partials/popular_recipes_grid.html', 
-            context, 
+            'recetas_app/partials/popular_recipes_grid.html',
+            context,
             request=request
         )
         # Renderiza también la paginación para actualizarla
@@ -172,7 +171,7 @@ def recetas_populares(request):
             'html_recetas': html_recetas,
             'html_pagination': html_pagination
         })
-    
+
     # Si no es AJAX, renderiza la página completa
     return render(request, 'recetas_app/recetas_populares.html', context)
 
@@ -186,7 +185,7 @@ def detalle_receta(request, pk):
     comentarios_principales = Comentario.objects.filter(
         receta=receta,
         respuesta_a__isnull=True
-    ).order_by('fecha_creacion')
+    ).order_by('fecha_publicacion')
 
     if request.method == 'POST':
         # Manejar el envío del formulario de comentario
@@ -200,7 +199,7 @@ def detalle_receta(request, pk):
             nuevo_comentario = form.save(commit=False)
             nuevo_comentario.receta = receta
             nuevo_comentario.autor = request.user
-            
+
             respuesta_a_id = request.POST.get('respuesta_a')
             if respuesta_a_id:
                 try:
@@ -208,7 +207,7 @@ def detalle_receta(request, pk):
                 except Comentario.DoesNotExist:
                     messages.error(request, 'El comentario al que intentas responder no existe.')
                     return redirect('recetas_app:detalle_receta', pk=receta.pk)
-            
+
             nuevo_comentario.save()
             messages.success(request, '¡Comentario publicado exitosamente!')
             return redirect('recetas_app:detalle_receta', pk=receta.pk)
@@ -243,7 +242,7 @@ def recetas_aleatorias(request):
 def simple_search_view(request):
     query = request.GET.get('q', '').strip()
     results = []
-    
+
     # --- Construir base_query_params en la vista ---
     base_query_params = {}
     if query:
@@ -251,7 +250,7 @@ def simple_search_view(request):
             Q(titulo__icontains=query) | Q(descripcion__icontains=query)
         ).distinct()
         base_query_params['q'] = query
-    
+
     # Convertir el diccionario a una cadena de consulta URL-encoded
     base_query_string = urlencode(base_query_params)
 
@@ -262,14 +261,14 @@ def simple_search_view(request):
     if order_by == 'fecha_publicacion':
         if direction == 'asc':
             results = results.order_by('fecha_publicacion')
-        else: 
+        else:
             results = results.order_by('-fecha_publicacion')
     elif order_by == 'titulo':
         if direction == 'asc':
             results = results.order_by('titulo')
-        else: 
+        else:
             results = results.order_by('-titulo')
-    
+
     # Obtener los IDs de las recetas favoritas del usuario actual para los iconos
     favoritas_ids = set()
     if request.user.is_authenticated:
@@ -281,7 +280,7 @@ def simple_search_view(request):
         'search_type': 'simple',
         'current_order_by': order_by,
         'current_direction': direction,
-        'base_query_string': base_query_string, 
+        'base_query_string': base_query_string,
         'favoritas_ids': favoritas_ids, # Pasamos los IDs de las recetas favoritas
     }
     return render(request, 'recetas_app/search_results.html', context)
@@ -295,13 +294,13 @@ def advanced_search_view(request):
     """
     categorias = Categoria.objects.all()
     queryset = Receta.objects.all()
-    
+
     # Obtener parámetros de la URL. Son los nombres de los campos del formulario.
     exact_phrase = request.GET.get('exact_phrase', '').strip()
     similar_words = request.GET.get('similar_words', '').strip()
     ingredient = request.GET.get('ingredient', '').strip()
     category_slug = request.GET.get('category', '').strip()
-    
+
     # Iniciar Q-objects para combinar filtros de forma dinámica
     # con el operador OR (|).
     main_q_filter = Q()
@@ -314,7 +313,7 @@ def advanced_search_view(request):
             main_q_filter |= Q(descripcion__icontains=word)
             # 'ingredientes' es la relación ManyToMany, el filtro funciona correctamente
             main_q_filter |= Q(ingredientes__nombre__icontains=word)
-            
+
     # 2. Búsqueda por frase exacta
     if exact_phrase:
         # Se combina con el filtro anterior usando AND (&)
@@ -325,11 +324,11 @@ def advanced_search_view(request):
             queryset = queryset.filter(exact_q_filter)
     elif main_q_filter:
         queryset = queryset.filter(main_q_filter)
-    
+
     # 3. Filtrado por ingrediente. Esto actúa como un filtro AND adicional.
     if ingredient:
         queryset = queryset.filter(ingredientes__nombre__icontains=ingredient)
-        
+
     # 4. Filtrado por categoría. También es un filtro AND.
     selected_category_obj = None
     if category_slug:
@@ -358,7 +357,7 @@ def advanced_search_view(request):
         'similar_words': similar_words,
         'ingredient': ingredient,
     }
-    
+
     return render(request, 'recetas_app/advanced_search.html', context)
 
 # Se elimina la vista 'advanced_search_results_view' ya que está consolidada en 'advanced_search_view'
@@ -462,7 +461,7 @@ def eliminar_receta(request, pk):
     if request.method == 'POST':
         receta.delete()
         messages.success(request, 'Receta eliminada exitosamente.')
-        return redirect('recetas_app:home')
+        return redirect('recetas_app:home') # Podrías redirigir a 'admin_recetas' si existe
     context = {
         'receta': receta
     }
@@ -507,14 +506,14 @@ def eliminar_comentario(request, pk):
         return redirect('recetas_app:detalle_receta', pk=comentario.receta.pk)
 
     if request.method == 'POST':
-        receta_pk = comentario.receta.pk 
+        receta_pk = comentario.receta.pk
         comentario.delete()
         messages.success(request, 'Comentario eliminado exitosamente.')
         return redirect('recetas_app:detalle_receta', pk=receta_pk)
     
     context = {
         'comentario': comentario,
-        'receta': comentario.receta, 
+        'receta': comentario.receta,
     }
     return render(request, 'recetas_app/eliminar_comentario_confirm.html', context)
 
@@ -550,7 +549,7 @@ def lista_categorias(request):
     context = {
         'categorias': categorias
     }
-    return render(request, 'recetas_app/lista_categorias.html', context)
+    return render(request, 'recetas_app/lista_categorias.html', context) # Puedes mantener esta vista para el listado directo, pero no se usará con el panel AJAX
 
 @login_required
 @user_passes_test(is_admin, login_url='/admin/login/')
@@ -562,7 +561,8 @@ def crear_categoria(request):
             # El slug se genera automáticamente en el método save del modelo Categoria
             categoria.save()
             messages.success(request, '¡Categoría creada exitosamente!')
-            return redirect('recetas_app:lista_categorias')
+            # REDIRIGE AL PANEL DE ADMINISTRACIÓN DE CATEGORÍAS (AJAX)
+            return redirect('recetas_app:admin_options') # O directamente a 'admin_categorias' si quieres que la pestaña se active
         else:
             messages.error(request, 'Hubo un error al crear la categoría.')
     else:
@@ -583,7 +583,8 @@ def editar_categoria(request, slug):
             categoria = form.save(commit=False)
             categoria.save()
             messages.success(request, '¡Categoría actualizada exitosamente!')
-            return redirect('recetas_app:lista_categorias')
+            # REDIRIGE AL PANEL DE ADMINISTRACIÓN DE CATEGORÍAS (AJAX)
+            return redirect('recetas_app:admin_options') # O directamente a 'admin_categorias'
         else:
             messages.error(request, 'Hubo un error al editar la categoría.')
     else:
@@ -602,17 +603,76 @@ def eliminar_categoria(request, slug):
     if request.method == 'POST':
         categoria.delete()
         messages.success(request, 'Categoría eliminada exitosamente.')
-        return redirect('recetas_app:lista_categorias')
+        # REDIRIGE AL PANEL DE ADMINISTRACIÓN DE CATEGORÍAS (AJAX)
+        return redirect('recetas_app:admin_options') # O directamente a 'admin_categorias'
     context = {
         'categoria': categoria
     }
     return render(request, 'recetas_app/categoria_confirm_delete.html', context)
 
-# Vista para las opciones de administración
+# --- INICIO DE VISTAS DEL PANEL DE ADMINISTRACIÓN CON AJAX ---
+# Vista principal para el panel de administración 
 @login_required
 @user_passes_test(is_admin, login_url='/admin/login/')
 def admin_options_view(request):
-    return render(request, 'recetas_app/admin_options.html', {})
+    # Por defecto, precargamos la lista de recetas en la vista principal
+    # para que haya contenido al cargar la página por primera vez.
+    recetas = Receta.objects.all().order_by('-fecha_publicacion')
+    context = {'recetas': recetas}
+    return render(request, 'recetas_app/admin_options.html', context)
+
+# Vista AJAX para la sección de Recetas
+@login_required
+@user_passes_test(is_admin, login_url='/admin/login/')
+def admin_recetas_ajax(request):
+    # Obtiene todas las recetas ordenadas
+    recetas = Receta.objects.all().order_by('-fecha_publicacion')
+    # Renderiza el parcial HTML a un string
+    html = render_to_string('recetas_app/partials/admin_recetas_list.html', {'recetas': recetas}, request=request)
+    # Devuelve el string HTML dentro de un objeto JSON
+    return JsonResponse({'html_content': html})
+
+# Vista AJAX para la sección de Categorías
+@login_required
+@user_passes_test(is_admin, login_url='/admin/login/')
+def admin_categorias_ajax(request):
+    categorias = Categoria.objects.all().order_by('nombre')
+    html = render_to_string('recetas_app/partials/admin_categorias_list.html', {'categorias': categorias}, request=request)
+    return JsonResponse({'html_content': html})
+
+# Vista AJAX para la sección de Usuarios
+@login_required
+@user_passes_test(is_admin, login_url='/admin/login/')
+def admin_usuarios_ajax(request):
+    # Aquí puedes listar usuarios reales. Por ahora, un mensaje de "Próximamente".
+    # usuarios = User.objects.all().order_by('username') # Si quieres listar usuarios de Django
+    context = {
+        # 'usuarios': usuarios, # Descomentar si ya los manejas
+        'message': 'La gestión de usuarios está próxima a implementarse.',
+        'is_coming_soon': True
+    }
+    html = render_to_string('recetas_app/partials/admin_usuarios_list.html', context, request=request)
+    return JsonResponse({'html_content': html})
+
+# Vista AJAX para la sección de Comentarios
+@login_required
+@user_passes_test(is_admin, login_url='/admin/login/')
+def admin_comentarios_ajax(request):
+    # Aquí puedes listar comentarios reales si ya tienes un modelo de Comentario.
+    # Si Comentario ya está importado arriba, puedes usarlo.
+    # Por ahora, un mensaje de "Próximamente".
+    # from .models import Comentario # Asegúrate de que Comentario está importado al inicio
+    # comentarios = Comentario.objects.all().order_by('-fecha_publicacion')
+    context = {
+        # 'comentarios': comentarios,
+        'message': 'La moderación de comentarios está próxima a implementarse.',
+        'is_coming_soon': True
+    }
+    html = render_to_string('recetas_app/partials/admin_comentarios_list.html', context, request=request)
+    return JsonResponse({'html_content': html})
+
+# --- FIN DE VISTAS DEL PANEL DE ADMINISTRACIÓN CON AJAX ---
+
 
 # Vista para previsualizar una receta antes de publicarla.
 def previsualizar_receta(request):
@@ -718,7 +778,7 @@ def contacto(request):
         form = ContactoForm()
     return render(request, 'recetas_app/contacto.html', {'form': form})
 
-# VISTAS PARA MENSAJES PRIVADOS 
+# VISTAS PARA MENSAJES PRIVADOS
 
 @login_required
 def inbox(request):
@@ -727,13 +787,13 @@ def inbox(request):
     el usuario actual ha tenido una conversación.
     """
     # Importar Mensaje aquí para evitar circular imports si MensajeForm lo necesita
-    from apps.usuarios.models import Mensaje 
+    from apps.usuarios.models import Mensaje
 
     # Obtener IDs de usuarios con los que el usuario actual ha intercambiado mensajes
     user_ids = Mensaje.objects.filter(
         Q(remitente=request.user) | Q(destinatario=request.user)
     ).values_list('remitente__pk', 'destinatario__pk')
-    
+
     unique_user_ids = set()
     for sender_id, recipient_id in user_ids:
         if sender_id != request.user.pk:
@@ -757,49 +817,41 @@ def inbox(request):
     conversations.sort(key=lambda x: x['last_message'].fecha_envio, reverse=True)
 
     context = {
-        'conversations': conversations,
+        'conversations': conversations # Corregido para usar la variable `conversations`
     }
-    return render(request, 'recetas_app/mensajes/inbox.html', context)
-
+    return render(request, 'recetas_app/inbox.html', context) # Asumo que tienes un template inbox.html
 
 @login_required
 def private_message(request, username):
     """
-    Muestra la conversación completa con un usuario específico y permite enviar nuevos mensajes.
+    Muestra la conversación con un usuario específico y permite enviar nuevos mensajes.
     """
-    # Importar Mensaje aquí para evitar circular imports si MensajeForm lo necesita
-    from apps.usuarios.models import Mensaje 
-    from apps.usuarios.forms import MensajeForm 
+    from apps.usuarios.models import Mensaje # Asegúrate de importar Mensaje
+    from apps.usuarios.forms import MensajeForm as PMForm # Renombrar para evitar conflicto con ComentarioForm
 
     other_user = get_object_or_404(User, username=username)
+    
+    # Obtener mensajes entre los dos usuarios
+    messages_between_users = Mensaje.objects.filter(
+        Q(remitente=request.user, destinatario=other_user) |
+        Q(remitente=other_user, destinatario=request.user)
+    ).order_by('fecha_envio')
 
     if request.method == 'POST':
-        form = MensajeForm(request.POST)
+        form = PMForm(request.POST)
         if form.is_valid():
-            # Crear y guardar el nuevo mensaje
-            mensaje = Mensaje(
-                remitente=request.user,
-                destinatario=other_user,
-                asunto=form.cleaned_data['asunto'],
-                cuerpo=form.cleaned_data['cuerpo']
-            )
+            mensaje = form.save(commit=False)
+            mensaje.remitente = request.user
+            mensaje.destinatario = other_user
             mensaje.save()
-            # Redirigir de nuevo a la misma página para ver el mensaje enviado
+            # Redirigir para evitar el reenvío del formulario
             return redirect('recetas_app:private_message', username=username)
     else:
-        form = MensajeForm()
-
-    # Obtener todos los mensajes entre los dos usuarios
-    messages = Mensaje.objects.filter(
-        Q(remitente=request.user, destinatario=other_user) | Q(remitente=other_user, destinatario=request.user)
-    ).order_by('fecha_envio')
-    
-    # Marcar como leídos todos los mensajes recibidos del otro usuario
-    Mensaje.objects.filter(destinatario=request.user, remitente=other_user).update(is_leido=True)
+        form = PMForm()
 
     context = {
         'other_user': other_user,
-        'messages': messages,
+        'messages': messages_between_users,
         'form': form,
     }
-    return render(request, 'recetas_app/mensajes/private_message.html', context)
+    return render(request, 'recetas_app/private_message.html', context) 

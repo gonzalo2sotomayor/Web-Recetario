@@ -1,0 +1,270 @@
+/* apps/recetas_app/static/css/admin_panel.css */
+
+/* Estilos */
+:root {
+    --primary-color: #0A2540; /* Un azul para los títulos y acentos */
+    --secondary-color: #d4edda; /* Un gris claro para el fondo */
+    --accent-color: #1A3A5A;
+    --accent-light: #1A3A5A; /* Azul oscuro más claro para hover/fondo secundario */
+    --font-family-title:'Inter', sans-serif;
+    --font-family-body: 'Inter', sans-serif; /* Usamos Inter para la consistencia */
+    --text-color: #333;
+    --white-text: #FFFFFF; /* Blanco puro */
+    --border-color: #ddd;
+    --hover-color: #e0e0e0;
+    --golden-border:#CFA854; /* Color dorado para bordes y acentos */
+    --shadow-color: rgba(0, 0, 0, 0.1); /* Color de sombra suave */
+}
+
+/* Estilos para la barra de navegación de la plantilla base en el modo admin */
+.nav-right .nav-icon-link {
+    position: relative;
+    color: var(--white-text);
+    margin-right: 15px; /* Espacio entre los iconos */
+    font-size: 1.2rem;
+    transition: color 0.3s;
+}
+
+.nav-right .nav-icon-link:hover {
+    color: var(--accent-color);
+}
+
+.nav-right .badge {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    background-color: var(--accent-color);
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* Estilos para el dropdown del perfil en el panel de administración */
+.user-profile-dropdown-new .dropdown-btn-new {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.user-profile-dropdown-new .avatar-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-color);
+}
+
+.user-profile-dropdown-new .dropdown-menu-new {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    padding: 10px 0;
+    z-index: 1000;
+    display: none;
+    min-width: 150px;
+}
+
+.user-profile-dropdown-new .dropdown-menu-new.show-dropdown {
+    display: block;
+}
+
+.user-profile-dropdown-new .dropdown-item-new {
+    display: block;
+    padding: 8px 15px;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: background-color 0.2s;
+}
+
+.user-profile-dropdown-new .dropdown-item-new:hover {
+    background-color: var(--hover-color);
+}
+
+
+/* -- Estilos del contenedor principal del panel -- */
+.admin-container {
+    width: 90%;
+    max-width: 1200px;
+    background-color: #FFF;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    margin: 2rem auto;
+    padding: 2rem;
+}
+
+.header {
+    text-align: center;
+    border-bottom: 2px solid var(--golden-border);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    font-family: var(--font-family-title);
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.header p {
+    margin-top: 0.5rem;
+    color: #666;
+}
+
+.nav-tabs {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.nav-tabs li {
+    padding: 0 1rem;
+}
+
+.nav-tab-link {
+    display: block;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    color: #666;
+    font-weight: 500;
+    transition: color 0.3s, border-bottom 0.3s;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-tab-link.active {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.nav-tab-link:hover {
+    color: var(--primary-color);
+}
+
+#content-area {
+    min-height: 300px;
+    padding: 1rem;
+    transition: opacity 0.5s ease-in-out;
+    position: relative;
+}
+
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 100;
+}
+
+.loading-spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border-left-color: var(--primary-color);
+    animation: spin 1s ease infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+th, td {
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #555;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.btn-edit {
+    background-color: #0A2540;
+    color: #333;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.admin-edit-btn {
+    background-color: #0A2540;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+}
+
+.admin-edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.admin-delete-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+}
+
+.admin-delete-btn:hover {
+    background-color: #c82333;
+}
+
+.admin-create-btn {
+    background-color: #0A2540;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: 2px solid var(--golden-border);
+}
+
+.admin-create-btn:hover {
+    background-color: #0056b3;
+}

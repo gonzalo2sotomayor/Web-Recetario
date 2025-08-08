@@ -5,8 +5,8 @@ from django.conf.urls.static import static
 import os 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', include('apps.recetas_app.urls')), # Incluye las URLs de la app de recetas
+    path('admin/', admin.site.urls),
     path('usuarios/', include('apps.usuarios.urls')), # Incluye las URLs de la app de usuarios
     #path('recetas/', include('recetas_app.urls')),
 ]

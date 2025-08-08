@@ -1,0 +1,39 @@
+{# recetas_app/partials/admin_comentarios_list.html #}
+{% load static %}
+<div class="admin-list-section">
+    <h3 class="admin-section-title">Administrar Comentarios</h3>
+    {% if is_coming_soon %}
+        <p class="admin-message-info">{{ message }}</p>
+    {% else %}
+        {# Tabla de comentarios si ya los gestionas #}
+        {#
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Comentario</th>
+                    <th>Receta</th>
+                    <th>Usuario</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comentario in comentarios %}
+                <tr>
+                    <td>{{ comentario.texto|truncatechars:50 }}</td>
+                    <td>{{ comentario.receta.titulo }}</td>
+                    <td>{{ comentario.usuario.username }}</td>
+                    <td>{{ comentario.fecha_creacion|date:"d M Y" }}</td>
+                    <td>{% if comentario.aprobado %}Aprobado{% else %}Pendiente{% endif %}</td>
+                    <td class="actions">
+                        <button class="admin-edit-btn" data-url="{% url 'recetas_app:moderar_comentario' pk=comentario.pk %}">Moderar</button>
+                        <button class="admin-delete-btn" data-url="{% url 'recetas_app:eliminar_comentario' pk=comentario.pk %}">Eliminar</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        #}
+    {% endif %}
+</div>

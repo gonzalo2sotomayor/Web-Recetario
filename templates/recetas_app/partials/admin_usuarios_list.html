@@ -1,0 +1,36 @@
+{# recetas_app/partials/admin_usuarios_list.html #}
+{% load static %}
+<div class="admin-list-section">
+    <h3 class="admin-section-title">Administrar Usuarios</h3>
+    {% if is_coming_soon %}
+        <p class="admin-message-info">{{ message }}</p>
+    {% else %}
+        <a href="#" class="admin-create-btn coming-soon-btn">Crear Nuevo Usuario (Próximamente)</a>
+        {# Tabla de usuarios si ya los gestionas #}
+        {#
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Staff</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in usuarios %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{% if user.is_staff %}Sí{% else %}No{% endif %}</td>
+                    <td class="actions">
+                        <button class="admin-edit-btn" data-url="{% url 'recetas_app:editar_usuario' pk=user.pk %}">Editar</button>
+                        <button class="admin-delete-btn" data-url="{% url 'recetas_app:eliminar_usuario' pk=user.pk %}">Eliminar</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        #}
+    {% endif %}
+</div>

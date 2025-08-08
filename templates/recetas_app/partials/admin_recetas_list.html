@@ -1,0 +1,38 @@
+{# apps/recetas_app/partials/admin_recetas_list.html #}
+{% load static %}
+
+<div class="admin-list-section">
+    <h3 class="admin-section-title">Gestionar Recetas</h3>
+    <a href="{% url 'recetas_app:crear_receta' %}" class="admin-create-btn">Crear Nueva Receta</a>
+
+    {% if recetas %}
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Categoría</th>
+                <th>Creador</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for receta in recetas %}
+            <tr>
+                <td>{{ receta.titulo }}</td>
+                <td>{{ receta.categoria.nombre }}</td>
+                <td>{{ receta.creador.username }}</td>
+                <td>{{ receta.fecha_creacion|date:"d M Y" }}</td>
+                <td class="actions">
+                    {# Se han cambiado los botones a enlaces (<a>) para que la navegación funcione de forma nativa #}
+                    <a href="{% url 'recetas_app:editar_receta' pk=receta.pk %}" class="admin-edit-btn">Editar</a>
+                    <a href="{% url 'recetas_app:eliminar_receta' pk=receta.pk %}" class="admin-delete-btn">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="admin-message-info">No hay recetas registradas.</p>
+    {% endif %}
+</div>

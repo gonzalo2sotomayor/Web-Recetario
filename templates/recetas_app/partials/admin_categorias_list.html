@@ -1,0 +1,140 @@
+<!-- apps/recetas_app/partials/admin_categorias_list.html -->
+{% load static %}
+
+<style>
+    /* Estilos para la tabla */
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .admin-table th, .admin-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .admin-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        color: #555;
+    }
+    
+    .admin-table tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .icon-cell {
+        text-align: center;
+        width: 50px; /* Ancho fijo para la columna del ícono */
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-button {
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .edit-button {
+    background-color: #0A2540;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+    }
+
+    .edit-button:hover {
+        background-color: #0056b3;
+    }
+
+    .delete-button {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+    }
+
+    .delete-button:hover {
+        background-color: #c82333;
+    }
+
+    .no-data-message {
+        text-align: center;
+        padding: 2rem;
+        color: #888;
+    }
+
+    .create-button-container {
+        margin-top: 1rem;
+        text-align: left;
+    }
+
+    .create-button {
+    background-color: #0A2540;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: 2px solid var(--golden-border);
+    }
+
+    .create-button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="p-4">
+<h3 class="admin-section-title">Gestionar Categorías
+</h3>
+    <div class="create-button-container">
+        <a href="{% url 'recetas_app:crear_categoria' %}" class="create-button">
+            Crear Nueva Categoría
+        </a>
+    </div>
+
+    {% if categorias %}
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th class="icon-cell">Ícono</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for categoria in categorias %}
+            <tr>
+                <td>{{ categoria.nombre }}</td>
+                <td class="icon-cell">
+                    <i class="{{ categoria.fa_icon }}"></i>
+                </td>
+                <td class="action-buttons">
+                    <a href="{% url 'recetas_app:editar_categoria' categoria.slug %}" class="action-button edit-button">Editar</a>
+                    <a href="{% url 'recetas_app:eliminar_categoria' categoria.slug %}" class="action-button delete-button">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="no-data-message">No hay categorías para mostrar.</p>
+    {% endif %}
+</div>
