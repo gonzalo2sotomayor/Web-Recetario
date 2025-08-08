@@ -1,0 +1,23 @@
+{# recetas_app/partials/popular_recipes_grid.html #}
+
+{% load static %}
+
+{% if recetas_populares %} {# 'recetas_populares' es el nombre que tu vista le dará a las recetas #}
+    {% for receta in recetas_populares %}
+        <div class="recipe-popular-card clickable-card" data-url="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
+            {% if receta.imagen %}
+                <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-popular-card-image">
+            {% else %}
+                <img src="{% static 'img/default_recipe.png' %}" alt="Imagen por defecto" class="recipe-popular-card-image">
+            {% endif %}
+            <h3 class="recipe-popular-card-title">{{ receta.titulo }}</h3>
+            <p class="recipe-popular-card-description">{{ receta.descripcion|truncatechars:100 }}</p>
+            <p class="recipe-popular-card-favorites">
+                <i class="fas fa-heart"></i> {{ receta.num_favoritos }}
+            </p>
+            <a href="{% url 'recetas_app:detalle_receta' pk=receta.pk %}" class="recipe-popular-btn-primary">Ver Receta</a>
+        </div>
+    {% endfor %}
+{% else %}
+    <p class="recipe-popular-no-results-message">Aún no hay recetas populares. ¡Sé el primero en añadir una a favoritos!</p>
+{% endif %}

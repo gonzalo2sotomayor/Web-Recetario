@@ -13,7 +13,7 @@ urlpatterns = [
     path('previsualizar/', views.previsualizar_receta, name='previsualizar_receta'),
     path('descubre/', views.recetas_aleatorias, name='recetas_aleatorias'),
     path('categoria/<slug:categoria_slug>/', views.recetas_por_categoria, name='recetas_por_categoria'),
-    path('populares/', views.recetas_populares_page, name='recetas_populares_page'), 
+    path('populares/', views.recetas_populares, name='recetas_mas_populares'),
 
     # Rutas de Comentarios
     path('comentario/<int:pk>/editar/', views.editar_comentario, name='editar_comentario'),

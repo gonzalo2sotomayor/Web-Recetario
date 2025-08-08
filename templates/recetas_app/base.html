@@ -35,7 +35,7 @@
                 <li><a href="{% url 'recetas_app:home' %}" class="nav-link-new">Home</a></li>
                 <li><a href="{% url 'recetas_app:recetas_aleatorias' %}" class="nav-link-new">Descubre</a></li>
                 <li><a href="{% url 'recetas_app:advanced_search' %}" class="nav-link-new">Búsqueda Avanzada</a></li>
-                <li><a href="{% url 'recetas_app:recetas_populares_page' %}" class="nav-link-new">Populares</a></li>
+                <li><a href="{% url 'recetas_app:recetas_mas_populares' %}" class="nav-link-new">Populares</a></li>
                 {# Enlace consolidado para opciones de administración #}
                 {% if user.is_authenticated and user.is_staff %}
                     <li><a href="{% url 'recetas_app:admin_options' %}" class="nav-link-new">Opciones Admin</a></li>
@@ -114,7 +114,7 @@
                 </div>
 
                 {# Recetas Populares en el banner principal #}
-                <div id="slide-popular-recipes" class="hero-slide clickable-slide" data-background-image="{% static 'img/popular_recipes_banner.jpg' %}" data-url="{% url 'recetas_app:recetas_populares_page' %}">
+                <div id="slide-popular-recipes" class="hero-slide clickable-slide" data-background-image="{% static 'img/popular_recipes_banner.jpg' %}" data-url="{% url 'recetas_app:recetas_mas_populares' %}">
                     <h2 class="slide-title">Recetas Populares</h2>
                     <p class="slide-description">Explora las recetas más votadas y comentadas por nuestra comunidad.</p>
                 </div>

@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.forms import inlineformset_factory
 from django.db import transaction
 from django.urls import reverse_lazy
-from django.db.models import Q, Count
+from django.db.models import Q, Count # Asegúrate de que Count está importado
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger 
 import random
 from django.utils.text import slugify
@@ -14,7 +14,7 @@ from django.views.generic import ListView, DetailView
 from django.utils import timezone
 from urllib.parse import urlencode 
 from django.contrib.auth.models import User
-from django.template.loader import render_to_string 
+from django.template.loader import render_to_string # Asegúrate de que render_to_string está importado
 
 # Importaciones consolidadas de modelos y formularios
 from .models import Receta, Ingrediente, Paso, Comentario, Categoria, RecetaFavorita 
@@ -102,17 +102,34 @@ def home(request):
 
     return render(request, 'recetas_app/home.html', context)
 
+# ------------------------------------------------------------------------------------------------------
+# --- VISTA: Recetas Populares (Página dedicada con paginación y ordenamiento AJAX) ---
+def recetas_populares(request):
+    order_by = request.GET.get('order_by', 'populares') # 'populares' es nuestro campo anotado
+    direction = request.GET.get('direction', 'desc') # Por defecto: más populares primero
 
-# --- VISTA: Recetas Populares (Página dedicada con paginación) ---
-def recetas_populares_page(request):
-    # Obtener todas las recetas, anotarlas con el número de favoritos
-    # y ordenarlas de forma descendente.
-    all_recetas_populares = Receta.objects.annotate(
+    # Anotar el número de favoritos a cada receta
+    # Asume que tienes un campo related_name='recetafavorita' en el modelo RecetaFavorita apuntando a Receta
+    recetas_query = Receta.objects.annotate(
         num_favoritos=Count('recetafavorita')
-    ).order_by('-num_favoritos')
+    )
 
-    # Configurar la paginación
-    paginator = Paginator(all_recetas_populares, 12) # Mostrar 12 recetas por página
+    # Aplicar ordenamiento
+    if order_by == 'populares':
+        if direction == 'asc':
+            recetas_query = recetas_query.order_by('num_favoritos')
+        else: # 'desc' o cualquier otro valor
+            recetas_query = recetas_query.order_by('-num_favoritos')
+    # Puedes añadir más opciones de ordenamiento aquí si las necesitas para esta página
+    # elif order_by == 'titulo':
+    #     if direction == 'asc':
+    #         recetas_query = recetas_query.order_by('titulo')
+    #     else:
+    #         recetas_query = recetas_query.order_by('-titulo')
+
+
+    # Paginación
+    paginator = Paginator(recetas_query, 12) # Mostrar 12 recetas por página (ajusta a tu gusto)
     page_number = request.GET.get('page') # Obtener el número de página de la URL
 
     try:
@@ -130,11 +147,36 @@ def recetas_populares_page(request):
         favoritas_ids = set(request.user.recetas_favoritas.values_list('receta__pk', flat=True))
 
     context = {
-        'recetas_populares': page_obj, 
+        'recetas_populares': page_obj.object_list, # Pasa las recetas de la página actual
         'page_obj': page_obj, 
         'favoritas_ids': favoritas_ids, # Pasamos los IDs de las recetas favoritas
+        'current_order_by': order_by, # Pasar al contexto para marcar el botón activo
+        'current_direction': direction, # Pasar al contexto para marcar el botón activo
     }
+
+    # Detectar si la petición es AJAX
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # Si es AJAX, renderiza solo los parciales y devuelve JSON
+        html_recetas = render_to_string(
+            'recetas_app/partials/popular_recipes_grid.html', 
+            context, 
+            request=request
+        )
+        # Renderiza también la paginación para actualizarla
+        html_pagination = render_to_string(
+            'recetas_app/partials/pagination_controls.html', # Necesitarás crear este parcial
+            context,
+            request=request
+        )
+        return JsonResponse({
+            'html_recetas': html_recetas,
+            'html_pagination': html_pagination
+        })
+    
+    # Si no es AJAX, renderiza la página completa
     return render(request, 'recetas_app/recetas_populares.html', context)
+
+# ------------------------------------------------------------------------------------------------------
 
 
 # Vista para el detalle de una receta específica

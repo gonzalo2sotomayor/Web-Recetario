@@ -4,216 +4,139 @@
 {% block title %}Recetas Más Populares - El Recetario{% endblock %}
 
 {% block content %}
-<div class="main-content-new">
-    <h2 class="section-title">Nuestras Recetas Más Populares</h2>
-    <p class="section-description">Descubre las recetas favoritas de nuestra comunidad, ¡las que más veces han sido guardadas!</p>
+<div class="recipe-popular-main-content">
+    <h2 class="recipe-popular-section-title">Nuestras Recetas Más Populares</h2>
+    <p class="recipe-popular-section-description">Descubre las recetas favoritas de nuestra comunidad, ¡las que más veces han sido guardadas!</p>
 
-    <div class="grid-container">
-        {% if recetas_populares %}
-            {% for receta in recetas_populares %} {# 'recetas_populares' ahora es page_obj.object_list #}
-                <div class="recipe-card clickable-card" data-url="{% url 'recetas_app:detalle_receta' pk=receta.pk %}">
-                    {% if receta.imagen %}
-                        <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-card-image">
-                    {% else %}
-                        <img src="{% static 'img/default_recipe.png' %}" alt="Imagen por defecto" class="recipe-card-image">
-                    {% endif %}
-                    <h3 class="recipe-card-title">{{ receta.titulo }}</h3>
-                    <p class="recipe-card-description">{{ receta.descripcion|truncatechars:100 }}</p>
-                    <p class="recipe-card-favorites">
-                        <i class="fas fa-heart"></i> {{ receta.num_favoritos }} Favoritos
-                    </p>
-                    <a href="{% url 'recetas_app:detalle_receta' pk=receta.pk %}" class="btn-primary">Ver Receta</a>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p class="no-results-message">Aún no hay recetas populares. ¡Sé el primero en añadir una a favoritos!</p>
-        {% endif %}
+    {# Controles de Ordenamiento para populares #}
+    <div class="recipe-popular-sort-options-container">
+        <span class="recipe-popular-sort-label">Ordenar por:</span>
+        <a href="?order_by=populares&direction=desc"
+           class="recipe-popular-sort-button {% if current_order_by == 'populares' and current_direction == 'desc' %}active{% endif %}"
+           data-order-by="populares" data-direction="desc">
+            Popularidad (Mayor a Menor)
+        </a>
+        <a href="?order_by=populares&direction=asc"
+           class="recipe-popular-sort-button {% if current_order_by == 'populares' and current_direction == 'asc' %}active{% endif %}"
+           data-order-by="populares" data-direction="asc">
+            Popularidad (Menor a Mayor)
+        </a>
+    </div>
+    {# FIN Controles de Ordenamiento #}
+
+    <div id="recipes-grid-container" class="recipe-popular-grid-container">
+        {% include 'recetas_app/partials/popular_recipes_grid.html' %}
     </div>
 
-    {# Controles de Paginación (NUEVO) #}
-    <div class="pagination">
-        <span class="step-links">
+    {# Controles de Paginación #}
+    <div class="recipe-popular-pagination">
+        <span class="recipe-popular-step-links">
             {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">Anterior</a>
+                <a href="?page={{ page_obj.previous_page_number }}&order_by={{ current_order_by }}&direction={{ current_direction }}" class="recipe-popular-pagination-btn">Anterior</a>
             {% endif %}
 
-            <span class="current">
+            <span class="recipe-popular-pagination-current">
                 Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
             </span>
 
             {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">Siguiente</a>
+                <a href="?page={{ page_obj.next_page_number }}&order_by={{ current_order_by }}&direction={{ current_direction }}" class="recipe-popular-pagination-btn">Siguiente</a>
             {% endif %}
         </span>
     </div>
 </div>
+{% endblock content %}
 
-<style>
-    /* Estilos específicos para esta página, si no están ya en styles.css */
-    .main-content-new {
-        padding: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
-        background-color: #f9f9f9;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        font-family: 'Inter', sans-serif;
-    }
-
-    .section-title {
-        color: #333;
-        text-align: center;
-        margin-bottom: 0.5rem;
-        font-size: 2.5rem;
-        font-weight: 700;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    }
-
-    .section-description {
-        text-align: center;
-        margin-bottom: 2rem;
-        font-size: 1.1rem;
-        color: #666;
-    }
-
-    .grid-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 2rem;
-        padding: 1rem;
-    }
-
-    .recipe-card {
-        background-color: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        padding-bottom: 1rem;
-    }
-
-    .recipe-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .recipe-card-image {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        border-bottom: 1px solid #eee;
-    }
-
-    .recipe-title {
-        font-size: 1.5rem;
-        color: #333;
-        margin: 1rem 1rem 0.5rem;
-        font-weight: 600;
-    }
-
-    .recipe-description {
-        font-size: 0.95rem;
-        color: #666;
-        margin: 0 1rem 1rem;
-        line-height: 1.5;
-        flex-grow: 1;
-    }
-
-    .recipe-card-favorites {
-        text-align: center;
-        color: #E91E63; /* Un color rosa para los corazones */
-        font-weight: 600;
-        margin-bottom: 1rem;
-    }
-
-    .recipe-card-favorites i {
-        margin-right: 5px;
-    }
-
-    .btn-primary {
-        display: block;
-        width: calc(100% - 2rem);
-        padding: 0.8rem 1.2rem;
-        margin: 0 1rem;
-        background-color: #4CAF50;
-        color: white;
-        text-align: center;
-        text-decoration: none;
-        border-radius: 8px;
-        transition: background-color 0.3s ease, transform 0.2s ease;
-        font-weight: 600;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-primary:hover {
-        background-color: #45a049;
-        transform: translateY(-2px);
-    }
-
-    .no-results-message {
-        text-align: center;
-        font-size: 1.2rem;
-        color: #777;
-        padding: 2rem;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .main-content-new {
-            padding: 1rem;
+{% block extra_body_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hacemos clicables las tarjetas de receta al cargar la página.
+        function attachCardClickListeners() {
+            document.querySelectorAll('.recipe-popular-card').forEach(card => {
+                card.removeEventListener('click', handleCardClick);
+                card.addEventListener('click', handleCardClick);
+            });
         }
 
-        .section-title {
-            font-size: 2rem;
+        function handleCardClick(event) {
+            if (event.target.closest('form') || event.target.tagName === 'A' || event.target.closest('button')) {
+                return; 
+            }
+            const url = this.dataset.url;
+            if (url) {
+                window.location.href = url;
+            }
         }
 
-        .grid-container {
-            grid-template-columns: 1fr;
-            padding: 0.5rem;
-        }
+        // Lógica para los botones de ordenamiento con AJAX
+        document.querySelectorAll('.recipe-popular-sort-button').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); 
 
-        .recipe-card {
-            margin: 0 auto;
-            max-width: 350px;
-        }
-    }
+                const currentUrl = new URL(window.location.href);
+                const orderBy = this.dataset.orderBy;
+                const direction = this.dataset.direction;
 
-    /* Estilos para la paginación */
-    .pagination {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 30px;
-        margin-bottom: 20px;
-    }
+                currentUrl.searchParams.set('order_by', orderBy);
+                currentUrl.searchParams.set('direction', direction);
+                currentUrl.searchParams.set('page', 1);
 
-    .step-links {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
+                document.querySelectorAll('.recipe-popular-sort-button').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
 
-    .pagination-btn {
-        background-color: #007bff; /* Color azul, puedes ajustar */
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        text-decoration: none;
-        transition: background-color 0.3s ease;
-        font-weight: 600;
-    }
+                fetch(currentUrl.toString(), {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const recipesGridContainer = document.getElementById('recipes-grid-container');
+                    if (recipesGridContainer) {
+                        recipesGridContainer.innerHTML = data.html_recetas;
+                        document.querySelector('.recipe-popular-pagination').innerHTML = data.html_pagination;
+                        attachCardClickListeners();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al ordenar recetas populares:', error);
+                    console.error('Hubo un error al ordenar las recetas. Por favor, inténtalo de nuevo.');
+                });
+            });
+        });
 
-    .pagination-btn:hover {
-        background-color: #0056b3;
-    }
+        // Lógica para la paginación con AJAX
+        document.querySelector('.recipe-popular-pagination').addEventListener('click', function(event) {
+            if (event.target.tagName === 'A' && event.target.classList.contains('recipe-popular-pagination-btn')) {
+                event.preventDefault();
+                const pageUrl = event.target.href;
 
-    .pagination .current {
-        font-size: 1.1rem;
-        color: #555;
-        font-weight: 500;
-    }
-</style>
-{% endblock %}
+                fetch(pageUrl, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const recipesGridContainer = document.getElementById('recipes-grid-container');
+                    if (recipesGridContainer) {
+                        recipesGridContainer.innerHTML = data.html_recetas;
+                        document.querySelector('.recipe-popular-pagination').innerHTML = data.html_pagination;
+                        attachCardClickListeners();
+                    }
+                })
+                .catch(error => console.error('Error al paginar recetas populares:', error));
+            }
+        });
+
+        attachCardClickListeners(); 
+    });
+</script>
+{% endblock extra_body_scripts %}
