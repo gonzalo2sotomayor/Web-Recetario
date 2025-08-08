@@ -6,7 +6,6 @@
 
 {% block content %}
 
-    <!-- Columna Izquierda: Categorías (Sidebar) -->
     <aside class="sidebar">
         <h2 class="sidebar-title">Categorías</h2>
         <ul class="category-list">
@@ -30,7 +29,6 @@
         </ul>
     </aside>
 
-    <!-- Columna Derecha: Contenido Principal (Recetas) -->
     <div class="main-content-area"> 
         <div class="section-wrapper">
             <h2 class="section-title">
@@ -245,6 +243,7 @@
                         });
 
                         // Re-adjuntar listeners para las tarjetas clickeables (si es necesario)
+                        // Esta es la lógica que ya estaba para las tarjetas de receta regulares.
                         document.querySelectorAll('#recipes-grid-container .clickable-card').forEach(card => {
                             card.addEventListener('click', function(event) {
                                 if (event.target.closest('form') || event.target.tagName === 'A' || event.target.closest('a')) {
@@ -264,6 +263,25 @@
                 });
             });
         });
-    });
+
+        // ⭐ Lógica NUEVA para hacer clic en los slides del banner principal ⭐
+        // Este código se ejecuta cuando la página carga por primera vez.
+        // Asegúrate de que tus slides tienen la clase 'hero-slide' y un atributo 'data-url'.
+        const heroSlides = document.querySelectorAll('.hero-section .hero-slide');
+        heroSlides.forEach(slide => {
+            slide.addEventListener('click', function(event) {
+                // Prevenir la navegación si el clic fue en un elemento interactivo dentro del slide
+                // (por ejemplo, botones dentro del slide si los hubiera, o enlaces explícitos)
+                if (event.target.closest('form') || event.target.tagName === 'A' || event.target.closest('button')) {
+                    return; 
+                }
+                const url = this.dataset.url;
+                if (url) {
+                    window.location.href = url;
+                }
+            });
+        });
+
+    }); // Cierre de document.addEventListener('DOMContentLoaded'
 </script>
 {% endblock %}
