@@ -46,17 +46,31 @@
                     {{ form.porciones }}
                     {% if form.porciones.errors %}<div class="error-message">{{ form.porciones.errors }}</div>{% endif %}
                 </div>
+                
+                {# Campo para subir la nueva imagen #}
                 <div class="form-field">
                     {{ form.imagen.label_tag }}
                     {{ form.imagen }}
                     {% if form.imagen.errors %}<div class="error-message">{{ form.imagen.errors }}</div>{% endif %}
                 </div>
-                {% if receta.imagen %}
-                    <div class="current-image-preview">
-                        <p>Imagen actual:</p>
-                        <img src="{{ receta.imagen.url }}" alt="{{ receta.titulo }}" class="recipe-detail-image-small">
+
+                {# Contenedor para la imagen actual y el botón de eliminar #}
+                <div id="current-image-preview-container" class="current-image-preview {% if not receta.imagen %}hidden{% endif %}">
+                    <p id="current-image-label">Imagen actual:</p>
+                    <div class="relative image-display-container">
+                        <img id="current-image" src="{% if receta.imagen %}{{ receta.imagen.url }}{% endif %}" alt="Imagen actual" class="image-preview-thumbnail">
+                        <button type="button" id="delete-image-btn" class="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 shadow-lg hover:bg-red-700 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
                     </div>
-                {% endif %}
+                    {# Este checkbox oculto es esencial para la lógica de borrado de Django. Se marca con JS. #}
+                    {% if form.imagen.field.required == False %}
+                        {{ form.imagen.clear }}
+                        <label for="{{ form.imagen.clear.id_for_label }}" class="sr-only">Borrar imagen actual</label>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="form-section">
@@ -83,7 +97,6 @@
                                 {{ form_ingrediente.unidad }}
                                 {% if form_ingrediente.unidad.errors %}<div class="error-message">{{ form_ingrediente.unidad.errors }}</div>{% endif %}
                             </div>
-                            {% comment %} El checkbox DELETE solo se renderiza si el formset tiene can_delete=True {% endcomment %}
                             {% if form_ingrediente.instance.pk %}
                                 <div class="form-field delete-checkbox">
                                     {{ form_ingrediente.DELETE }}
@@ -107,16 +120,15 @@
                                 {{ hidden_field }}
                             {% endfor %}
                             <div class="form-field small-field">
-                                {{ form_paso.titulo.label_tag }} {# CAMBIO AQUÍ: de 'orden' a 'titulo' #}
-                                {{ form_paso.titulo }} {# CAMBIO AQUÍ: de 'orden' a 'titulo' #}
-                                {% if form_paso.titulo.errors %}<div class="error-message">{{ form_paso.titulo.errors }}</div>{% endif %} {# CAMBIO AQUÍ #}
+                                {{ form_paso.titulo.label_tag }}
+                                {{ form_paso.titulo }}
+                                {% if form_paso.titulo.errors %}<div class="error-message">{{ form_paso.titulo.errors }}</div>{% endif %}
                             </div>
                             <div class="form-field large-field">
                                 {{ form_paso.descripcion.label_tag }}
                                 {{ form_paso.descripcion }}
                                 {% if form_paso.descripcion.errors %}<div class="error-message">{{ form_paso.descripcion.errors }}</div>{% endif %}
                             </div>
-                            {% comment %} El checkbox DELETE solo se renderiza si el formset tiene can_delete=True {% endcomment %}
                             {% if form_paso.instance.pk %}
                                 <div class="form-field delete-checkbox">
                                     {{ form_paso.DELETE }}
@@ -133,6 +145,7 @@
             <div class="form-actions">
                 <button type="submit" class="button-primary submit-button">Actualizar Receta</button>
                 <button type="submit" formaction="{% url 'recetas_app:previsualizar_receta' %}" formtarget="_blank" class="button-secondary preview-button">Previsualizar Receta</button>
+                <button type="button" class="button-secondary" onclick="history.back()">Cancelar</button>
             </div>
         </form>
     </div>
@@ -155,23 +168,16 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Función para añadir un nuevo formulario dinámicamente
+        // --- Lógica para añadir/eliminar formsets (Ingredientes y Pasos) ---
         function addForm(formType) {
             const container = document.getElementById(`${formType}s-formset-container`);
             const totalFormsInput = document.querySelector(`#id_${formType}s-TOTAL_FORMS`);
             let currentTotalForms = parseInt(totalFormsInput.value);
-
-            console.log(`[${formType}] Antes de añadir: TOTAL_FORMS = ${currentTotalForms}`);
-
-            // Obtener la plantilla del formulario vacío de Django
             const template = document.getElementById(`empty-${formType}-form`);
             const newFormRow = template.content.cloneNode(true);
-
-            // Reemplazar '__prefix__' con el nuevo índice en todos los atributos name e id
             newFormRow.querySelectorAll('[name*="__prefix__"]').forEach(element => {
                 element.name = element.name.replace(/__prefix__/g, currentTotalForms);
                 element.id = element.id.replace(/__prefix__/g, currentTotalForms);
-                // Añadir clases CSS a los elementos dinámicamente
                 if (element.tagName === 'INPUT' && (element.type === 'text' || element.type === 'number')) {
                     element.classList.add('form-input');
                 } else if (element.tagName === 'TEXTAREA') {
@@ -181,104 +187,103 @@
             newFormRow.querySelectorAll('label[for*="__prefix__"]').forEach(element => {
                 element.htmlFor = element.htmlFor.replace(/__prefix__/g, currentTotalForms);
             });
-
             container.appendChild(newFormRow);
-
-            // Actualizar el TOTAL_FORMS
             totalFormsInput.value = currentTotalForms + 1;
-            console.log(`[${formType}] Después de añadir: TOTAL_FORMS = ${totalFormsInput.value}`);
-
-            // Añadir listener al nuevo botón de eliminar
             const addedButton = container.lastElementChild.querySelector('.remove-item-button');
             if (addedButton) {
                 addedButton.addEventListener('click', removeForm);
             }
         }
-
-        // Función para eliminar un formulario
         function removeForm(event) {
             const button = event.target;
             const formType = button.dataset.formType;
             const row = button.closest(`.${formType}-formset-row`);
-            
             const totalFormsInput = document.querySelector(`#id_${formType}s-TOTAL_FORMS`);
-            const initialFormsInput = document.querySelector(`#id_${formType}s-INITIAL_FORMS`);
-
-            const currentTotalForms = parseInt(totalFormsInput.value);
-            const currentInitialForms = parseInt(initialFormsInput.value);
-
-            console.log(`[${formType}] Antes de eliminar: TOTAL_FORMS = ${currentTotalForms}, INITIAL_FORMS = ${currentInitialForms}`);
-
-            // Obtener el input 'id' para saber si es un formulario existente o nuevo
-            const idInput = row.querySelector(`input[name$="-id"]`);
-            const deleteCheckbox = row.querySelector(`input[name$="-DELETE"]`);
-
-            // Contar los formularios visibles (no marcados para eliminación)
             const visibleForms = Array.from(document.querySelectorAll(`.${formType}-formset-row`)).filter(item => {
-                const cb = item.querySelector(`input[name$="-DELETE"]`);
+                const cb = item.querySelector('input[name$="-DELETE"]');
                 return !(cb && cb.checked);
             }).length;
-
-            // Restricción: No permitir eliminar el último ingrediente/paso
-            if (visibleForms <= 1 && formType === 'ingrediente') {
-                showMessageModal('¡Atención!', 'La receta debe tener al menos un ingrediente.', 'warning');
+            if (visibleForms <= 1 && (formType === 'ingrediente' || formType === 'paso')) {
+                showMessageModal('¡Atención!', `La receta debe tener al menos un ${formType}.`, 'warning');
                 return;
             }
-            if (visibleForms <= 1 && formType === 'paso') {
-                showMessageModal('¡Atención!', 'La receta debe tener al menos un paso.', 'warning');
-                return;
-            }
-
+            const idInput = row.querySelector('input[name$="-id"]');
+            const deleteCheckbox = row.querySelector('input[name$="-DELETE"]');
             if (idInput && idInput.value) {
-                // Es un formulario existente, marcar para eliminación y ocultar
                 if (deleteCheckbox) {
                     deleteCheckbox.checked = true;
                 }
-                row.style.display = 'none'; // Ocultar visualmente
+                row.style.display = 'none';
                 showMessageModal('Elemento Marcado para Eliminar', 'Este elemento será eliminado al guardar la receta.', 'success');
             } else {
-                // Es un formulario nuevo, eliminar del DOM y decrementar TOTAL_FORMS
                 row.remove();
-                totalFormsInput.value = currentTotalForms - 1; // Solo decrementar si es un formulario nuevo
+                totalFormsInput.value = parseInt(totalFormsInput.value) - 1;
                 showMessageModal('Elemento Eliminado', 'El elemento nuevo ha sido removido.', 'success');
             }
-            console.log(`[${formType}] Después de eliminar: TOTAL_FORMS = ${totalFormsInput.value}`);
-            
-            // No es necesario re-indexar los nombres de los campos después de eliminar,
-            // Django solo necesita saber cuáles están marcados para DELETE y el TOTAL_FORMS.
-            // La re-indexación de nombres solo es necesaria si se reorganizan los elementos,
-            // lo cual no es el caso aquí.
         }
-
-        // Añadir listeners a los botones de añadir
         document.getElementById('add-ingrediente').addEventListener('click', () => addForm('ingrediente'));
         document.getElementById('add-paso').addEventListener('click', () => addForm('paso'));
-
-        // Añadir listeners a los botones de eliminar existentes (los que vienen del backend)
         document.querySelectorAll('.remove-item-button').forEach(button => {
             button.addEventListener('click', removeForm);
         });
 
-        // Lógica para el botón de previsualización (ya estaba bien)
+        // --- Lógica para la imagen (nueva funcionalidad) ---
+        const imagenInput = document.getElementById('id_imagen');
+        const imagePreviewContainer = document.getElementById('current-image-preview-container');
+        const currentImage = document.getElementById('current-image');
+        const deleteImageBtn = document.getElementById('delete-image-btn');
+        const clearCheckbox = document.getElementById('id_imagen-clear');
+
+        // Escuchar cambios en el input de archivo
+        if (imagenInput) {
+            imagenInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        currentImage.src = e.target.result;
+                        imagePreviewContainer.classList.remove('hidden');
+                        // Asegurarse de que el checkbox de borrar esté desmarcado
+                        if (clearCheckbox) {
+                            clearCheckbox.checked = false;
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    // Si se borra la selección, ocultamos la previsualización
+                    // Usamos una URL de placeholder para que la imagen no se muestre rota
+                    currentImage.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 24 24"%3E%3Cpath fill="%23ccc" d="M19 5v14H5V5h14zm0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/%3E%3C/svg%3E';
+                    imagePreviewContainer.classList.add('hidden');
+                }
+            });
+        }
+
+        // Escuchar el clic en el botón de eliminar imagen
+        if (deleteImageBtn) {
+            deleteImageBtn.addEventListener('click', function() {
+                // Ocultar el contenedor de la imagen
+                imagePreviewContainer.classList.add('hidden');
+                
+                // Limpiar el campo de archivo para que no se envíe nada
+                if (imagenInput) {
+                    imagenInput.value = '';
+                }
+                
+                // Marcar el checkbox de borrado si existe (Django lo necesita)
+                if (clearCheckbox) {
+                    clearCheckbox.checked = true;
+                }
+            });
+        }
+
+        // --- Lógica para el botón de previsualización ---
         const previewButton = document.querySelector('.preview-button');
         if (previewButton) {
             const form = document.getElementById('recipe-form');
             const originalFormAction = form.action; 
-
             previewButton.addEventListener('click', function(event) {
-                // No prevenir el default aquí, ya que el formaction y formtarget lo manejan
-                // Asegurarse de que los formsets estén en un estado válido para la previsualización
-                // (aunque la validación completa se hace en el submit principal)
-                
-                // Temporalmente cambiar la acción y el objetivo para la previsualización
                 form.action = "{% url 'recetas_app:previsualizar_receta' %}"; 
                 form.target = "_blank"; 
-                
-                // Submit el formulario
-                // No es necesario llamar a form.submit() explícitamente si el botón es type="submit"
-                // y tiene formaction/formtarget.
-                
-                // Restaurar la acción original después de un breve retraso
                 setTimeout(() => {
                     form.action = originalFormAction; 
                     form.target = "_self"; 
@@ -286,89 +291,58 @@
             });
         }
 
-        // Función para mostrar el modal de mensajes
+        // --- Lógica para el modal de mensajes ---
         function showMessageModal(title, message, type = 'info') {
             const modal = document.getElementById('messageModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalMessage = document.getElementById('modalMessage');
-
-            modalTitle.textContent = title;
-            modalMessage.textContent = message;
-
-            modalTitle.classList.remove('text-red-800', 'text-green-800', 'text-gray-800', 'text-orange-800');
-            if (type === 'error') {
-                modalTitle.classList.add('text-red-800');
-            } else if (type === 'success') {
-                modalTitle.classList.add('text-green-800');
-            } else if (type === 'warning') {
-                modalTitle.classList.add('text-orange-800');
-            } else {
-                modalTitle.classList.add('text-gray-800');
+            if (modalTitle && modalMessage && modal) {
+                modalTitle.textContent = title;
+                modalMessage.textContent = message;
+                modalTitle.classList.remove('text-red-800', 'text-green-800', 'text-gray-800', 'text-orange-800');
+                if (type === 'error') {
+                    modalTitle.classList.add('text-red-800');
+                } else if (type === 'success') {
+                    modalTitle.classList.add('text-green-800');
+                } else if (type === 'warning') {
+                    modalTitle.classList.add('text-orange-800');
+                } else {
+                    modalTitle.classList.add('text-gray-800');
+                }
+                modal.style.display = 'flex';
             }
-            modal.style.display = 'flex';
         }
-
-        // Función para cerrar el modal de mensajes
         function closeModal() {
-            document.getElementById('messageModal').style.display = 'none';
+            const modal = document.getElementById('messageModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
         }
-
-        // Event listener para el botón de cerrar modal
         const closeButton = document.querySelector('#messageModal button');
         if (closeButton) {
             closeButton.addEventListener('click', closeModal);
         }
 
-        // Validación final antes de enviar el formulario principal
+        // --- Validación final antes de enviar el formulario principal ---
         document.getElementById('recipe-form').addEventListener('submit', function(event) {
             const ingredientesContainer = document.getElementById('ingredientes-formset-container');
             const pasosContainer = document.getElementById('pasos-formset-container');
-
             const visibleIngredients = Array.from(ingredientesContainer.querySelectorAll('.ingrediente-formset-row')).filter(item => {
                 const deleteCheckbox = item.querySelector('input[name$="-DELETE"]');
                 return !(deleteCheckbox && deleteCheckbox.checked);
             });
-
             const visiblePasos = Array.from(pasosContainer.querySelectorAll('.paso-formset-row')).filter(item => {
                 const deleteCheckbox = item.querySelector('input[name$="-DELETE"]');
                 return !(deleteCheckbox && deleteCheckbox.checked);
             });
-
             if (visibleIngredients.length === 0) {
                 event.preventDefault();
                 showMessageModal('Error de Validación', 'La receta debe tener al menos un ingrediente.', 'error');
                 return;
             }
-
             if (visiblePasos.length === 0) {
                 event.preventDefault();
                 showMessageModal('Error de Validación', 'La receta debe tener al menos un paso.', 'error');
-                return;
-            }
-
-            let isValid = true;
-            visibleIngredients.forEach((item, index) => {
-                // Usar el índice dinámico para buscar los elementos
-                const nombreInput = item.querySelector(`input[name^="ingredientes-"][name$="-nombre"]`);
-                const cantidadInput = item.querySelector(`input[name^="ingredientes-"][name$="-cantidad"]`);
-                if (!nombreInput || !nombreInput.value.trim() || !cantidadInput || !cantidadInput.value.trim()) {
-                    isValid = false;
-                    showMessageModal('Error de Validación', 'Todos los campos de nombre y cantidad de ingredientes deben estar llenos.', 'error');
-                }
-            });
-
-            visiblePasos.forEach((item, index) => {
-                // CAMBIO AQUÍ: de 'ordenInput' a 'tituloInput'
-                const tituloInput = item.querySelector(`input[name^="pasos-"][name$="-titulo"]`);
-                const descripcionInput = item.querySelector(`textarea[name^="pasos-"][name$="-descripcion"]`);
-                if (!tituloInput || !tituloInput.value.trim() || !descripcionInput || !descripcionInput.value.trim()) {
-                    isValid = false;
-                    showMessageModal('Error de Validación', 'Todos los campos de nombre y descripción de los pasos deben estar llenos.', 'error');
-                }
-            });
-
-            if (!isValid) {
-                event.preventDefault();
             }
         });
     });

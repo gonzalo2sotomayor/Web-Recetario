@@ -946,8 +946,11 @@ html, body {
 }
 
 .button-danger {
-    background-color: var(--favorite-filled);
+    background-color: #c82333; /* Rojo oscuro */
     color: var(--white-text);
+    width: 200px;
+    height: auto;
+    display: flex;
 }
 
 .button-danger:hover {
@@ -1036,6 +1039,7 @@ html, body {
 
 .form-container form button[type="submit"] {
     width: auto;
+    height: auto;
     padding: 12px 30px;
     background-color: var(--button-primary-bg);
     color: var(--white-text);
@@ -1045,6 +1049,7 @@ html, body {
     font-size: 18px;
     font-weight: 600;
     transition: background-color 0.2s ease;
+    margin-top: 2px;
 }
 
 .form-container form button[type="submit"]:hover {
@@ -1058,6 +1063,28 @@ html, body {
     margin-bottom: 15px;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
+}
+
+/* Estilos para el contenedor de la imagen actual editar receta*/
+.image-display-container {
+    width: 256px; /* Ancho fijo para la miniatura */
+    height: 256px; /* Alto fijo para la miniatura */
+    overflow: hidden;
+    border-radius: 8px; /* Esquinas redondeadas */
+    border: 2px solid #e5e7eb; /* Borde gris claro */
+    margin: 0 auto; /* Centrar el contenedor */
+}
+
+/* Estilos para la imagen dentro del contenedor */
+.image-preview-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Asegura que la imagen cubra el contenedor sin distorsionarse */
+}
+
+/* Ocultar elementos */
+.hidden {
+    display: none;
 }
 
 /* Estilos para listas de favoritos/comentarios */
@@ -1781,6 +1808,22 @@ html, body {
     margin-top: 20px;
 }
 
+.button-secondary {
+    background-color: #0A2540;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+    width: auto;
+    height: auto;
+}
+
+.button-secondary:hover {
+    background-color: #0056b3;
+}
+
 /* Estilos para la página de confirmación de eliminación */
 .confirm-page-container {
     max-width: 600px;
@@ -1807,15 +1850,33 @@ html, body {
 
 .warning-message {
     font-size: 16px;
-    color: var(--favorite-filled);
+    color: #c82333;
     margin-bottom: 30px;
     font-weight: 500;
+    text-align: left;
 }
 
 .highlight-text {
     color: var(--accent-color);
     font-weight: bold;
 }
+
+.button-secondary2 {
+    background-color: #0A2540;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+    width: 200px;
+    height: auto;
+    text-align: center;
+}
+
+.button-secondary2:hover {
+    background-color: #0056b3;
+}
+
 
 /* --- ESTILOS PARA DETALLE DE RECETA --- */
 

@@ -17,6 +17,14 @@
 }
 
 /* Estilos para la barra de navegación de la plantilla base en el modo admin */
+.main-header-new {
+    background-color: var(--primary-color);
+}
+
+.main-footer-new {
+    background-color: var(--primary-color);
+}
+
 .nav-right .nav-icon-link {
     position: relative;
     color: var(--white-text);
@@ -24,6 +32,8 @@
     font-size: 1.2rem;
     transition: color 0.3s;
 }
+
+
 
 .nav-right .nav-icon-link:hover {
     color: var(--accent-color);
@@ -268,3 +278,4 @@ tr:nth-child(even) {
 .admin-create-btn:hover {
     background-color: #0056b3;
 }
+

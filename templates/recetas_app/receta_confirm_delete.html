@@ -4,25 +4,23 @@
 
 {% block content %}
 <div class="container confirm-page-container">
-    <h1 class="section-title">Eliminar Receta</h1>
+    <h1 class="section-title">Eliminar Receta</h1>
 
-    <div class="confirm-card">
-        <p class="confirm-message">
-            ¿Estás seguro de que quieres eliminar la receta "<strong class="highlight-text">{{ receta.titulo }}</strong>"?
-        </p>
-        <p class="warning-message">
-            ¡Esta acción es irreversible! Se eliminarán todos los ingredientes, pasos y comentarios asociados a esta receta.
-        </p>
+    <div class="confirm-card">
+        <p class="confirm-message">
+        ¿Estás seguro de que quieres eliminar la receta "<strong class="highlight-text">{{ receta.titulo }}</strong>"?
+        </p>
+        <p class="warning-message">
+        ¡Esta acción es irreversible! Se eliminarán todos los ingredientes, pasos y comentarios asociados a esta receta.
+        </p>
 
-        <form method="post" class="form-actions">
-            {% csrf_token %}
-            <a href="{% url 'recetas_app:detalle_receta' pk=receta.pk %}" class="button button-secondary">
-                Cancelar
+        <form method="post" class="form-actions">
+            {% csrf_token %}
+            <a href="#" class="button button-secondary2" onclick="history.back()">Cancelar
             </a>
-            <button type="submit" class="button button-danger">
-                Confirmar Eliminación
+            <button type="submit" class="button button-danger">Confirmar Eliminación
             </button>
-        </form>
-    </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

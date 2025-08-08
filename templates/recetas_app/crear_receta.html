@@ -101,9 +101,9 @@
                                 {{ hidden_field }}
                             {% endfor %}
                             <div class="form-field small-field">
-                                {{ form_paso.titulo.label_tag }} {# CAMBIO AQUÍ: de 'orden' a 'titulo' #}
-                                {{ form_paso.titulo }} {# CAMBIO AQUÍ: de 'orden' a 'titulo' #}
-                                {% if form_paso.titulo.errors %}<div class="error-message">{{ form_paso.titulo.errors }}</div>{% endif %} {# CAMBIO AQUÍ #}
+                                {{ form_paso.titulo.label_tag }}
+                                {{ form_paso.titulo }}
+                                {% if form_paso.titulo.errors %}<div class="error-message">{{ form_paso.titulo.errors }}</div>{% endif %}
                             </div>
                             <div class="form-field large-field">
                                 {{ form_paso.descripcion.label_tag }}
@@ -127,6 +127,8 @@
             <div class="form-actions">
                 <button type="submit" class="button-primary submit-button">Guardar Receta</button>
                 <button type="submit" formaction="{% url 'recetas_app:previsualizar_receta' %}" formtarget="_blank" class="button-secondary preview-button">Previsualizar Receta</button>
+                {# Se cambia el enlace por un botón que usa JavaScript para volver a la página anterior #}
+                <button type="button" class="button-secondary" onclick="history.back()">Cancelar</button>
             </div>
         </form>
     </div>
@@ -352,7 +354,6 @@
             });
 
             visiblePasos.forEach((item, index) => {
-                // CAMBIO AQUÍ: de 'ordenInput' a 'tituloInput'
                 const tituloInput = item.querySelector(`input[name^="pasos-"][name$="-titulo"]`);
                 const descripcionInput = item.querySelector(`textarea[name^="pasos-"][name$="-descripcion"]`);
                 if (!tituloInput || !tituloInput.value.trim() || !descripcionInput || !descripcionInput.value.trim()) {
