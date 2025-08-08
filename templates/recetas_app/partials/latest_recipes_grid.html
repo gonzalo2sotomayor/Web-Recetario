@@ -27,7 +27,13 @@
                                 <i class="{% if receta.pk in favoritas_ids %}fas{% else %}far{% endif %} fa-heart"></i>
                             </button>
                         </form>
-                        <span class="favorite-text">Add to favorites</span>
+                        <span class="favorite-text">
+                         {% if receta.pk in favoritas_ids %}
+                         Favorito
+                         {% else %}
+                         Añadir a favoritos
+                         {% endif %}
+                        </span>
                     {% endif %}
                 </div>
                 <a href="{% url 'recetas_app:detalle_receta' pk=receta.pk %}#comments-section" class="comments-icon-link">

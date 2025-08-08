@@ -18,6 +18,13 @@
     --hero-text-color: #FFFFFF; /* Color de texto para el banner */
     --hero-overlay-bg: rgba(0, 0, 0, 0.4); /* Overlay para el texto del banner */
     --golden-border:#CFA854; /* Color dorado para bordes y acentos */
+    /* Colores adicionales para estados de mensajes */
+    --success-bg: #d4edda;
+    --success-text: #155724;
+    --error-bg: #f8d7da;
+    --error-text: #721c24;
+    --warning-bg: #fff3cd;
+    --warning-text: #664d03;
 }
 
 /* Estilos Base HTML y Body */
@@ -3103,3 +3110,4 @@ Estilos para el modal (sustituto de alert)
         flex-direction: row;
     }
 }
+
